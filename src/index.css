@@ -2,68 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=EB+Garamond:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 220 16% 96%;
-    --foreground: 220 20% 14%;
+    /* Lemhi Brand — Warm parchment base */
+    --background: 40 45% 94%;
+    --foreground: 0 0% 11%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 14%;
+    --card: 40 33% 97%;
+    --card-foreground: 0 0% 11%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 14%;
+    --popover: 40 33% 97%;
+    --popover-foreground: 0 0% 11%;
 
-    --primary: 214 84% 36%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 90 37% 20%;
+    --primary-foreground: 40 20% 96%;
 
-    --secondary: 220 14% 90%;
-    --secondary-foreground: 220 20% 14%;
+    --secondary: 40 30% 86%;
+    --secondary-foreground: 0 0% 11%;
 
-    --muted: 220 14% 92%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 40 30% 86%;
+    --muted-foreground: 40 8% 46%;
 
-    --accent: 220 14% 92%;
-    --accent-foreground: 220 20% 14%;
+    --accent: 25 84% 56%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 87%;
-    --input: 220 13% 87%;
-    --ring: 214 84% 36%;
+    --border: 40 25% 82%;
+    --input: 40 25% 82%;
+    --ring: 90 37% 20%;
 
     --radius: 0.5rem;
 
-    /* Custom semantic tokens */
-    --ig1: 152 60% 36%;
-    --ig2: 38 92% 50%;
-    --ig3: 0 72% 51%;
+    /* Status colors */
+    --status-red: 0 84% 60%;
+    --status-yellow: 40 90% 45%;
+    --status-green: 86 32% 40%;
 
-    --ig1-bg: 152 60% 95%;
-    --ig2-bg: 38 92% 95%;
-    --ig3-bg: 0 72% 96%;
+    --accent-orange: 25 84% 56%;
+    --highlight: 46 100% 62%;
 
-    --pillar-str: 214 84% 36%;
-    --pillar-gov: 262 52% 47%;
-    --pillar-tec: 168 60% 34%;
-    --pillar-prc: 24 80% 50%;
-    --pillar-dat: 340 65% 47%;
-    --pillar-obs: 198 80% 40%;
-    --pillar-dep: 45 80% 42%;
+    /* IG semantic colors */
+    --ig1: 86 32% 40%;
+    --ig2: 40 90% 45%;
+    --ig3: 0 84% 60%;
 
-    --sidebar-background: 220 20% 14%;
-    --sidebar-foreground: 220 14% 80%;
-    --sidebar-primary: 214 84% 56%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 18% 20%;
-    --sidebar-accent-foreground: 220 14% 90%;
-    --sidebar-border: 220 16% 22%;
-    --sidebar-ring: 214 84% 56%;
+    --ig1-bg: 86 32% 93%;
+    --ig2-bg: 40 60% 93%;
+    --ig3-bg: 0 60% 95%;
 
-    --surface-raised: 0 0% 100%;
-    --surface-sunken: 220 16% 94%;
+    /* Pillar accent hues */
+    --pillar-str: 90 37% 28%;
+    --pillar-gov: 280 30% 40%;
+    --pillar-tec: 168 40% 30%;
+    --pillar-prc: 25 70% 46%;
+    --pillar-dat: 340 45% 42%;
+    --pillar-obs: 200 50% 36%;
+    --pillar-dep: 46 60% 38%;
+
+    /* Charts */
+    --chart-1: 90 37% 20%;
+    --chart-2: 86 32% 40%;
+    --chart-3: 25 84% 56%;
+    --chart-4: 46 100% 62%;
+    --chart-5: 0 84% 60%;
+
+    /* Sidebar */
+    --sidebar-background: 40 33% 95%;
+    --sidebar-foreground: 0 0% 11%;
+    --sidebar-primary: 90 37% 20%;
+    --sidebar-primary-foreground: 40 20% 96%;
+    --sidebar-accent: 40 25% 90%;
+    --sidebar-accent-foreground: 0 0% 11%;
+    --sidebar-border: 40 25% 85%;
+    --sidebar-ring: 90 37% 20%;
   }
 }
 
@@ -71,24 +86,37 @@
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    line-height: 1.65;
   }
-
-  code, .font-mono {
-    font-family: 'IBM Plex Mono', monospace;
-  }
-
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight;
+    font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
-
   p {
     text-wrap: pretty;
   }
+}
+
+/* Topo Pattern Overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url('/topo-pattern.png');
+  background-size: 800px 800px;
+  background-repeat: repeat;
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+#root {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
 }
 
 @layer utilities {
@@ -125,8 +153,3 @@
 .animate-fade-up {
   animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-
-.stagger-1 { animation-delay: 60ms; }
-.stagger-2 { animation-delay: 120ms; }
-.stagger-3 { animation-delay: 180ms; }
-.stagger-4 { animation-delay: 240ms; }

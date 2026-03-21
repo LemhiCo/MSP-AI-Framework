@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["'IBM Plex Sans'", "system-ui", "sans-serif"],
-        mono: ["'IBM Plex Mono'", "monospace"],
+        sans: ['"DM Sans"', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        serif: ['"EB Garamond"', 'Georgia', '"Times New Roman"', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -61,11 +61,18 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        ig1: "hsl(var(--ig1))",
-        ig2: "hsl(var(--ig2))",
-        ig3: "hsl(var(--ig3))",
-        "surface-raised": "hsl(var(--surface-raised))",
-        "surface-sunken": "hsl(var(--surface-sunken))",
+        "status-red": "hsl(var(--status-red))",
+        "status-yellow": "hsl(var(--status-yellow))",
+        "status-green": "hsl(var(--status-green))",
+        "accent-orange": "hsl(var(--accent-orange))",
+        highlight: "hsl(var(--highlight))",
+        chart: {
+          "1": "hsl(var(--chart-1))",
+          "2": "hsl(var(--chart-2))",
+          "3": "hsl(var(--chart-3))",
+          "4": "hsl(var(--chart-4))",
+          "5": "hsl(var(--chart-5))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
