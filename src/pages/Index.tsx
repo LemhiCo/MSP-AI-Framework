@@ -1,9 +1,10 @@
-import { useState, useMemo } from "react";
-import { Plus, Trash2, Search, Check, Minus, X, Users, ChevronRight } from "lucide-react";
+import { useState, useMemo, useCallback } from "react";
+import { Plus, Trash2, Search, Check, Minus, X, Users, Download } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
 import { useClientStore } from "@/hooks/use-client-store";
 import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
 import { getClientProgress, type ControlStatus } from "@/lib/client-store";
+import * as XLSX from "xlsx";
 
 const IG_META: Record<string, { label: string; sub: string }> = {
   IG1: { label: "IG1 — Essential", sub: "Minimum safe floor" },
