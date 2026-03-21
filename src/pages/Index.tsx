@@ -28,20 +28,25 @@ const Index = () => {
   const [newName, setNewName] = useState("");
   const [showNewInput, setShowNewInput] = useState(false);
   const [search, setSearch] = useState("");
+  const [lifecycleFilter, setLifecycleFilter] = useState<string>("all");
   const [activeControl, setActiveControl] = useState<Control | null>(null);
 
   const selectedClient = clients.find((c) => c.id === selectedClientId);
 
   const filteredControls = useMemo(() => {
-    if (!search) return controls;
-    const q = search.toLowerCase();
-    return controls.filter(
-      (c) =>
-        c.controlId.toLowerCase().includes(q) ||
-        c.safeguardTitle.toLowerCase().includes(q) ||
-        c.customerObjective.toLowerCase().includes(q)
-    );
-  }, [controls, search]);
+    return controls.filter((c) => {
+      if (lifecycleFilter !== "all" && c.lifecycleTrigger !== lifecycleFilter) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        return (
+          c.controlId.toLowerCase().includes(q) ||
+          c.safeguardTitle.toLowerCase().includes(q) ||
+          c.customerObjective.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [controls, search, lifecycleFilter]);
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
