@@ -1,10 +1,9 @@
 import { useState, useMemo } from "react";
-import { Plus, Trash2, ChevronDown, Search, Check, Minus, X, Users } from "lucide-react";
+import { Plus, Trash2, Search, Check, Minus, X, Users, ChevronRight } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
 import { useClientStore } from "@/hooks/use-client-store";
 import { PILLARS, IG_LEVELS, type Control } from "@/lib/csv-loader";
 import { getClientProgress, type ControlStatus } from "@/lib/client-store";
-import lemhiIcon from "@/assets/lemhi-icon.png";
 
 const IG_META: Record<string, { label: string; sub: string }> = {
   IG1: { label: "IG1 — Essential", sub: "Minimum safe floor" },
@@ -29,7 +28,7 @@ const Index = () => {
   const [newName, setNewName] = useState("");
   const [showNewInput, setShowNewInput] = useState(false);
   const [search, setSearch] = useState("");
-  const [expandedControl, setExpandedControl] = useState<string | null>(null);
+  const [activeControl, setActiveControl] = useState<Control | null>(null);
 
   const selectedClient = clients.find((c) => c.id === selectedClientId);
 
@@ -98,14 +97,6 @@ const Index = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Top Bar */}
       <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-2.5 flex items-center gap-3 shadow-sm">
-        <div className="flex items-center gap-2.5 mr-4">
-          <img src={lemhiIcon} alt="Lemhi" className="w-7 h-7" />
-          <div className="hidden sm:block">
-            <h1 className="text-sm font-serif font-bold leading-none">AI Enablement Framework</h1>
-            <p className="text-[10px] text-muted-foreground font-sans">Customer Environment Controls</p>
-          </div>
-        </div>
-
         {/* Search */}
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -185,11 +176,8 @@ const Index = () => {
           <div className="hidden md:flex items-center gap-2 ml-2 pl-3 border-l border-border">
             <div className="w-20 h-1.5 rounded-full bg-muted overflow-hidden">
               <div
-                className="h-full rounded-full transition-all"
-                style={{
-                  width: `${progress.percentage}%`,
-                  background: "hsl(var(--ig1))",
-                }}
+                className="h-full rounded-full transition-all bg-status-green"
+                style={{ width: `${progress.percentage}%` }}
               />
             </div>
             <span className="text-xs font-mono tabular-nums text-muted-foreground">{progress.percentage}%</span>
@@ -202,14 +190,9 @@ const Index = () => {
         <div className="min-w-[1200px]">
           {/* Pillar Headers */}
           <div className="sticky top-[53px] z-20 bg-background border-b border-border grid grid-cols-[100px_repeat(7,1fr)]">
-            <div className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-end">
-              IG Level
-            </div>
+            <div className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-end" />
             {PILLARS.map((p) => (
-              <div
-                key={p.id}
-                className="px-2 py-2 border-l border-border"
-              >
+              <div key={p.id} className="px-2 py-2 border-l border-border">
                 <div className="flex items-center gap-1.5">
                   <span
                     className="w-2 h-2 rounded-full flex-shrink-0"
@@ -229,19 +212,12 @@ const Index = () => {
             const igBgVar = ig === "IG1" ? "--ig1-bg" : ig === "IG2" ? "--ig2-bg" : "--ig3-bg";
 
             return (
-              <div
-                key={ig}
-                className="grid grid-cols-[100px_repeat(7,1fr)] border-b border-border"
-              >
-                {/* IG Label */}
+              <div key={ig} className="grid grid-cols-[100px_repeat(7,1fr)] border-b border-border">
                 <div
                   className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10"
                   style={{ background: `hsl(var(${igBgVar}))` }}
                 >
-                  <span
-                    className="text-xs font-bold"
-                    style={{ color: `hsl(var(${igColorVar}))` }}
-                  >
+                  <span className="text-xs font-bold" style={{ color: `hsl(var(${igColorVar}))` }}>
                     {ig}
                   </span>
                   <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">
@@ -249,92 +225,58 @@ const Index = () => {
                   </span>
                 </div>
 
-                {/* Pillar Cells */}
                 {PILLARS.map((pillar) => {
                   const items = grid[pillar.id]?.[ig] || [];
                   return (
-                    <div
-                      key={`${pillar.id}-${ig}`}
-                      className="border-l border-border px-1.5 py-1.5 space-y-1 bg-card/50"
-                    >
+                    <div key={`${pillar.id}-${ig}`} className="border-l border-border px-1.5 py-1.5 space-y-1 bg-card/50">
                       {items.map((c) => {
                         const status = getStatus(c.controlId);
-                        const isExpanded = expandedControl === c.controlId;
                         return (
-                          <div
+                          <button
                             key={c.controlId}
-                            className={`rounded-md border text-[11px] transition-all ${
+                            onClick={() => setActiveControl(c)}
+                            className={`w-full rounded-md border text-[11px] transition-all text-left px-1.5 py-1.5 hover:shadow-md active:scale-[0.97] cursor-pointer ${
                               status === "complete"
-                                ? "bg-emerald-50 border-emerald-200"
+                                ? "bg-status-green/10 border-status-green/30"
                                 : status === "in-progress"
-                                ? "bg-amber-50 border-amber-200"
+                                ? "bg-status-yellow/10 border-status-yellow/30"
                                 : status === "not-applicable"
-                                ? "bg-slate-50 border-slate-200 opacity-50"
-                                : "bg-card border-border"
+                                ? "bg-muted/60 border-border opacity-50"
+                                : "bg-card border-border hover:border-primary/40"
                             }`}
                           >
-                            <div className="flex items-start gap-1 px-1.5 py-1.5">
-                              {/* Checkbox */}
+                            <div className="flex items-start gap-1.5">
                               {selectedClient && (
-                                <button
-                                  onClick={() => cycleStatus(c.controlId)}
-                                  className={`mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border transition-all active:scale-90 ${
+                                <span
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    cycleStatus(c.controlId);
+                                  }}
+                                  className={`mt-0.5 w-3.5 h-3.5 rounded flex-shrink-0 flex items-center justify-center border transition-all active:scale-90 ${
                                     status === "complete"
-                                      ? "bg-emerald-500 border-emerald-500"
+                                      ? "bg-status-green border-status-green"
                                       : status === "in-progress"
-                                      ? "bg-amber-400 border-amber-400"
+                                      ? "bg-status-yellow border-status-yellow"
                                       : status === "not-applicable"
-                                      ? "bg-slate-300 border-slate-300"
+                                      ? "bg-muted-foreground/30 border-muted-foreground/30"
                                       : "border-border hover:border-primary"
                                   }`}
-                                  title="Click to cycle: Not Started → Complete → In Progress → N/A"
                                 >
-                                  {status === "complete" && <Check className="w-2.5 h-2.5 text-white" />}
-                                  {status === "in-progress" && <Minus className="w-2.5 h-2.5 text-white" />}
-                                  {status === "not-applicable" && <X className="w-2.5 h-2.5 text-white" />}
-                                </button>
+                                  {status === "complete" && <Check className="w-2 h-2 text-primary-foreground" />}
+                                  {status === "in-progress" && <Minus className="w-2 h-2 text-primary-foreground" />}
+                                  {status === "not-applicable" && <X className="w-2 h-2 text-primary-foreground" />}
+                                </span>
                               )}
-                              <button
-                                onClick={() => setExpandedControl(isExpanded ? null : c.controlId)}
-                                className="flex-1 text-left min-w-0"
-                              >
-                                <span
-                                  className={`leading-tight block ${
-                                    status === "complete" ? "line-through text-muted-foreground" : ""
-                                  }`}
-                                >
+                              <div className="flex-1 min-w-0">
+                                <span className={`leading-tight block ${status === "complete" ? "line-through text-muted-foreground" : ""}`}>
                                   {c.safeguardTitle}
                                 </span>
                                 <span className="text-[9px] font-mono text-muted-foreground block mt-0.5">
                                   {c.controlId}
                                 </span>
-                              </button>
-                              <ChevronDown
-                                className={`w-3 h-3 text-muted-foreground flex-shrink-0 mt-0.5 transition-transform ${
-                                  isExpanded ? "rotate-180" : ""
-                                }`}
-                              />
-                            </div>
-                            {isExpanded && (
-                              <div className="px-2 pb-2 pt-1 border-t border-border/50 space-y-1.5 animate-fade-up" style={{ animationDuration: "200ms" }}>
-                                <p className="text-[10px] leading-relaxed text-muted-foreground">{c.customerObjective}</p>
-                                <div className="text-[9px] space-y-0.5">
-                                  <Detail label="Requirement" value={c.detailedRequirement} />
-                                  <Detail label="Trigger" value={c.lifecycleTrigger} />
-                                  <Detail label="Cadence" value={c.cadence} />
-                                  <Detail label="Stakeholder" value={c.primaryStakeholder} />
-                                  <Detail label="MS Tooling" value={c.microsoftTool} />
-                                  <Detail label="Generic Tooling" value={c.genericTooling} />
-                                  <Detail label="Evidence" value={c.evidenceOfCompletion} />
-                                </div>
-                                {c.notesGuardrails && (
-                                  <div className="bg-amber-50 border border-amber-200 rounded px-1.5 py-1 text-[9px] text-amber-800">
-                                    ⚠ {c.notesGuardrails}
-                                  </div>
-                                )}
                               </div>
-                            )}
-                          </div>
+                            </div>
+                          </button>
                         );
                       })}
                       {items.length === 0 && (
@@ -349,6 +291,89 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Detail Panel (slide-over) */}
+      {activeControl && (
+        <>
+          <div
+            className="fixed inset-0 bg-foreground/20 z-40"
+            onClick={() => setActiveControl(null)}
+          />
+          <div className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-card border-l border-border z-50 shadow-xl overflow-y-auto animate-fade-up"
+            style={{ animationDuration: "250ms" }}
+          >
+            <div className="sticky top-0 bg-card border-b border-border px-5 py-4 flex items-start justify-between">
+              <div>
+                <span className="text-[10px] font-mono text-muted-foreground">{activeControl.controlId}</span>
+                <h2 className="text-lg font-serif font-semibold mt-0.5 leading-snug">{activeControl.safeguardTitle}</h2>
+                <span className={`inline-block mt-1.5 ${activeControl.ig === "IG1" ? "ig1-badge" : activeControl.ig === "IG2" ? "ig2-badge" : "ig3-badge"}`}>
+                  {activeControl.ig} — {activeControl.ig === "IG1" ? "Essential" : activeControl.ig === "IG2" ? "Managed" : "Advanced"}
+                </span>
+              </div>
+              <button
+                onClick={() => setActiveControl(null)}
+                className="p-1.5 rounded-md hover:bg-muted transition-colors active:scale-95"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="px-5 py-4 space-y-5">
+              {/* Status controls */}
+              {selectedClient && (
+                <div>
+                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">Status</h3>
+                  <div className="flex gap-1.5">
+                    {([
+                      { val: "not-started", label: "Not Started" },
+                      { val: "in-progress", label: "In Progress" },
+                      { val: "complete", label: "Complete" },
+                      { val: "not-applicable", label: "N/A" },
+                    ] as const).map((opt) => {
+                      const current = getStatus(activeControl.controlId);
+                      const isActive = current === opt.val;
+                      return (
+                        <button
+                          key={opt.val}
+                          onClick={() => updateStatus(selectedClient.id, activeControl.controlId, opt.val)}
+                          className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-all active:scale-95 ${
+                            isActive
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-card border-border hover:bg-muted"
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <DetailSection title="Customer Objective" value={activeControl.customerObjective} />
+              <DetailSection title="Detailed Requirement" value={activeControl.detailedRequirement} />
+
+              <div className="grid grid-cols-2 gap-4">
+                <DetailSection title="Lifecycle Trigger" value={activeControl.lifecycleTrigger} />
+                <DetailSection title="Cadence" value={activeControl.cadence} />
+                <DetailSection title="Primary Stakeholder" value={activeControl.primaryStakeholder} />
+                <DetailSection title="Applies To" value={activeControl.appliesTo} />
+              </div>
+
+              <DetailSection title="Microsoft Tooling" value={activeControl.microsoftTool} />
+              <DetailSection title="Generic Tooling" value={activeControl.genericTooling} />
+              <DetailSection title="Evidence of Completion" value={activeControl.evidenceOfCompletion} />
+
+              {activeControl.notesGuardrails && (
+                <div className="bg-status-yellow/10 border border-status-yellow/30 rounded-lg p-3">
+                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-status-yellow mb-1">Notes & Guardrails</h3>
+                  <p className="text-sm leading-relaxed">{activeControl.notesGuardrails}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+
       {/* No client hint */}
       {!selectedClient && clients.length === 0 && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-foreground text-background text-xs font-medium px-4 py-2 rounded-full shadow-lg animate-fade-up">
@@ -359,12 +384,12 @@ const Index = () => {
   );
 };
 
-function Detail({ label, value }: { label: string; value: string }) {
+function DetailSection({ title, value }: { title: string; value: string }) {
   if (!value) return null;
   return (
     <div>
-      <span className="font-semibold text-foreground">{label}:</span>{" "}
-      <span className="text-muted-foreground">{value}</span>
+      <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">{title}</h3>
+      <p className="text-sm leading-relaxed">{value}</p>
     </div>
   );
 }
