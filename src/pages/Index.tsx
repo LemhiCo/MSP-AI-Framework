@@ -124,9 +124,9 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background overflow-x-auto">
+    <div className="min-h-screen bg-background">
       {/* Top Bar */}
-      <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-1.5 flex items-center gap-3 shadow-sm">
+      <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-1.5 flex items-center gap-3 shadow-sm min-w-[1200px]">
         <h1 className="text-sm font-serif font-semibold mr-3 hidden sm:block">AI Enablement Framework</h1>
         {/* Search */}
         <div className="relative flex-1 max-w-xs">
