@@ -13,8 +13,13 @@ export interface Control {
   microsoftTool: string;
   genericTooling: string;
   evidenceOfCompletion: string;
+  rawWeight: string;
+  gateType: string;
+  minStatusToPass: string;
+  minEvidenceToPass: string;
+  failCondition: string;
+  whyItMatters: string;
   appliesTo: string;
-  notesGuardrails: string;
 }
 
 export interface AssessmentRow {
