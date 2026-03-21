@@ -150,6 +150,14 @@ const Index = () => {
             <option key={t} value={t}>{t}</option>
           ))}
         </select>
+        <button
+          onClick={handleDownloadXlsx}
+          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95"
+          title="Download XLSX"
+        >
+          <Download className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
+          XLSX
+        </button>
 
         <div className="flex-1" />
 
