@@ -170,10 +170,22 @@ function ControlRow({ control, expanded, onToggle }: { control: Control; expande
           <div>
             <DetailField label="Evidence of Completion" value={control.evidenceOfCompletion} />
           </div>
-          {control.notesGuardrails && (
-            <div className="bg-amber-50 border border-amber-200 rounded-md p-3">
-              <h4 className="text-xs font-semibold uppercase tracking-wide text-amber-700 mb-1">Notes & Guardrails</h4>
-              <p className="text-sm text-amber-900 leading-relaxed">{control.notesGuardrails}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <DetailField label="Raw Weight" value={control.rawWeight} />
+            <DetailField label="Gate Type" value={control.gateType} />
+            <DetailField label="Min Status to Pass" value={control.minStatusToPass} />
+            <DetailField label="Min Evidence to Pass" value={control.minEvidenceToPass} />
+          </div>
+          {control.failCondition && (
+            <div className="bg-destructive/5 border border-destructive/20 rounded-md p-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-destructive mb-1">Fail Condition</h4>
+              <p className="text-sm leading-relaxed">{control.failCondition}</p>
+            </div>
+          )}
+          {control.whyItMatters && (
+            <div className="bg-primary/5 border border-primary/20 rounded-md p-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-primary mb-1">Why it Matters</h4>
+              <p className="text-sm leading-relaxed">{control.whyItMatters}</p>
             </div>
           )}
         </div>

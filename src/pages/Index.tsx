@@ -105,8 +105,13 @@ const Index = () => {
       "Microsoft Tool Recommendation": c.microsoftTool,
       "Generic Tooling Category": c.genericTooling,
       "Evidence of Completion": c.evidenceOfCompletion,
+      "Raw Weight": c.rawWeight,
+      "Gate Type": c.gateType,
+      "Minimum Status to Pass": c.minStatusToPass,
+      "Minimum Evidence to Pass": c.minEvidenceToPass,
+      "Fail Condition": c.failCondition,
+      "Why it Matters": c.whyItMatters,
       "Applies To": c.appliesTo,
-      "Notes / Guardrails": c.notesGuardrails,
       ...(selectedClient ? { "Status": getStatus(c.controlId) } : {}),
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
@@ -320,9 +325,20 @@ const Index = () => {
                                 <span className={`leading-tight block ${status === "complete" ? "line-through text-muted-foreground" : ""}`}>
                                   {c.safeguardTitle}
                                 </span>
-                                <span className="text-[9px] font-mono text-muted-foreground block mt-0.5">
-                                  {c.controlId}
-                                </span>
+                                <div className="flex items-center gap-1 mt-0.5">
+                                  <span className="text-[9px] font-mono text-muted-foreground">
+                                    {c.controlId}
+                                  </span>
+                                  <span className={`text-[8px] font-semibold px-1 py-0.5 rounded ${
+                                    c.gateType === "Baseline Gate"
+                                      ? "bg-destructive/15 text-destructive"
+                                      : c.gateType === "Scale Gate"
+                                      ? "bg-status-yellow/20 text-foreground"
+                                      : "bg-muted text-muted-foreground"
+                                  }`}>
+                                    {c.gateType === "Baseline Gate" ? "BASE" : c.gateType === "Scale Gate" ? "SCALE" : c.gateType === "Advanced Score" ? "ADV" : ""}
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           </button>
@@ -407,14 +423,28 @@ const Index = () => {
                 <DetailSection title="Applies To" value={activeControl.appliesTo} />
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <DetailSection title="Raw Weight" value={activeControl.rawWeight} />
+                <DetailSection title="Gate Type" value={activeControl.gateType} />
+                <DetailSection title="Min Status to Pass" value={activeControl.minStatusToPass} />
+                <DetailSection title="Min Evidence to Pass" value={activeControl.minEvidenceToPass} />
+              </div>
+
               <DetailSection title="Microsoft Tooling" value={activeControl.microsoftTool} />
               <DetailSection title="Generic Tooling" value={activeControl.genericTooling} />
               <DetailSection title="Evidence of Completion" value={activeControl.evidenceOfCompletion} />
 
-              {activeControl.notesGuardrails && (
-                <div className="bg-status-yellow/10 border border-status-yellow/30 rounded-lg p-3">
-                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-status-yellow mb-1">Notes & Guardrails</h3>
-                  <p className="text-sm leading-relaxed">{activeControl.notesGuardrails}</p>
+              {activeControl.failCondition && (
+                <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3">
+                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-destructive mb-1">Fail Condition</h3>
+                  <p className="text-sm leading-relaxed">{activeControl.failCondition}</p>
+                </div>
+              )}
+
+              {activeControl.whyItMatters && (
+                <div className="bg-primary/10 border border-primary/30 rounded-lg p-3">
+                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-primary mb-1">Why it Matters</h3>
+                  <p className="text-sm leading-relaxed">{activeControl.whyItMatters}</p>
                 </div>
               )}
             </div>
