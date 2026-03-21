@@ -412,14 +412,28 @@ const Index = () => {
                 <DetailSection title="Applies To" value={activeControl.appliesTo} />
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <DetailSection title="Raw Weight" value={activeControl.rawWeight} />
+                <DetailSection title="Gate Type" value={activeControl.gateType} />
+                <DetailSection title="Min Status to Pass" value={activeControl.minStatusToPass} />
+                <DetailSection title="Min Evidence to Pass" value={activeControl.minEvidenceToPass} />
+              </div>
+
               <DetailSection title="Microsoft Tooling" value={activeControl.microsoftTool} />
               <DetailSection title="Generic Tooling" value={activeControl.genericTooling} />
               <DetailSection title="Evidence of Completion" value={activeControl.evidenceOfCompletion} />
 
-              {activeControl.notesGuardrails && (
-                <div className="bg-status-yellow/10 border border-status-yellow/30 rounded-lg p-3">
-                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-status-yellow mb-1">Notes & Guardrails</h3>
-                  <p className="text-sm leading-relaxed">{activeControl.notesGuardrails}</p>
+              {activeControl.failCondition && (
+                <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3">
+                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-destructive mb-1">Fail Condition</h3>
+                  <p className="text-sm leading-relaxed">{activeControl.failCondition}</p>
+                </div>
+              )}
+
+              {activeControl.whyItMatters && (
+                <div className="bg-primary/10 border border-primary/30 rounded-lg p-3">
+                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-primary mb-1">Why it Matters</h3>
+                  <p className="text-sm leading-relaxed">{activeControl.whyItMatters}</p>
                 </div>
               )}
             </div>
