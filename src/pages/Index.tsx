@@ -105,8 +105,13 @@ const Index = () => {
       "Microsoft Tool Recommendation": c.microsoftTool,
       "Generic Tooling Category": c.genericTooling,
       "Evidence of Completion": c.evidenceOfCompletion,
+      "Raw Weight": c.rawWeight,
+      "Gate Type": c.gateType,
+      "Minimum Status to Pass": c.minStatusToPass,
+      "Minimum Evidence to Pass": c.minEvidenceToPass,
+      "Fail Condition": c.failCondition,
+      "Why it Matters": c.whyItMatters,
       "Applies To": c.appliesTo,
-      "Notes / Guardrails": c.notesGuardrails,
       ...(selectedClient ? { "Status": getStatus(c.controlId) } : {}),
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
