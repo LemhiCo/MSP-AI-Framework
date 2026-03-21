@@ -69,11 +69,21 @@ export default function WaitlistGate({ onComplete }: { onComplete: () => void })
 
       {/* Modal */}
       <div className="relative z-10 w-full max-w-md mx-4 bg-card border border-border rounded-xl shadow-2xl p-6 animate-fade-up" style={{ animationDuration: "400ms" }}>
-        <div className="text-center mb-6">
+        <div className="text-center mb-5">
           <h2 className="text-xl font-serif font-semibold">Join the Expedition</h2>
           <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
             Get access to the MSP AI Enablement Framework — the operational blueprint for embedding AI across your stack.
           </p>
+        </div>
+
+        <div className="mb-5 rounded-lg border border-border bg-muted/40 px-4 py-3 space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">What you'll get</p>
+          <ul className="text-xs text-foreground/80 space-y-1 leading-relaxed">
+            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>88 controls across 7 pillars — Strategy to Deployment</li>
+            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Gate-based scoring (Baseline, Scale, Advanced)</li>
+            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Microsoft & generic tooling recommendations per control</li>
+            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Downloadable XLSX for offline planning</li>
+          </ul>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
