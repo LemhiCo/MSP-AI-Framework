@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Plus, Trash2, Search, Check, Minus, X, Users, ChevronRight } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
 import { useClientStore } from "@/hooks/use-client-store";
-import { PILLARS, IG_LEVELS, type Control } from "@/lib/csv-loader";
+import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
 import { getClientProgress, type ControlStatus } from "@/lib/client-store";
 
 const IG_META: Record<string, { label: string; sub: string }> = {
@@ -28,20 +28,25 @@ const Index = () => {
   const [newName, setNewName] = useState("");
   const [showNewInput, setShowNewInput] = useState(false);
   const [search, setSearch] = useState("");
+  const [lifecycleFilter, setLifecycleFilter] = useState<string>("all");
   const [activeControl, setActiveControl] = useState<Control | null>(null);
 
   const selectedClient = clients.find((c) => c.id === selectedClientId);
 
   const filteredControls = useMemo(() => {
-    if (!search) return controls;
-    const q = search.toLowerCase();
-    return controls.filter(
-      (c) =>
-        c.controlId.toLowerCase().includes(q) ||
-        c.safeguardTitle.toLowerCase().includes(q) ||
-        c.customerObjective.toLowerCase().includes(q)
-    );
-  }, [controls, search]);
+    return controls.filter((c) => {
+      if (lifecycleFilter !== "all" && c.lifecycleTrigger !== lifecycleFilter) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        return (
+          c.controlId.toLowerCase().includes(q) ||
+          c.safeguardTitle.toLowerCase().includes(q) ||
+          c.customerObjective.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [controls, search, lifecycleFilter]);
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
@@ -109,6 +114,17 @@ const Index = () => {
             className="w-full pl-8 pr-3 py-1.5 rounded-md border border-input bg-background text-xs focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
           />
         </div>
+
+        <select
+          value={lifecycleFilter}
+          onChange={(e) => setLifecycleFilter(e.target.value)}
+          className="text-xs font-medium border border-border rounded-md px-2 py-1.5 bg-card focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
+        >
+          <option value="all">All Lifecycle Triggers</option>
+          {LIFECYCLE_TRIGGERS.map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </select>
 
         <div className="flex-1" />
 
