@@ -337,7 +337,6 @@ const Index = () => {
               </div>
             );
           })}
-        </div>
       </div>
 
       {/* Detail Panel (slide-over) */}
