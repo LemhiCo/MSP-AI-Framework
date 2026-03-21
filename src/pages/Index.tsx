@@ -98,13 +98,11 @@ const Index = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Top Bar */}
       <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-2.5 flex items-center gap-3 shadow-sm">
-        <div className="flex items-center gap-2 mr-4">
-          <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground text-xs font-bold">AI</span>
-          </div>
+        <div className="flex items-center gap-2.5 mr-4">
+          <img src={lemhiIcon} alt="Lemhi" className="w-7 h-7" />
           <div className="hidden sm:block">
-            <h1 className="text-sm font-bold leading-none">AI Enablement Framework</h1>
-            <p className="text-[10px] text-muted-foreground">Customer Environment Controls</p>
+            <h1 className="text-sm font-serif font-bold leading-none">AI Enablement Framework</h1>
+            <p className="text-[10px] text-muted-foreground font-sans">Customer Environment Controls</p>
           </div>
         </div>
 
