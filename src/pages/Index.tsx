@@ -190,7 +190,7 @@ const Index = () => {
       <div className="flex-1 overflow-x-auto">
         <div className="min-w-[1200px]">
           {/* Pillar Headers */}
-          <div className="sticky top-[41px] z-20 bg-background border-b border-border grid grid-cols-[100px_repeat(7,1fr)]">
+          <div className="sticky top-[37px] z-20 bg-background border-b border-border grid grid-cols-[100px_repeat(7,1fr)]">
             <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-end" />
             {PILLARS.map((p) => (
               <div key={p.id} className="px-2 py-1.5 border-l border-border">
