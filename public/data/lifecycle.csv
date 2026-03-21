@@ -1,0 +1,65 @@
+Lifecycle Trigger,IG1 Controls,IG2 Controls,IG3 Controls
+Onboarding,"• STR-IG1-01 Executive sponsor assigned
+• STR-IG1-02 Business outcomes by persona
+• STR-IG1-03 In-scope user cohort defined
+• STR-IG1-04 Communication plan published
+• GOV-IG1-01 Basic AI acceptable use policy
+• GOV-IG1-02 Approved AI tools inventory
+• GOV-IG1-03 Prohibited data list for AI
+• GOV-IG1-04 Output validation standard
+• TEC-IG1-01 Identity baseline for AI users
+• TEC-IG1-02 Supported endpoint baseline
+• TEC-IG1-03 Network and service reachability
+• PRC-IG1-01 Top workflow inventory
+• PRC-IG1-02 Human review gates
+• PRC-IG1-03 Approved use-case SOPs
+• PRC-IG1-04 Prompt starter library
+• DAT-IG1-01 Approved data-in-scope register
+• DAT-IG1-02 Classification taxonomy
+• DAT-IG1-03 Permissions and sharing cleanup
+• DAT-IG1-04 Repository hygiene baseline
+• OBS-IG1-01 Adoption baseline
+• OBS-IG1-02 Shadow AI discovery baseline
+• OBS-IG1-03 Audit evidence path
+• OBS-IG1-04 Output quality sampling starter
+• DEP-IG1-01 Named pilot with training
+• DEP-IG1-04 Support runbook","• STR-IG2-03 Licensing and budget plan
+• TEC-IG2-02 Least-privilege admin review
+• TEC-IG2-03 Audit and logging baseline
+• PRC-IG2-02 Escalation and exception path by workflow",
+QBR,,"• STR-IG2-01 Steering cadence established
+• DAT-IG2-03 External sharing review
+• OBS-IG2-02 Cost and value scorecard
+• OBS-IG2-04 Configuration drift review","• STR-IG3-01 12-month AI roadmap
+• GOV-IG3-02 Policy mapping to enterprise risk framework
+• PRC-IG3-02 Workflow quality scorecard
+• DAT-IG3-02 Continuous oversharing monitoring
+• OBS-IG3-02 Automated anomaly detection"
+Employee Onboarding,• DEP-IG1-03 Role-based user training path,• DEP-IG2-03 Role-based expansion gate,
+Employee Offboarding,,,• DEP-IG3-02 Employee offboarding AI access removal
+Project,"• TEC-IG1-04 Rollback plan for AI enablement
+• DEP-IG1-02 Deployment rings","• STR-IG2-02 Use-case backlog prioritized
+• STR-IG2-04 Department expansion criteria
+• GOV-IG2-01 AI change approval path
+• GOV-IG2-02 Third-party AI vendor review
+• GOV-IG2-03 Exception register
+• GOV-IG2-04 Agent approval workflow
+• TEC-IG2-01 Device compliance gating
+• TEC-IG2-04 Separated test and production path
+• PRC-IG2-01 Workflow baseline metrics
+• PRC-IG2-04 Workflow change control
+• DAT-IG2-01 Labeling deployment
+• DAT-IG2-02 DLP and exfiltration controls
+• DAT-IG2-04 Retention alignment for AI records
+• OBS-IG2-03 Model/agent inventory
+• DEP-IG2-01 Connector approval path
+• DEP-IG2-02 Dev/test/prod promotion path
+• DEP-IG2-04 Rollback rehearsal","• STR-IG3-02 AI risk appetite statement
+• GOV-IG3-01 Block unapproved GenAI tools
+• TEC-IG3-01 Just-in-time privileged changes
+• TEC-IG3-02 Secret and integration credential control
+• PRC-IG3-01 Autonomy boundary matrix
+• DAT-IG3-01 Regulated data access model
+• DEP-IG3-01 Agent lifecycle register"
+Security Incident,,"• PRC-IG2-03 AI incident response playbook
+• OBS-IG2-01 Risky-pattern alerting",• OBS-IG3-01 Cross-tool correlation

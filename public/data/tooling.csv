@@ -1,0 +1,71 @@
+Control ID,Pillar,Safeguard Title,Microsoft Tool Recommendation,Generic Tooling Category,Lifecycle Trigger,IG
+STR-IG1-01,Strategy & Buy-In,Executive sponsor assigned,Microsoft 365 admin center for pilot scope visibility; SharePoint list for decision log,Project portfolio management / governance tracker,Onboarding,IG1
+STR-IG1-02,Strategy & Buy-In,Business outcomes by persona,Power BI for KPI baseline visualization; Excel/SharePoint for outcome register,BI/reporting tool,Onboarding,IG1
+STR-IG1-03,Strategy & Buy-In,In-scope user cohort defined,Entra ID groups,Identity/group management,Onboarding,IG1
+STR-IG1-04,Strategy & Buy-In,Communication plan published,SharePoint communication site; Teams announcement,Intranet / change communications,Onboarding,IG1
+STR-IG2-01,Strategy & Buy-In,Steering cadence established,Teams meetings; Loop/SharePoint for decision log,Governance meeting cadence,QBR,IG2
+STR-IG2-02,Strategy & Buy-In,Use-case backlog prioritized,Planner / Lists / SharePoint,Backlog management,Project,IG2
+STR-IG2-03,Strategy & Buy-In,Licensing and budget plan,Microsoft 365 admin center usage and license reports,SaaS license management,Onboarding,IG2
+STR-IG2-04,Strategy & Buy-In,Department expansion criteria,Power BI scorecards; SharePoint checklists,Project gate management,Project,IG2
+STR-IG3-01,Strategy & Buy-In,12-month AI roadmap,Planner / Project for the web / Power BI,Roadmapping / PMO tooling,QBR,IG3
+STR-IG3-02,Strategy & Buy-In,AI risk appetite statement,SharePoint controlled document library,Risk management / policy repository,Project,IG3
+GOV-IG1-01,Policy & Governance,Basic AI acceptable use policy,SharePoint policy library; Purview communication/compliance references,Policy management / HR policy system,Onboarding,IG1
+GOV-IG1-02,Policy & Governance,Approved AI tools inventory,SharePoint list; Defender exposure inventory where available,Asset / SaaS inventory,Onboarding,IG1
+GOV-IG1-03,Policy & Governance,Prohibited data list for AI,Purview information protection reference; SharePoint policy page,Data handling standard,Onboarding,IG1
+GOV-IG1-04,Policy & Governance,Output validation standard,SharePoint knowledge base,Knowledge management / SOP platform,Onboarding,IG1
+GOV-IG2-01,Policy & Governance,AI change approval path,ServiceNow/Planner paired with Microsoft 365 admin change evidence,ITSM / CAB process,Project,IG2
+GOV-IG2-02,Policy & Governance,Third-party AI vendor review,Defender for Cloud Apps app governance references; SharePoint checklist,Vendor risk management / procurement review,Project,IG2
+GOV-IG2-03,Policy & Governance,Exception register,SharePoint/Lists,GRC / exception management,Project,IG2
+GOV-IG2-04,Policy & Governance,Agent approval workflow,Copilot Studio admin controls; Power Platform admin center,Workflow / application approval process,Project,IG2
+GOV-IG3-01,Policy & Governance,Block unapproved GenAI tools,Microsoft Defender for Endpoint / Defender for Cloud Apps / Defender for Web controls,DNS filtering tools / SSE / CASB / secure web gateway / browser control,Project,IG3
+GOV-IG3-02,Policy & Governance,Policy mapping to enterprise risk framework,SharePoint controlled register; Purview evidence exports where relevant,GRC platform,QBR,IG3
+TEC-IG1-01,Technical Readiness,Identity baseline for AI users,Microsoft Entra ID,Identity provider / SSO platform,Onboarding,IG1
+TEC-IG1-02,Technical Readiness,Supported endpoint baseline,Intune; Microsoft 365 apps admin center,UEM / endpoint management,Onboarding,IG1
+TEC-IG1-03,Technical Readiness,Network and service reachability,Microsoft connectivity and service health references,Firewall / proxy / network controls,Onboarding,IG1
+TEC-IG1-04,Technical Readiness,Rollback plan for AI enablement,Entra groups; Microsoft 365 admin center,Rollback / release management,Project,IG1
+TEC-IG2-01,Technical Readiness,Device compliance gating,Intune compliance + Conditional Access,UEM / conditional access,Project,IG2
+TEC-IG2-02,Technical Readiness,Least-privilege admin review,Entra roles / PIM,Privileged access management,Onboarding,IG2
+TEC-IG2-03,Technical Readiness,Audit and logging baseline,Purview Audit; Entra sign-in logs; Microsoft 365 audit surfaces,SIEM / audit logging,Onboarding,IG2
+TEC-IG2-04,Technical Readiness,Separated test and production path,Copilot Studio / Power Platform environments / Entra groups,Test environment / SDLC controls,Project,IG2
+TEC-IG3-01,Technical Readiness,Just-in-time privileged changes,Entra PIM,Privileged access management,Project,IG3
+TEC-IG3-02,Technical Readiness,Secret and integration credential control,Azure Key Vault,Secrets management / PAM,Project,IG3
+PRC-IG1-01,Process Mapping,Top workflow inventory,Excel / SharePoint / Power BI for scoring,Process mapping / workflow discovery,Onboarding,IG1
+PRC-IG1-02,Process Mapping,Human review gates,SharePoint SOPs; Teams approvals where used,SOP / quality control,Onboarding,IG1
+PRC-IG1-03,Process Mapping,Approved use-case SOPs,SharePoint knowledge base,SOP / knowledge base,Onboarding,IG1
+PRC-IG1-04,Process Mapping,Prompt starter library,SharePoint pages / Loop,Knowledge base / prompt library,Onboarding,IG1
+PRC-IG2-01,Process Mapping,Workflow baseline metrics,Power BI,BI / process analytics,Project,IG2
+PRC-IG2-02,Process Mapping,Escalation and exception path by workflow,Teams / SharePoint,ITSM / SOP,Onboarding,IG2
+PRC-IG2-03,Process Mapping,AI incident response playbook,Purview audit references; Teams incident collaboration,Incident response / ITSM / SIEM,Security Incident,IG2
+PRC-IG2-04,Process Mapping,Workflow change control,SharePoint versioning; Planner change list,Change management,Project,IG2
+PRC-IG3-01,Process Mapping,Autonomy boundary matrix,SharePoint controlled matrix,Risk / controls documentation,Project,IG3
+PRC-IG3-02,Process Mapping,Workflow quality scorecard,Power BI,QA / analytics,QBR,IG3
+DAT-IG1-01,Data Security & Tagging,Approved data-in-scope register,SharePoint list; Purview data map references,Data inventory / repository register,Onboarding,IG1
+DAT-IG1-02,Data Security & Tagging,Classification taxonomy,Microsoft Purview Information Protection,Data classification / information governance,Onboarding,IG1
+DAT-IG1-03,Data Security & Tagging,Permissions and sharing cleanup,SharePoint admin tools; Entra groups,Access governance / file permissions review,Onboarding,IG1
+DAT-IG1-04,Data Security & Tagging,Repository hygiene baseline,SharePoint / OneDrive administration,Records management / content lifecycle,Onboarding,IG1
+DAT-IG2-01,Data Security & Tagging,Labeling deployment,Microsoft Purview sensitivity labels,Data labeling / classification enforcement,Project,IG2
+DAT-IG2-02,Data Security & Tagging,DLP and exfiltration controls,Microsoft Purview DLP / Defender for Cloud Apps,DLP / CASB / email and web controls,Project,IG2
+DAT-IG2-03,Data Security & Tagging,External sharing review,SharePoint / Teams admin centers,External sharing governance,QBR,IG2
+DAT-IG2-04,Data Security & Tagging,Retention alignment for AI records,Purview retention policies,Records management / retention tooling,Project,IG2
+DAT-IG3-01,Data Security & Tagging,Regulated data access model,Purview advanced labeling / DLP / access policies,Sensitive data governance / DSPM / data access controls,Project,IG3
+DAT-IG3-02,Data Security & Tagging,Continuous oversharing monitoring,Purview DSPM for AI / SharePoint governance signals,DSPM / data access governance,QBR,IG3
+OBS-IG1-01,AI Observability,Adoption baseline,Microsoft 365 usage reports / Viva Insights where applicable,Usage analytics,Onboarding,IG1
+OBS-IG1-02,AI Observability,Shadow AI discovery baseline,Defender for Cloud Apps / Defender for Endpoint visibility,CASB / endpoint discovery / DNS reporting,Onboarding,IG1
+OBS-IG1-03,AI Observability,Audit evidence path,Purview Audit / Entra logs,Audit / SIEM,Onboarding,IG1
+OBS-IG1-04,AI Observability,Output quality sampling starter,Excel / Power BI / Forms,QA / sampling workflow,Onboarding,IG1
+OBS-IG2-01,AI Observability,Risky-pattern alerting,Microsoft Sentinel / Defender / Purview alerts,SIEM / XDR / alerting,Security Incident,IG2
+OBS-IG2-02,AI Observability,Cost and value scorecard,Power BI + M365 reports,BI / FinOps / service reporting,QBR,IG2
+OBS-IG2-03,AI Observability,Model/agent inventory,Copilot Studio / M365 admin references / SharePoint register,Configuration inventory,Project,IG2
+OBS-IG2-04,AI Observability,Configuration drift review,Defender / Entra / Purview / admin center exports,Configuration management / compliance monitoring,QBR,IG2
+OBS-IG3-01,AI Observability,Cross-tool correlation,Microsoft Sentinel / Defender / Purview,SIEM / XDR / UEBA,Security Incident,IG3
+OBS-IG3-02,AI Observability,Automated anomaly detection,Sentinel analytics / Power BI anomaly views,Behavior analytics / UEBA,QBR,IG3
+DEP-IG1-01,AI Tooling & Deployment,Named pilot with training,Entra groups; Viva Learning / Microsoft 365 training resources,LMS / identity groups,Onboarding,IG1
+DEP-IG1-02,AI Tooling & Deployment,Deployment rings,Entra groups; M365 admin licensing,Release / cohort management,Project,IG1
+DEP-IG1-03,AI Tooling & Deployment,Role-based user training path,Viva Learning / SharePoint,LMS / enablement platform,Employee Onboarding,IG1
+DEP-IG1-04,AI Tooling & Deployment,Support runbook,Teams + SharePoint + ticketing integrations,ITSM / support knowledge base,Onboarding,IG1
+DEP-IG2-01,AI Tooling & Deployment,Connector approval path,Copilot Studio / Power Platform admin / M365 admin controls,Integration governance,Project,IG2
+DEP-IG2-02,AI Tooling & Deployment,Dev/test/prod promotion path,Copilot Studio / Power Platform environments,SDLC / release management,Project,IG2
+DEP-IG2-03,AI Tooling & Deployment,Role-based expansion gate,Entra groups; Viva Learning; SharePoint checklist,Cohort readiness / LMS,Employee Onboarding,IG2
+DEP-IG2-04,AI Tooling & Deployment,Rollback rehearsal,Entra / M365 admin center,Release management / DR rehearsal,Project,IG2
+DEP-IG3-01,AI Tooling & Deployment,Agent lifecycle register,Copilot Studio / SharePoint register,Application lifecycle management,Project,IG3
+DEP-IG3-02,AI Tooling & Deployment,Employee offboarding AI access removal,Entra ID; M365 admin center; Copilot Studio access review,IAM / offboarding workflow,Employee Offboarding,IG3
