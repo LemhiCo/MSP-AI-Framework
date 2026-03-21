@@ -339,6 +339,7 @@ const Index = () => {
                                     {c.gateType === "Baseline Gate" ? "BASE" : c.gateType === "Scale Gate" ? "SCALE" : c.gateType === "Advanced Score" ? "ADV" : ""}
                                   </span>
                                 </div>
+                              </div>
                             </div>
                           </button>
                         );
