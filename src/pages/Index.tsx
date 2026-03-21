@@ -237,7 +237,7 @@ const Index = () => {
                 {/* IG Label */}
                 <div
                   className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10"
-                  style={{ background: `hsl(${igBgVar.replace("--", "var(--")})` }}
+                  style={{ background: `hsl(var(${igBgVar}))` }}
                 >
                   <span
                     className="text-xs font-bold"
