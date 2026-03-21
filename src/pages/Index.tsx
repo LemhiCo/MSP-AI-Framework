@@ -1,9 +1,10 @@
-import { useState, useMemo } from "react";
-import { Plus, Trash2, Search, Check, Minus, X, Users, ChevronRight } from "lucide-react";
+import { useState, useMemo, useCallback } from "react";
+import { Plus, Trash2, Search, Check, Minus, X, Users, Download } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
 import { useClientStore } from "@/hooks/use-client-store";
 import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
 import { getClientProgress, type ControlStatus } from "@/lib/client-store";
+import * as XLSX from "xlsx";
 
 const IG_META: Record<string, { label: string; sub: string }> = {
   IG1: { label: "IG1 — Essential", sub: "Minimum safe floor" },
@@ -90,6 +91,30 @@ const Index = () => {
 
   const progress = selectedClient ? getClientProgress(selectedClient, controls.length) : null;
 
+  const handleDownloadXlsx = useCallback(() => {
+    const rows = controls.map((c) => ({
+      "Control ID": c.controlId,
+      "Pillar": c.pillar,
+      "IG": c.ig,
+      "Safeguard Title": c.safeguardTitle,
+      "Customer Objective": c.customerObjective,
+      "Detailed Requirement": c.detailedRequirement,
+      "Lifecycle Trigger": c.lifecycleTrigger,
+      "Cadence": c.cadence,
+      "Primary Stakeholder": c.primaryStakeholder,
+      "Microsoft Tool Recommendation": c.microsoftTool,
+      "Generic Tooling Category": c.genericTooling,
+      "Evidence of Completion": c.evidenceOfCompletion,
+      "Applies To": c.appliesTo,
+      "Notes / Guardrails": c.notesGuardrails,
+      ...(selectedClient ? { "Status": getStatus(c.controlId) } : {}),
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Controls");
+    XLSX.writeFile(wb, `ai-enablement-framework${selectedClient ? `-${selectedClient.name}` : ""}.xlsx`);
+  }, [controls, selectedClient]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -99,9 +124,9 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background">
       {/* Top Bar */}
-      <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-1.5 flex items-center gap-3 shadow-sm">
+      <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-1.5 flex items-center gap-3 shadow-sm min-w-[1200px]">
         <h1 className="text-sm font-serif font-semibold mr-3 hidden sm:block">AI Enablement Framework</h1>
         {/* Search */}
         <div className="relative flex-1 max-w-xs">
@@ -125,6 +150,14 @@ const Index = () => {
             <option key={t} value={t}>{t}</option>
           ))}
         </select>
+        <button
+          onClick={handleDownloadXlsx}
+          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95"
+          title="Download XLSX"
+        >
+          <Download className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
+          XLSX
+        </button>
 
         <div className="flex-1" />
 
@@ -203,10 +236,9 @@ const Index = () => {
       </header>
 
       {/* Kanban Board */}
-      <div className="flex-1 overflow-x-auto">
-        <div className="min-w-[1200px]">
-          {/* Pillar Headers */}
-          <div className="sticky top-[37px] z-20 bg-background border-b border-border grid grid-cols-[100px_repeat(7,1fr)]">
+      <div className="min-w-[1200px]">
+        {/* Pillar Headers */}
+        <div className="sticky top-[37px] z-20 bg-background border-b border-border grid grid-cols-[100px_repeat(7,1fr)]">
             <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-end" />
             {PILLARS.map((p) => (
               <div key={p.id} className="px-2 py-1.5 border-l border-border">
@@ -305,7 +337,6 @@ const Index = () => {
               </div>
             );
           })}
-        </div>
       </div>
 
       {/* Detail Panel (slide-over) */}
