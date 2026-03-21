@@ -91,6 +91,30 @@ const Index = () => {
 
   const progress = selectedClient ? getClientProgress(selectedClient, controls.length) : null;
 
+  const handleDownloadXlsx = useCallback(() => {
+    const rows = controls.map((c) => ({
+      "Control ID": c.controlId,
+      "Pillar": c.pillar,
+      "IG": c.ig,
+      "Safeguard Title": c.safeguardTitle,
+      "Customer Objective": c.customerObjective,
+      "Detailed Requirement": c.detailedRequirement,
+      "Lifecycle Trigger": c.lifecycleTrigger,
+      "Cadence": c.cadence,
+      "Primary Stakeholder": c.primaryStakeholder,
+      "Microsoft Tool Recommendation": c.microsoftTool,
+      "Generic Tooling Category": c.genericTooling,
+      "Evidence of Completion": c.evidenceOfCompletion,
+      "Applies To": c.appliesTo,
+      "Notes / Guardrails": c.notesGuardrails,
+      ...(selectedClient ? { "Status": getStatus(c.controlId) } : {}),
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Controls");
+    XLSX.writeFile(wb, `ai-enablement-framework${selectedClient ? `-${selectedClient.name}` : ""}.xlsx`);
+  }, [controls, selectedClient]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -100,7 +124,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background overflow-x-auto">
       {/* Top Bar */}
       <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-1.5 flex items-center gap-3 shadow-sm">
         <h1 className="text-sm font-serif font-semibold mr-3 hidden sm:block">AI Enablement Framework</h1>
