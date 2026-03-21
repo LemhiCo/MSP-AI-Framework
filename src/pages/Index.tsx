@@ -325,10 +325,20 @@ const Index = () => {
                                 <span className={`leading-tight block ${status === "complete" ? "line-through text-muted-foreground" : ""}`}>
                                   {c.safeguardTitle}
                                 </span>
-                                <span className="text-[9px] font-mono text-muted-foreground block mt-0.5">
-                                  {c.controlId}
-                                </span>
-                              </div>
+                                <div className="flex items-center gap-1 mt-0.5">
+                                  <span className="text-[9px] font-mono text-muted-foreground">
+                                    {c.controlId}
+                                  </span>
+                                  <span className={`text-[8px] font-semibold px-1 py-0.5 rounded ${
+                                    c.gateType === "Baseline Gate"
+                                      ? "bg-destructive/15 text-destructive"
+                                      : c.gateType === "Scale Gate"
+                                      ? "bg-status-yellow/20 text-foreground"
+                                      : "bg-muted text-muted-foreground"
+                                  }`}>
+                                    {c.gateType === "Baseline Gate" ? "BASE" : c.gateType === "Scale Gate" ? "SCALE" : c.gateType === "Advanced Score" ? "ADV" : ""}
+                                  </span>
+                                </div>
                             </div>
                           </button>
                         );
