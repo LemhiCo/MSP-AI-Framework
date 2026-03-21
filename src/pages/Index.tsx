@@ -115,6 +115,17 @@ const Index = () => {
           />
         </div>
 
+        <select
+          value={lifecycleFilter}
+          onChange={(e) => setLifecycleFilter(e.target.value)}
+          className="text-xs font-medium border border-border rounded-md px-2 py-1.5 bg-card focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
+        >
+          <option value="all">All Lifecycle Triggers</option>
+          {LIFECYCLE_TRIGGERS.map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </select>
+
         <div className="flex-1" />
 
         {/* Client Selector */}
