@@ -193,7 +193,7 @@ const Index = () => {
           <div className="sticky top-[41px] z-20 bg-background border-b border-border grid grid-cols-[100px_repeat(7,1fr)]">
             <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-end" />
             {PILLARS.map((p) => (
-              <div key={p.id} className="px-2 py-2 border-l border-border">
+              <div key={p.id} className="px-2 py-1.5 border-l border-border">
                 <div className="flex items-center gap-1.5">
                   <span
                     className="w-2 h-2 rounded-full flex-shrink-0"
