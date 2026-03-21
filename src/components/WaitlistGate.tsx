@@ -7,7 +7,10 @@ const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 const ROLES = ["MSP Owner", "VCIO", "Sales Leader", "Technical Leader", "Other"];
 
 export function useWaitlistGate() {
+  const isPreview = new URLSearchParams(window.location.search).get("preview") === "true";
+
   const [signedUp, setSignedUp] = useState(() => {
+    if (isPreview) return false;
     try {
       return localStorage.getItem(WAITLIST_KEY) === "true";
     } catch {
