@@ -59,8 +59,13 @@ export async function loadControls(): Promise<Control[]> {
     microsoftTool: r["Microsoft Tool Recommendation"] || "",
     genericTooling: r["Generic Tooling Category"] || "",
     evidenceOfCompletion: r["Evidence of Completion"] || "",
+    rawWeight: r["Raw Weight"] || "",
+    gateType: r["Gate Type"] || "",
+    minStatusToPass: r["Minimum Status to Pass"] || "",
+    minEvidenceToPass: r["Minimum Evidence to Pass"] || "",
+    failCondition: r["Fail Condition"] || "",
+    whyItMatters: r["Why it Matters"] || "",
     appliesTo: r["Applies To"] || "",
-    notesGuardrails: r["Notes / Guardrails"] || "",
   }));
 }
 
