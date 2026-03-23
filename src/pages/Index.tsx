@@ -74,20 +74,16 @@ const Index = () => {
   const [igFilter, setIgFilter] = useState<Set<string>>(new Set());
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
   const [gateFilter, setGateFilter] = useState<Set<string>>(new Set());
-  const [stakeholderFilter, setStakeholderFilter] = useState<Set<string>>(new Set());
-  const [cadenceFilter, setCadenceFilter] = useState<Set<string>>(new Set());
 
   // Derive unique values
   const gateTypes = useUniqueValues(controls, "gateType");
-  const stakeholders = useUniqueValues(controls, "primaryStakeholder");
-  const cadences = useUniqueValues(controls, "cadence");
 
-  const activeFilterCount = [pillarFilter, igFilter, lifecycleFilter, gateFilter, stakeholderFilter, cadenceFilter]
+  const activeFilterCount = [pillarFilter, igFilter, lifecycleFilter, gateFilter]
     .reduce((n, s) => n + s.size, 0);
 
   const clearAllFilters = () => {
     setPillarFilter(new Set()); setIgFilter(new Set()); setLifecycleFilter(new Set());
-    setGateFilter(new Set()); setStakeholderFilter(new Set()); setCadenceFilter(new Set());
+    setGateFilter(new Set());
   };
 
   const filteredControls = useMemo(() => {
@@ -96,8 +92,6 @@ const Index = () => {
       if (igFilter.size && !igFilter.has(c.ig)) return false;
       if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
       if (gateFilter.size && !gateFilter.has(c.gateType)) return false;
-      if (stakeholderFilter.size && !stakeholderFilter.has(c.primaryStakeholder)) return false;
-      if (cadenceFilter.size && !cadenceFilter.has(c.cadence)) return false;
       if (search) {
         const q = search.toLowerCase();
         return (
@@ -108,7 +102,7 @@ const Index = () => {
       }
       return true;
     });
-  }, [controls, search, pillarFilter, igFilter, lifecycleFilter, gateFilter, stakeholderFilter, cadenceFilter]);
+  }, [controls, search, pillarFilter, igFilter, lifecycleFilter, gateFilter]);
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
@@ -215,8 +209,6 @@ const Index = () => {
           <ChipFilter label="IG Level" options={[...IG_LEVELS]} selected={igFilter} onChange={setIgFilter} />
           <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
           <ChipFilter label="Gate Type" options={gateTypes} selected={gateFilter} onChange={setGateFilter} />
-          <ChipFilter label="Stakeholder" options={stakeholders} selected={stakeholderFilter} onChange={setStakeholderFilter} />
-          <ChipFilter label="Cadence" options={cadences} selected={cadenceFilter} onChange={setCadenceFilter} />
         </div>
       )}
 
