@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { Search, Download, X } from "lucide-react";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
 import { useControls } from "@/hooks/use-framework-data";
-import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
+import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, AI_MODALITIES, type Control } from "@/lib/csv-loader";
 import * as XLSX from "xlsx";
 import WaitlistGate, { useWaitlistGate } from "@/components/WaitlistGate";
 
@@ -72,22 +72,30 @@ const Index = () => {
   // Filter state
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
   const [gateFilter, setGateFilter] = useState<Set<string>>(new Set());
+  const [aiModalityFilter, setAiModalityFilter] = useState<Set<string>>(new Set());
 
   // Derive unique values
   const gateTypes = useUniqueValues(controls, "gateType");
 
-  const activeFilterCount = [lifecycleFilter, gateFilter]
+  const activeFilterCount = [lifecycleFilter, gateFilter, aiModalityFilter]
     .reduce((n, s) => n + s.size, 0);
 
   const clearAllFilters = () => {
     setLifecycleFilter(new Set());
     setGateFilter(new Set());
+    setAiModalityFilter(new Set());
   };
 
   const filteredControls = useMemo(() => {
     return controls.filter((c) => {
       if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
       if (gateFilter.size && !gateFilter.has(c.gateType)) return false;
+      if (aiModalityFilter.size) {
+        const match = AI_MODALITIES.some(
+          (m) => aiModalityFilter.has(m.label) && c[m.key] === "Yes"
+        );
+        if (!match) return false;
+      }
       if (search) {
         const q = search.toLowerCase();
         return (
@@ -98,7 +106,7 @@ const Index = () => {
       }
       return true;
     });
-  }, [controls, search, lifecycleFilter, gateFilter]);
+  }, [controls, search, lifecycleFilter, gateFilter, aiModalityFilter]);
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
@@ -203,6 +211,7 @@ const Index = () => {
         <div className="bg-card border-b border-border px-4 py-3 space-y-2 min-w-[1200px] shadow-sm">
           <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
           <ChipFilter label="Gate Type" options={gateTypes} selected={gateFilter} onChange={setGateFilter} />
+          <ChipFilter label="AI Type" options={AI_MODALITIES.map((m) => m.label)} selected={aiModalityFilter} onChange={setAiModalityFilter} />
         </div>
       )}
 

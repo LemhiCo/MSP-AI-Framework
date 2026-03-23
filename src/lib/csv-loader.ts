@@ -23,6 +23,11 @@ export interface Control {
   endCustomerBusinessValue: string;
   customerConversationTrack: string;
   whoCaresMost: string;
+  relevantGenAI: string;
+  relevantCustomGPTs: string;
+  relevantAgenticAI: string;
+  relevantDigitalWorkers: string;
+  relevantCowork: string;
 }
 
 export interface AssessmentRow {
@@ -72,6 +77,11 @@ export async function loadControls(): Promise<Control[]> {
     endCustomerBusinessValue: r["End Customer Business Value"] || "",
     customerConversationTrack: r["Customer Conversation Track"] || "",
     whoCaresMost: r["Who Cares Most (Customer)"] || "",
+    relevantGenAI: r["Relevant: GenAI"] || "",
+    relevantCustomGPTs: r["Relevant: Custom GPTs"] || "",
+    relevantAgenticAI: r["Relevant: Agentic AI"] || "",
+    relevantDigitalWorkers: r["Relevant: Digital Workers"] || "",
+    relevantCowork: r["Relevant: Cowork"] || "",
   }));
 }
 
@@ -104,6 +114,14 @@ export const PILLARS = [
 ] as const;
 
 export const IG_LEVELS = ["IG1", "IG2", "IG3"] as const;
+
+export const AI_MODALITIES = [
+  { key: "relevantGenAI" as const, label: "GenAI" },
+  { key: "relevantCustomGPTs" as const, label: "Custom GPTs" },
+  { key: "relevantAgenticAI" as const, label: "Agentic AI" },
+  { key: "relevantDigitalWorkers" as const, label: "Digital Workers" },
+  { key: "relevantCowork" as const, label: "Cowork" },
+] as const;
 
 export const LIFECYCLE_TRIGGERS = [
   "Onboarding",
