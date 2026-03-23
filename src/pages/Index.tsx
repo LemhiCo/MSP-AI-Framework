@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { Search, Download } from "lucide-react";
+import { Search, Download, X } from "lucide-react";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
 import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
@@ -22,16 +22,82 @@ const PILLAR_COLORS: Record<string, string> = {
   DEP: "46 60% 38%",
 };
 
+function useUniqueValues(controls: Control[], key: keyof Control) {
+  return useMemo(() => {
+    const set = new Set<string>();
+    controls.forEach((c) => { if (c[key]) set.add(c[key]); });
+    return Array.from(set).sort();
+  }, [controls, key]);
+}
+
+function ChipFilter({ label, options, selected, onChange }: {
+  label: string;
+  options: string[];
+  selected: Set<string>;
+  onChange: (next: Set<string>) => void;
+}) {
+  if (options.length === 0) return null;
+  const toggle = (v: string) => {
+    const next = new Set(selected);
+    if (next.has(v)) next.delete(v); else next.add(v);
+    onChange(next);
+  };
+  return (
+    <div className="flex items-center gap-1 flex-wrap">
+      <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground shrink-0">{label}</span>
+      {options.map((o) => (
+        <button
+          key={o}
+          onClick={() => toggle(o)}
+          className={`text-[10px] font-medium px-2 py-0.5 rounded-full border transition-colors ${
+            selected.has(o)
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-card text-muted-foreground border-border hover:border-primary/40"
+          }`}
+        >
+          {o}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 const Index = () => {
   const { data: controls = [], isLoading } = useControls();
   const { signedUp, markSignedUp } = useWaitlistGate();
   const [search, setSearch] = useState("");
-  const [lifecycleFilter, setLifecycleFilter] = useState<string>("all");
   const [activeControl, setActiveControl] = useState<Control | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Filter state
+  const [pillarFilter, setPillarFilter] = useState<Set<string>>(new Set());
+  const [igFilter, setIgFilter] = useState<Set<string>>(new Set());
+  const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
+  const [gateFilter, setGateFilter] = useState<Set<string>>(new Set());
+  const [stakeholderFilter, setStakeholderFilter] = useState<Set<string>>(new Set());
+  const [cadenceFilter, setCadenceFilter] = useState<Set<string>>(new Set());
+
+  // Derive unique values
+  const gateTypes = useUniqueValues(controls, "gateType");
+  const stakeholders = useUniqueValues(controls, "primaryStakeholder");
+  const cadences = useUniqueValues(controls, "cadence");
+
+  const activeFilterCount = [pillarFilter, igFilter, lifecycleFilter, gateFilter, stakeholderFilter, cadenceFilter]
+    .reduce((n, s) => n + s.size, 0);
+
+  const clearAllFilters = () => {
+    setPillarFilter(new Set()); setIgFilter(new Set()); setLifecycleFilter(new Set());
+    setGateFilter(new Set()); setStakeholderFilter(new Set()); setCadenceFilter(new Set());
+  };
 
   const filteredControls = useMemo(() => {
     return controls.filter((c) => {
-      if (lifecycleFilter !== "all" && c.lifecycleTrigger !== lifecycleFilter) return false;
+      if (pillarFilter.size && !pillarFilter.has(c.pillar)) return false;
+      if (igFilter.size && !igFilter.has(c.ig)) return false;
+      if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
+      if (gateFilter.size && !gateFilter.has(c.gateType)) return false;
+      if (stakeholderFilter.size && !stakeholderFilter.has(c.primaryStakeholder)) return false;
+      if (cadenceFilter.size && !cadenceFilter.has(c.cadence)) return false;
       if (search) {
         const q = search.toLowerCase();
         return (
@@ -42,7 +108,7 @@ const Index = () => {
       }
       return true;
     });
-  }, [controls, search, lifecycleFilter]);
+  }, [controls, search, pillarFilter, igFilter, lifecycleFilter, gateFilter, stakeholderFilter, cadenceFilter]);
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
