@@ -211,6 +211,7 @@ const Index = () => {
         <div className="bg-card border-b border-border px-4 py-3 space-y-2 min-w-[1200px] shadow-sm">
           <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
           <ChipFilter label="Gate Type" options={gateTypes} selected={gateFilter} onChange={setGateFilter} />
+          <ChipFilter label="AI Type" options={AI_MODALITIES.map((m) => m.label)} selected={aiModalityFilter} onChange={setAiModalityFilter} />
         </div>
       )}
 

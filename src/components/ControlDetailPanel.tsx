@@ -69,6 +69,20 @@ export default function ControlDetailPanel({ control, onClose }: Props) {
                 {control.gateType}
               </span>
             </div>
+            <div className="flex items-center gap-1 mt-2 flex-wrap">
+              {AI_MODALITIES.map((m) => (
+                <span
+                  key={m.key}
+                  className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full border ${
+                    control[m.key] === "Yes"
+                      ? "bg-primary/10 text-primary border-primary/30"
+                      : "bg-muted/50 text-muted-foreground/50 border-border line-through"
+                  }`}
+                >
+                  {m.label}
+                </span>
+              ))}
+            </div>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-md hover:bg-muted transition-colors active:scale-95 shrink-0">
             <X className="w-4 h-4" />
