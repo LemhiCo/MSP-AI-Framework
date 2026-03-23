@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
-import { Search, Download, X, Check, Minus } from "lucide-react";
+import { Search, Download } from "lucide-react";
+import ControlDetailPanel from "@/components/ControlDetailPanel";
 import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
 import * as XLSX from "xlsx";
