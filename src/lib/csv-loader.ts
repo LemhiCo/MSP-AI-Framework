@@ -28,6 +28,7 @@ export interface Control {
   relevantAgenticAI: string;
   relevantDigitalWorkers: string;
   relevantCowork: string;
+  firstRequiredWhen: string;
 }
 
 export interface AssessmentRow {
@@ -82,6 +83,7 @@ export async function loadControls(): Promise<Control[]> {
     relevantAgenticAI: r["Relevant: Agentic AI"] || "",
     relevantDigitalWorkers: r["Relevant: Digital Workers"] || "",
     relevantCowork: r["Relevant: Cowork"] || "",
+    firstRequiredWhen: r["First Required When"] || "",
   }));
 }
 
