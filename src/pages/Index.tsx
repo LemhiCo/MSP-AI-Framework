@@ -70,26 +70,22 @@ const Index = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   // Filter state
-  const [pillarFilter, setPillarFilter] = useState<Set<string>>(new Set());
-  const [igFilter, setIgFilter] = useState<Set<string>>(new Set());
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
   const [gateFilter, setGateFilter] = useState<Set<string>>(new Set());
 
   // Derive unique values
   const gateTypes = useUniqueValues(controls, "gateType");
 
-  const activeFilterCount = [pillarFilter, igFilter, lifecycleFilter, gateFilter]
+  const activeFilterCount = [lifecycleFilter, gateFilter]
     .reduce((n, s) => n + s.size, 0);
 
   const clearAllFilters = () => {
-    setPillarFilter(new Set()); setIgFilter(new Set()); setLifecycleFilter(new Set());
+    setLifecycleFilter(new Set());
     setGateFilter(new Set());
   };
 
   const filteredControls = useMemo(() => {
     return controls.filter((c) => {
-      if (pillarFilter.size && !pillarFilter.has(c.pillar)) return false;
-      if (igFilter.size && !igFilter.has(c.ig)) return false;
       if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
       if (gateFilter.size && !gateFilter.has(c.gateType)) return false;
       if (search) {
@@ -102,7 +98,7 @@ const Index = () => {
       }
       return true;
     });
-  }, [controls, search, pillarFilter, igFilter, lifecycleFilter, gateFilter]);
+  }, [controls, search, lifecycleFilter, gateFilter]);
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
@@ -205,8 +201,6 @@ const Index = () => {
       {/* Filter Panel */}
       {showFilters && (
         <div className="bg-card border-b border-border px-4 py-3 space-y-2 min-w-[1200px] shadow-sm">
-          <ChipFilter label="Pillar" options={PILLARS.map((p) => p.id)} selected={pillarFilter} onChange={setPillarFilter} />
-          <ChipFilter label="IG Level" options={[...IG_LEVELS]} selected={igFilter} onChange={setIgFilter} />
           <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
           <ChipFilter label="Gate Type" options={gateTypes} selected={gateFilter} onChange={setGateFilter} />
         </div>
