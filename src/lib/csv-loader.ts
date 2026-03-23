@@ -77,6 +77,11 @@ export async function loadControls(): Promise<Control[]> {
     endCustomerBusinessValue: r["End Customer Business Value"] || "",
     customerConversationTrack: r["Customer Conversation Track"] || "",
     whoCaresMost: r["Who Cares Most (Customer)"] || "",
+    relevantGenAI: r["Relevant: GenAI"] || "",
+    relevantCustomGPTs: r["Relevant: Custom GPTs"] || "",
+    relevantAgenticAI: r["Relevant: Agentic AI"] || "",
+    relevantDigitalWorkers: r["Relevant: Digital Workers"] || "",
+    relevantCowork: r["Relevant: Cowork"] || "",
   }));
 }
 
