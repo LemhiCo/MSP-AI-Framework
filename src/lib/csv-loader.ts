@@ -23,6 +23,11 @@ export interface Control {
   endCustomerBusinessValue: string;
   customerConversationTrack: string;
   whoCaresMost: string;
+  relevantGenAI: string;
+  relevantCustomGPTs: string;
+  relevantAgenticAI: string;
+  relevantDigitalWorkers: string;
+  relevantCowork: string;
 }
 
 export interface AssessmentRow {
