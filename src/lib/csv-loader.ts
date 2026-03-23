@@ -115,6 +115,14 @@ export const PILLARS = [
 
 export const IG_LEVELS = ["IG1", "IG2", "IG3"] as const;
 
+export const AI_MODALITIES = [
+  { key: "relevantGenAI" as const, label: "GenAI" },
+  { key: "relevantCustomGPTs" as const, label: "Custom GPTs" },
+  { key: "relevantAgenticAI" as const, label: "Agentic AI" },
+  { key: "relevantDigitalWorkers" as const, label: "Digital Workers" },
+  { key: "relevantCowork" as const, label: "Cowork" },
+] as const;
+
 export const LIFECYCLE_TRIGGERS = [
   "Onboarding",
   "QBR",
