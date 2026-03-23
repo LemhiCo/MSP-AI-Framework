@@ -102,7 +102,7 @@ const Index = () => {
       }
       return true;
     });
-  }, [controls, search, pillarFilter, igFilter, lifecycleFilter, gateFilter, stakeholderFilter, cadenceFilter]);
+  }, [controls, search, pillarFilter, igFilter, lifecycleFilter, gateFilter]);
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
