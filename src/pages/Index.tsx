@@ -74,20 +74,16 @@ const Index = () => {
   const [igFilter, setIgFilter] = useState<Set<string>>(new Set());
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
   const [gateFilter, setGateFilter] = useState<Set<string>>(new Set());
-  const [stakeholderFilter, setStakeholderFilter] = useState<Set<string>>(new Set());
-  const [cadenceFilter, setCadenceFilter] = useState<Set<string>>(new Set());
 
   // Derive unique values
   const gateTypes = useUniqueValues(controls, "gateType");
-  const stakeholders = useUniqueValues(controls, "primaryStakeholder");
-  const cadences = useUniqueValues(controls, "cadence");
 
-  const activeFilterCount = [pillarFilter, igFilter, lifecycleFilter, gateFilter, stakeholderFilter, cadenceFilter]
+  const activeFilterCount = [pillarFilter, igFilter, lifecycleFilter, gateFilter]
     .reduce((n, s) => n + s.size, 0);
 
   const clearAllFilters = () => {
     setPillarFilter(new Set()); setIgFilter(new Set()); setLifecycleFilter(new Set());
-    setGateFilter(new Set()); setStakeholderFilter(new Set()); setCadenceFilter(new Set());
+    setGateFilter(new Set());
   };
 
   const filteredControls = useMemo(() => {
