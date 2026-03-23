@@ -178,25 +178,47 @@ const Index = () => {
           />
         </div>
 
-        <select
-          value={lifecycleFilter}
-          onChange={(e) => setLifecycleFilter(e.target.value)}
-          className="text-xs font-medium border border-border rounded-md px-2 py-1.5 bg-card focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
+        <button
+          onClick={() => setShowFilters((v) => !v)}
+          className={`text-xs font-medium px-2.5 py-1.5 rounded-md border transition-colors active:scale-95 ${
+            showFilters || activeFilterCount > 0
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-card border-border hover:bg-muted"
+          }`}
         >
-          <option value="all">All Lifecycle Triggers</option>
-          {LIFECYCLE_TRIGGERS.map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
+          Filters{activeFilterCount > 0 && ` (${activeFilterCount})`}
+        </button>
+
+        {activeFilterCount > 0 && (
+          <button
+            onClick={clearAllFilters}
+            className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-0.5"
+          >
+            <X className="w-3 h-3" /> Clear
+          </button>
+        )}
+
         <button
           onClick={handleDownloadXlsx}
-          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95"
+          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95 ml-auto"
           title="Download XLSX"
         >
           <Download className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
           XLSX
         </button>
       </header>
+
+      {/* Filter Panel */}
+      {showFilters && (
+        <div className="sticky top-[37px] z-25 bg-card border-b border-border px-4 py-3 space-y-2 min-w-[1200px] shadow-sm">
+          <ChipFilter label="Pillar" options={PILLARS.map((p) => p.id)} selected={pillarFilter} onChange={setPillarFilter} />
+          <ChipFilter label="IG Level" options={[...IG_LEVELS]} selected={igFilter} onChange={setIgFilter} />
+          <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
+          <ChipFilter label="Gate Type" options={gateTypes} selected={gateFilter} onChange={setGateFilter} />
+          <ChipFilter label="Stakeholder" options={stakeholders} selected={stakeholderFilter} onChange={setStakeholderFilter} />
+          <ChipFilter label="Cadence" options={cadences} selected={cadenceFilter} onChange={setCadenceFilter} />
+        </div>
+      )}
 
       {/* Kanban Board */}
       <div className="min-w-[1200px]">
