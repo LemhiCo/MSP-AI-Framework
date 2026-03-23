@@ -20,6 +20,9 @@ export interface Control {
   failCondition: string;
   whyItMatters: string;
   appliesTo: string;
+  endCustomerBusinessValue: string;
+  customerConversationTrack: string;
+  whoCaresMost: string;
 }
 
 export interface AssessmentRow {
@@ -66,6 +69,9 @@ export async function loadControls(): Promise<Control[]> {
     failCondition: r["Fail Condition"] || "",
     whyItMatters: r["Why it Matters"] || "",
     appliesTo: r["Applies To"] || "",
+    endCustomerBusinessValue: r["End Customer Business Value"] || "",
+    customerConversationTrack: r["Customer Conversation Track"] || "",
+    whoCaresMost: r["Who Cares Most (Customer)"] || "",
   }));
 }
 

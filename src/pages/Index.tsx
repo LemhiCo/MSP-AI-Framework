@@ -275,6 +275,24 @@ const Index = () => {
                   <p className="text-sm leading-relaxed">{activeControl.whyItMatters}</p>
                 </div>
               )}
+
+              {activeControl.endCustomerBusinessValue && (
+                <div className="bg-accent/50 border border-accent rounded-lg p-3">
+                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-accent-foreground/70 mb-1">End Customer Business Value</h3>
+                  <p className="text-sm leading-relaxed">{activeControl.endCustomerBusinessValue}</p>
+                </div>
+              )}
+
+              {activeControl.customerConversationTrack && (
+                <div className="bg-muted border border-border rounded-lg p-3">
+                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">Customer Conversation Track</h3>
+                  <p className="text-sm leading-relaxed italic">{activeControl.customerConversationTrack}</p>
+                </div>
+              )}
+
+              {activeControl.whoCaresMost && (
+                <DetailSection title="Who Cares Most (Customer)" value={activeControl.whoCaresMost} />
+              )}
             </div>
           </div>
         </>
