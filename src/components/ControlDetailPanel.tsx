@@ -68,6 +68,11 @@ export default function ControlDetailPanel({ control, onClose }: Props) {
               }`}>
                 {control.gateType}
               </span>
+              {control.firstRequiredWhen && (
+                <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-accent/50 text-accent-foreground">
+                  First required: {control.firstRequiredWhen}
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-1 mt-2 flex-wrap">
               {AI_MODALITIES.map((m) => (
