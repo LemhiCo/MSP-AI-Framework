@@ -90,6 +90,12 @@ const Index = () => {
     return controls.filter((c) => {
       if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
       if (gateFilter.size && !gateFilter.has(c.gateType)) return false;
+      if (aiModalityFilter.size) {
+        const match = AI_MODALITIES.some(
+          (m) => aiModalityFilter.has(m.label) && c[m.key] === "Yes"
+        );
+        if (!match) return false;
+      }
       if (search) {
         const q = search.toLowerCase();
         return (
@@ -100,7 +106,7 @@ const Index = () => {
       }
       return true;
     });
-  }, [controls, search, lifecycleFilter, gateFilter]);
+  }, [controls, search, lifecycleFilter, gateFilter, aiModalityFilter]);
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
