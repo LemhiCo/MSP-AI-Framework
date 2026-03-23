@@ -242,8 +242,8 @@ function CustomerContent({ control }: { control: Control }) {
   return (
     <>
       {control.endCustomerBusinessValue && (
-        <div className="bg-accent/50 border border-accent rounded-lg p-3 space-y-1">
-          <h3 className="text-[10px] font-semibold uppercase tracking-wider text-accent-foreground/70">End Customer Business Value</h3>
+        <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-1">
+          <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">End Customer Business Value</h3>
           <p className="text-sm leading-relaxed">{control.endCustomerBusinessValue}</p>
         </div>
       )}
