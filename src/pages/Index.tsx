@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
-import { Search, Download, X, Check, Minus } from "lucide-react";
+import { Search, Download } from "lucide-react";
+import ControlDetailPanel from "@/components/ControlDetailPanel";
 import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
 import * as XLSX from "xlsx";
@@ -216,99 +217,10 @@ const Index = () => {
 
       {/* Detail Panel (slide-over) */}
       {activeControl && (
-        <>
-          <div
-            className="fixed inset-0 bg-foreground/20 z-40"
-            onClick={() => setActiveControl(null)}
-          />
-          <div className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-card border-l border-border z-50 shadow-xl overflow-y-auto animate-fade-up"
-            style={{ animationDuration: "250ms" }}
-          >
-            <div className="sticky top-0 bg-card border-b border-border px-5 py-4 flex items-start justify-between">
-              <div>
-                <span className="text-[10px] font-mono text-muted-foreground">{activeControl.controlId}</span>
-                <h2 className="text-lg font-serif font-semibold mt-0.5 leading-snug">{activeControl.safeguardTitle}</h2>
-                <span className={`inline-block mt-1.5 ${activeControl.ig === "IG1" ? "ig1-badge" : activeControl.ig === "IG2" ? "ig2-badge" : "ig3-badge"}`}>
-                  {activeControl.ig} — {activeControl.ig === "IG1" ? "Essential" : activeControl.ig === "IG2" ? "Managed" : "Advanced"}
-                </span>
-              </div>
-              <button
-                onClick={() => setActiveControl(null)}
-                className="p-1.5 rounded-md hover:bg-muted transition-colors active:scale-95"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="px-5 py-4 space-y-5">
-              <DetailSection title="Customer Objective" value={activeControl.customerObjective} />
-              <DetailSection title="Detailed Requirement" value={activeControl.detailedRequirement} />
-
-              <div className="grid grid-cols-2 gap-4">
-                <DetailSection title="Lifecycle Trigger" value={activeControl.lifecycleTrigger} />
-                <DetailSection title="Cadence" value={activeControl.cadence} />
-                <DetailSection title="Primary Stakeholder" value={activeControl.primaryStakeholder} />
-                <DetailSection title="Applies To" value={activeControl.appliesTo} />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <DetailSection title="Raw Weight" value={activeControl.rawWeight} />
-                <DetailSection title="Gate Type" value={activeControl.gateType} />
-                <DetailSection title="Min Status to Pass" value={activeControl.minStatusToPass} />
-                <DetailSection title="Min Evidence to Pass" value={activeControl.minEvidenceToPass} />
-              </div>
-
-              <DetailSection title="Microsoft Tooling" value={activeControl.microsoftTool} />
-              <DetailSection title="Generic Tooling" value={activeControl.genericTooling} />
-              <DetailSection title="Evidence of Completion" value={activeControl.evidenceOfCompletion} />
-
-              {activeControl.failCondition && (
-                <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3">
-                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-destructive mb-1">Fail Condition</h3>
-                  <p className="text-sm leading-relaxed">{activeControl.failCondition}</p>
-                </div>
-              )}
-
-              {activeControl.whyItMatters && (
-                <div className="bg-primary/10 border border-primary/30 rounded-lg p-3">
-                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-primary mb-1">Why it Matters</h3>
-                  <p className="text-sm leading-relaxed">{activeControl.whyItMatters}</p>
-                </div>
-              )}
-
-              {activeControl.endCustomerBusinessValue && (
-                <div className="bg-accent/50 border border-accent rounded-lg p-3">
-                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-accent-foreground/70 mb-1">End Customer Business Value</h3>
-                  <p className="text-sm leading-relaxed">{activeControl.endCustomerBusinessValue}</p>
-                </div>
-              )}
-
-              {activeControl.customerConversationTrack && (
-                <div className="bg-muted border border-border rounded-lg p-3">
-                  <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">Customer Conversation Track</h3>
-                  <p className="text-sm leading-relaxed italic">{activeControl.customerConversationTrack}</p>
-                </div>
-              )}
-
-              {activeControl.whoCaresMost && (
-                <DetailSection title="Who Cares Most (Customer)" value={activeControl.whoCaresMost} />
-              )}
-            </div>
-          </div>
-        </>
+        <ControlDetailPanel control={activeControl} onClose={() => setActiveControl(null)} />
       )}
     </div>
   );
 };
-
-function DetailSection({ title, value }: { title: string; value: string }) {
-  if (!value) return null;
-  return (
-    <div>
-      <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">{title}</h3>
-      <p className="text-sm leading-relaxed">{value}</p>
-    </div>
-  );
-}
 
 export default Index;
