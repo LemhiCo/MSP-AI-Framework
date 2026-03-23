@@ -209,8 +209,6 @@ const Index = () => {
           <ChipFilter label="IG Level" options={[...IG_LEVELS]} selected={igFilter} onChange={setIgFilter} />
           <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
           <ChipFilter label="Gate Type" options={gateTypes} selected={gateFilter} onChange={setGateFilter} />
-          <ChipFilter label="Stakeholder" options={stakeholders} selected={stakeholderFilter} onChange={setStakeholderFilter} />
-          <ChipFilter label="Cadence" options={cadences} selected={cadenceFilter} onChange={setCadenceFilter} />
         </div>
       )}
 
