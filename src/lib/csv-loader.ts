@@ -28,6 +28,7 @@ export interface Control {
   relevantAgenticAI: string;
   relevantDigitalWorkers: string;
   relevantCowork: string;
+  firstRequiredWhen: string;
 }
 
 export interface AssessmentRow {
