@@ -20,6 +20,9 @@ export interface Control {
   failCondition: string;
   whyItMatters: string;
   appliesTo: string;
+  endCustomerBusinessValue: string;
+  customerConversationTrack: string;
+  whoCaresMost: string;
 }
 
 export interface AssessmentRow {
