@@ -92,8 +92,6 @@ const Index = () => {
       if (igFilter.size && !igFilter.has(c.ig)) return false;
       if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
       if (gateFilter.size && !gateFilter.has(c.gateType)) return false;
-      if (stakeholderFilter.size && !stakeholderFilter.has(c.primaryStakeholder)) return false;
-      if (cadenceFilter.size && !cadenceFilter.has(c.cadence)) return false;
       if (search) {
         const q = search.toLowerCase();
         return (
