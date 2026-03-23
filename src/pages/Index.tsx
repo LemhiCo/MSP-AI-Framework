@@ -72,16 +72,18 @@ const Index = () => {
   // Filter state
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
   const [gateFilter, setGateFilter] = useState<Set<string>>(new Set());
+  const [aiModalityFilter, setAiModalityFilter] = useState<Set<string>>(new Set());
 
   // Derive unique values
   const gateTypes = useUniqueValues(controls, "gateType");
 
-  const activeFilterCount = [lifecycleFilter, gateFilter]
+  const activeFilterCount = [lifecycleFilter, gateFilter, aiModalityFilter]
     .reduce((n, s) => n + s.size, 0);
 
   const clearAllFilters = () => {
     setLifecycleFilter(new Set());
     setGateFilter(new Set());
+    setAiModalityFilter(new Set());
   };
 
   const filteredControls = useMemo(() => {
