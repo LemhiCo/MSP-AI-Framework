@@ -282,8 +282,8 @@ function ComplianceContent({ control }: { control: Control }) {
         <MetaCard label="Min Evidence to Pass" value={control.minEvidenceToPass} />
       </div>
       {control.failCondition && (
-        <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3">
-          <h3 className="text-[10px] font-semibold uppercase tracking-wider text-destructive mb-1">Fail Condition</h3>
+        <div className="rounded-lg border border-border bg-muted/20 p-3">
+          <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">Fail Condition</h3>
           <p className="text-sm leading-relaxed">{control.failCondition}</p>
         </div>
       )}
