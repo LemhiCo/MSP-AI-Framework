@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { X, Shield, Wrench, Users, AlertTriangle, GripVertical } from "lucide-react";
-import type { Control } from "@/lib/csv-loader";
+import { type Control, AI_MODALITIES } from "@/lib/csv-loader";
 
 const MIN_WIDTH = 420;
 const DEFAULT_WIDTH = 480;
