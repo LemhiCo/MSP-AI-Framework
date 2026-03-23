@@ -201,8 +201,6 @@ const Index = () => {
       {/* Filter Panel */}
       {showFilters && (
         <div className="bg-card border-b border-border px-4 py-3 space-y-2 min-w-[1200px] shadow-sm">
-          <ChipFilter label="Pillar" options={PILLARS.map((p) => p.id)} selected={pillarFilter} onChange={setPillarFilter} />
-          <ChipFilter label="IG Level" options={[...IG_LEVELS]} selected={igFilter} onChange={setIgFilter} />
           <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
           <ChipFilter label="Gate Type" options={gateTypes} selected={gateFilter} onChange={setGateFilter} />
         </div>
