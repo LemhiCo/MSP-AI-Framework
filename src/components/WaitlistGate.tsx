@@ -7,10 +7,21 @@ const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 const ROLES = ["MSP Owner", "VCIO", "Sales Leader", "Technical Leader", "Other"];
 
 export function useWaitlistGate() {
-  const isPreview = new URLSearchParams(window.location.search).get("preview") === "true";
+  const [isPreview] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const preview = params.get("preview") === "true";
+    if (preview) {
+      // Strip preview param from URL so copied links don't bypass the gate
+      params.delete("preview");
+      const newSearch = params.toString();
+      const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : "") + window.location.hash;
+      window.history.replaceState({}, "", newUrl);
+    }
+    return preview;
+  });
 
   const [signedUp, setSignedUp] = useState(() => {
-    if (isPreview) return false;
+    if (isPreview) return true;
     try {
       return localStorage.getItem(WAITLIST_KEY) === "true";
     } catch {
