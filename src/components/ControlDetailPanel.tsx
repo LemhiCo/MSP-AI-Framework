@@ -1,19 +1,42 @@
 import { useState, useRef, useCallback } from "react";
-import { X, Shield, Wrench, Users, AlertTriangle, GripVertical } from "lucide-react";
-import { type Control, AI_MODALITIES } from "@/lib/csv-loader";
+import { X, Shield, Wrench, Users, AlertTriangle, GripVertical, Pencil, Save, Trash2 } from "lucide-react";
+import { type Control, AI_MODALITIES, PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS } from "@/lib/csv-loader";
 
 const MIN_WIDTH = 420;
 const DEFAULT_WIDTH = 480;
 const EXPAND_THRESHOLD = 640;
 
+const SELECT_FIELDS: Partial<Record<keyof Control, string[]>> = {
+  pillar: PILLARS.map(p => p.id),
+  ig: [...IG_LEVELS],
+  gateType: ["Baseline Gate", "Scale Gate", "Advanced Score"],
+  lifecycleTrigger: [...LIFECYCLE_TRIGGERS],
+  relevantGenAI: ["Yes", "No"],
+  relevantCustomGPTs: ["Yes", "No"],
+  relevantAgenticAI: ["Yes", "No"],
+  relevantDigitalWorkers: ["Yes", "No"],
+  relevantCowork: ["Yes", "No"],
+};
+
+const TEXTAREA_FIELDS: Set<keyof Control> = new Set([
+  "customerObjective", "detailedRequirement", "whyItMatters",
+  "endCustomerBusinessValue", "customerConversationTrack", "failCondition",
+  "evidenceOfCompletion",
+]);
+
 interface Props {
   control: Control;
   onClose: () => void;
+  editable?: boolean;
+  onSave?: (updated: Control) => void;
+  onDelete?: (id: string) => void;
 }
 
-export default function ControlDetailPanel({ control, onClose }: Props) {
+export default function ControlDetailPanel({ control, onClose, editable, onSave, onDelete }: Props) {
   const [width, setWidth] = useState(DEFAULT_WIDTH);
   const dragging = useRef(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<Control>({ ...control });
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
@@ -34,10 +57,40 @@ export default function ControlDetailPanel({ control, onClose }: Props) {
   }, []);
 
   const expanded = width >= EXPAND_THRESHOLD;
+  const isNew = !control.controlId;
+
+  const handleStartEdit = () => {
+    setDraft({ ...control });
+    setEditing(true);
+  };
+
+  const handleSave = () => {
+    onSave?.(draft);
+    setEditing(false);
+  };
+
+  const handleDelete = () => {
+    if (confirm(`Delete ${control.controlId}?`)) {
+      onDelete?.(control.controlId);
+    }
+  };
+
+  const handleCancel = () => {
+    if (isNew) { onClose(); return; }
+    setDraft({ ...control });
+    setEditing(false);
+  };
+
+  const updateField = (key: keyof Control, value: string) => {
+    setDraft(prev => ({ ...prev, [key]: value }));
+  };
+
+  // Auto-enter edit mode for new controls
+  const showEdit = editing || isNew;
 
   return (
     <>
-      <div className="fixed inset-0 bg-foreground/20 z-40" onClick={onClose} />
+      <div className="fixed inset-0 bg-foreground/20 z-40" onClick={showEdit ? undefined : onClose} />
       <div
         className="fixed right-0 top-0 bottom-0 bg-card border-l border-border z-50 shadow-xl flex flex-col animate-fade-up"
         style={{ width, animationDuration: "250ms" }}
@@ -52,54 +105,205 @@ export default function ControlDetailPanel({ control, onClose }: Props) {
 
         {/* Header */}
         <div className="shrink-0 bg-card border-b border-border px-5 py-4 flex items-start justify-between ml-3">
-          <div className="min-w-0">
-            <span className="text-[10px] font-mono text-muted-foreground">{control.controlId}</span>
-            <h2 className="text-lg font-serif font-semibold mt-0.5 leading-snug">{control.safeguardTitle}</h2>
-            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-              <span className={control.ig === "IG1" ? "ig1-badge" : control.ig === "IG2" ? "ig2-badge" : "ig3-badge"}>
-                {control.ig} — {control.ig === "IG1" ? "Essential" : control.ig === "IG2" ? "Managed" : "Advanced"}
-              </span>
-              <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${
-                control.gateType === "Baseline Gate"
-                  ? "bg-destructive/15 text-destructive"
-                  : control.gateType === "Scale Gate"
-                  ? "bg-status-yellow/20 text-foreground"
-                  : "bg-muted text-muted-foreground"
-              }`}>
-                {control.gateType}
-              </span>
-              {control.firstRequiredWhen && (
-                <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-accent/50 text-accent-foreground">
-                  First required: {control.firstRequiredWhen}
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-1 mt-2 flex-wrap">
-              {AI_MODALITIES.map((m) => (
-                <span
-                  key={m.key}
-                  className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full border ${
-                    control[m.key] === "Yes"
-                      ? "bg-primary/10 text-primary border-primary/30"
-                      : "bg-muted/50 text-muted-foreground/50 border-border line-through"
-                  }`}
-                >
-                  {m.label}
-                </span>
-              ))}
-            </div>
+          <div className="min-w-0 flex-1">
+            {showEdit ? (
+              <>
+                <EditField fieldKey="controlId" value={draft.controlId} onChange={updateField} placeholder="e.g. STR-01" label="Control ID" />
+                <EditField fieldKey="safeguardTitle" value={draft.safeguardTitle} onChange={updateField} placeholder="Safeguard Title" label="" className="mt-1" />
+              </>
+            ) : (
+              <>
+                <span className="text-[10px] font-mono text-muted-foreground">{control.controlId}</span>
+                <h2 className="text-lg font-serif font-semibold mt-0.5 leading-snug">{control.safeguardTitle}</h2>
+              </>
+            )}
+            {!showEdit && (
+              <>
+                <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                  <span className={control.ig === "IG1" ? "ig1-badge" : control.ig === "IG2" ? "ig2-badge" : "ig3-badge"}>
+                    {control.ig} — {control.ig === "IG1" ? "Essential" : control.ig === "IG2" ? "Managed" : "Advanced"}
+                  </span>
+                  <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${
+                    control.gateType === "Baseline Gate" ? "bg-destructive/15 text-destructive"
+                      : control.gateType === "Scale Gate" ? "bg-status-yellow/20 text-foreground"
+                      : "bg-muted text-muted-foreground"
+                  }`}>{control.gateType}</span>
+                  {control.firstRequiredWhen && (
+                    <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-accent/50 text-accent-foreground">
+                      First required: {control.firstRequiredWhen}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-1 mt-2 flex-wrap">
+                  {AI_MODALITIES.map((m) => (
+                    <span key={m.key}
+                      className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full border ${
+                        control[m.key] === "Yes" ? "bg-primary/10 text-primary border-primary/30"
+                          : "bg-muted/50 text-muted-foreground/50 border-border line-through"
+                      }`}>{m.label}</span>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-md hover:bg-muted transition-colors active:scale-95 shrink-0">
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            {editable && !showEdit && (
+              <>
+                <button onClick={handleStartEdit} className="p-1.5 rounded-md hover:bg-primary/10 text-primary transition-colors active:scale-95" title="Edit">
+                  <Pencil className="w-4 h-4" />
+                </button>
+                <button onClick={handleDelete} className="p-1.5 rounded-md hover:bg-destructive/10 text-destructive transition-colors active:scale-95" title="Delete">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </>
+            )}
+            {showEdit && (
+              <>
+                <button onClick={handleSave}
+                  className="text-xs font-medium px-2.5 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors active:scale-95 flex items-center gap-1">
+                  <Save className="w-3.5 h-3.5" /> Save
+                </button>
+                <button onClick={handleCancel} className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border hover:bg-muted transition-colors active:scale-95">
+                  Cancel
+                </button>
+              </>
+            )}
+            {!showEdit && (
+              <button onClick={onClose} className="p-1.5 rounded-md hover:bg-muted transition-colors active:scale-95 shrink-0">
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-5 py-4 ml-3">
-          {expanded ? <ExpandedView control={control} /> : <CompactView control={control} />}
+          {showEdit ? (
+            <EditView draft={draft} onChange={updateField} />
+          ) : expanded ? (
+            <ExpandedView control={control} />
+          ) : (
+            <CompactView control={control} />
+          )}
         </div>
       </div>
     </>
+  );
+}
+
+/* ── Edit View: all fields editable ── */
+function EditView({ draft, onChange }: { draft: Control; onChange: (key: keyof Control, value: string) => void }) {
+  const fieldGroups: { title: string; icon: React.ElementType; fields: { key: keyof Control; label: string }[] }[] = [
+    {
+      title: "Classification", icon: Shield,
+      fields: [
+        { key: "pillar", label: "Pillar" },
+        { key: "ig", label: "Implementation Group" },
+        { key: "gateType", label: "Gate Type" },
+        { key: "firstRequiredWhen", label: "First Required When" },
+      ],
+    },
+    {
+      title: "Overview", icon: Shield,
+      fields: [
+        { key: "customerObjective", label: "Customer Objective" },
+        { key: "detailedRequirement", label: "Detailed Requirement" },
+        { key: "lifecycleTrigger", label: "Lifecycle Trigger" },
+        { key: "cadence", label: "Cadence" },
+        { key: "primaryStakeholder", label: "Primary Stakeholder" },
+        { key: "appliesTo", label: "Applies To" },
+        { key: "whyItMatters", label: "Why it Matters" },
+      ],
+    },
+    {
+      title: "Tooling", icon: Wrench,
+      fields: [
+        { key: "microsoftTool", label: "Microsoft Tool Recommendation" },
+        { key: "genericTooling", label: "Generic Tooling Category" },
+        { key: "evidenceOfCompletion", label: "Evidence of Completion" },
+      ],
+    },
+    {
+      title: "Customer Value", icon: Users,
+      fields: [
+        { key: "endCustomerBusinessValue", label: "End Customer Business Value" },
+        { key: "customerConversationTrack", label: "Customer Conversation Track" },
+        { key: "whoCaresMost", label: "Who Cares Most (Customer)" },
+      ],
+    },
+    {
+      title: "Compliance", icon: AlertTriangle,
+      fields: [
+        { key: "rawWeight", label: "Raw Weight" },
+        { key: "minStatusToPass", label: "Min Status to Pass" },
+        { key: "minEvidenceToPass", label: "Min Evidence to Pass" },
+        { key: "failCondition", label: "Fail Condition" },
+      ],
+    },
+    {
+      title: "AI Modalities", icon: Shield,
+      fields: [
+        { key: "relevantGenAI", label: "GenAI" },
+        { key: "relevantCustomGPTs", label: "Custom GPTs" },
+        { key: "relevantAgenticAI", label: "Agentic AI" },
+        { key: "relevantDigitalWorkers", label: "Digital Workers" },
+        { key: "relevantCowork", label: "Cowork" },
+      ],
+    },
+  ];
+
+  return (
+    <div className="space-y-5">
+      {fieldGroups.map((group) => {
+        const Icon = group.icon;
+        return (
+          <div key={group.title}>
+            <div className="flex items-center gap-1.5 border-b border-border pb-1 mb-3">
+              <Icon className="w-3.5 h-3.5 text-primary" />
+              <span className="text-xs font-bold uppercase tracking-wider text-primary">{group.title}</span>
+            </div>
+            <div className="grid grid-cols-1 gap-2.5">
+              {group.fields.map(({ key, label }) => {
+                const options = SELECT_FIELDS[key];
+                const isTextarea = TEXTAREA_FIELDS.has(key);
+                return (
+                  <div key={key}>
+                    <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5 block">{label}</label>
+                    {options ? (
+                      <select value={draft[key]} onChange={e => onChange(key, e.target.value)}
+                        className="w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring">
+                        <option value="">—</option>
+                        {options.map(o => <option key={o} value={o}>{o}</option>)}
+                      </select>
+                    ) : isTextarea ? (
+                      <textarea value={draft[key]} onChange={e => onChange(key, e.target.value)} rows={3}
+                        className="w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring resize-y min-h-[60px]" />
+                    ) : (
+                      <input type="text" value={draft[key]} onChange={e => onChange(key, e.target.value)}
+                        className="w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring" />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── Inline edit field for header ── */
+function EditField({ fieldKey, value, onChange, placeholder, label, className = "" }: {
+  fieldKey: keyof Control; value: string; onChange: (key: keyof Control, val: string) => void;
+  placeholder: string; label: string; className?: string;
+}) {
+  return (
+    <div className={className}>
+      {label && <label className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</label>}
+      <input type="text" value={value} onChange={e => onChange(fieldKey, e.target.value)} placeholder={placeholder}
+        className="w-full rounded-md border border-input bg-background px-2 py-1 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ring" />
+    </div>
   );
 }
 
@@ -107,12 +311,10 @@ export default function ControlDetailPanel({ control, onClose }: Props) {
 function ExpandedView({ control }: { control: Control }) {
   return (
     <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-      {/* Left column */}
       <div className="space-y-4 col-span-2">
         <Section title="Customer Objective" value={control.customerObjective} />
         <Section title="Detailed Requirement" value={control.detailedRequirement} />
       </div>
-
       <div className="space-y-4">
         <SectionHeader icon={Shield} label="Overview" />
         <div className="grid grid-cols-2 gap-2">
@@ -127,13 +329,11 @@ function ExpandedView({ control }: { control: Control }) {
             <p className="text-sm leading-relaxed">{control.whyItMatters}</p>
           </div>
         )}
-
         <SectionHeader icon={Wrench} label="Tooling" />
         {control.microsoftTool && <InfoBlock label="Microsoft Tooling" value={control.microsoftTool} />}
         {control.genericTooling && <InfoBlock label="Generic Tooling Category" value={control.genericTooling} />}
         {control.evidenceOfCompletion && <InfoBlock label="Evidence of Completion" value={control.evidenceOfCompletion} variant="muted" />}
       </div>
-
       <div className="space-y-4">
         <SectionHeader icon={Users} label="Customer Value" />
         {control.endCustomerBusinessValue && (
@@ -153,14 +353,11 @@ function ExpandedView({ control }: { control: Control }) {
             <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Who Cares Most</h3>
             <div className="flex flex-wrap gap-1.5">
               {control.whoCaresMost.split(",").map((role) => (
-                <span key={role.trim()} className="text-xs font-medium bg-primary/10 text-primary px-2.5 py-1 rounded-full">
-                  {role.trim()}
-                </span>
+                <span key={role.trim()} className="text-xs font-medium bg-primary/10 text-primary px-2.5 py-1 rounded-full">{role.trim()}</span>
               ))}
             </div>
           </div>
         )}
-
         <SectionHeader icon={AlertTriangle} label="Compliance" />
         <div className="grid grid-cols-2 gap-2">
           <MetaCard label="Raw Weight" value={control.rawWeight} />
@@ -191,22 +388,17 @@ type TabId = (typeof TABS)[number]["id"];
 
 function CompactView({ control }: { control: Control }) {
   const [tab, setTab] = useState<TabId>("overview");
-
   return (
     <div className="space-y-4">
-      {/* Tab bar */}
       <div className="border-b border-border bg-muted/30 flex rounded-t-md -mx-5 px-2">
         {TABS.map((t) => {
           const Icon = t.icon;
           const active = tab === t.id;
           return (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
+            <button key={t.id} onClick={() => setTab(t.id)}
               className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2.5 text-xs font-medium transition-colors relative ${
                 active ? "text-primary" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
+              }`}>
               <Icon className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">{t.label}</span>
               {active && <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-t" />}
@@ -214,7 +406,6 @@ function CompactView({ control }: { control: Control }) {
           );
         })}
       </div>
-
       <div className="space-y-4">
         {tab === "overview" && <OverviewContent control={control} />}
         {tab === "tooling" && <ToolingContent control={control} />}
@@ -225,7 +416,6 @@ function CompactView({ control }: { control: Control }) {
   );
 }
 
-/* ── Tab content (reused in both views) ── */
 function OverviewContent({ control }: { control: Control }) {
   return (
     <>
@@ -277,9 +467,7 @@ function CustomerContent({ control }: { control: Control }) {
           <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Who Cares Most</h3>
           <div className="flex flex-wrap gap-1.5">
             {control.whoCaresMost.split(",").map((role) => (
-              <span key={role.trim()} className="text-xs font-medium bg-primary/10 text-primary px-2.5 py-1 rounded-full">
-                {role.trim()}
-              </span>
+              <span key={role.trim()} className="text-xs font-medium bg-primary/10 text-primary px-2.5 py-1 rounded-full">{role.trim()}</span>
             ))}
           </div>
         </div>

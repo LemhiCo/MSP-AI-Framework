@@ -1,9 +1,10 @@
 import { useState, useMemo, useCallback } from "react";
-import { Search, Plus, Download, ArrowLeft, Pencil, Trash2, Save, X } from "lucide-react";
+import { Search, Plus, Download, ArrowLeft, X, Filter } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, AI_MODALITIES, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
 import { Link } from "react-router-dom";
 import Papa from "papaparse";
+import ControlDetailPanel from "@/components/ControlDetailPanel";
 
 const EMPTY_CONTROL: Control = {
   controlId: "", pillar: "", ig: "", safeguardTitle: "", customerObjective: "",
@@ -16,40 +17,21 @@ const EMPTY_CONTROL: Control = {
   relevantCowork: "No", firstRequiredWhen: "",
 };
 
-const FIELD_LABELS: Record<keyof Control, string> = {
-  controlId: "Control ID", pillar: "Pillar", ig: "IG", safeguardTitle: "Safeguard Title",
-  customerObjective: "Customer Objective", detailedRequirement: "Detailed Requirement",
-  lifecycleTrigger: "Lifecycle Trigger", cadence: "Cadence",
-  primaryStakeholder: "Primary Stakeholder", microsoftTool: "Microsoft Tool Recommendation",
-  genericTooling: "Generic Tooling Category", evidenceOfCompletion: "Evidence of Completion",
-  rawWeight: "Raw Weight", gateType: "Gate Type", minStatusToPass: "Minimum Status to Pass",
-  minEvidenceToPass: "Minimum Evidence to Pass", failCondition: "Fail Condition",
-  whyItMatters: "Why it Matters", appliesTo: "Applies To",
-  endCustomerBusinessValue: "End Customer Business Value",
-  customerConversationTrack: "Customer Conversation Track",
-  whoCaresMost: "Who Cares Most (Customer)", relevantGenAI: "Relevant: GenAI",
-  relevantCustomGPTs: "Relevant: Custom GPTs", relevantAgenticAI: "Relevant: Agentic AI",
-  relevantDigitalWorkers: "Relevant: Digital Workers", relevantCowork: "Relevant: Cowork",
-  firstRequiredWhen: "First Required When",
+const IG_META: Record<string, { label: string; sub: string }> = {
+  IG1: { label: "IG1 — Essential", sub: "Minimum safe floor" },
+  IG2: { label: "IG2 — Managed", sub: "Repeatable practice" },
+  IG3: { label: "IG3 — Advanced", sub: "Mature & regulated" },
 };
 
-const SELECT_FIELDS: Partial<Record<keyof Control, string[]>> = {
-  pillar: PILLARS.map(p => p.id),
-  ig: [...IG_LEVELS],
-  gateType: ["Baseline Gate", "Scale Gate", "Advanced Score"],
-  lifecycleTrigger: [...LIFECYCLE_TRIGGERS],
-  relevantGenAI: ["Yes", "No"],
-  relevantCustomGPTs: ["Yes", "No"],
-  relevantAgenticAI: ["Yes", "No"],
-  relevantDigitalWorkers: ["Yes", "No"],
-  relevantCowork: ["Yes", "No"],
+const PILLAR_COLORS: Record<string, string> = {
+  STR: "90 37% 28%",
+  GOV: "280 30% 40%",
+  TEC: "168 40% 30%",
+  PRC: "25 70% 46%",
+  DAT: "340 45% 42%",
+  OBS: "200 50% 36%",
+  DEP: "46 60% 38%",
 };
-
-const TEXTAREA_FIELDS: Set<keyof Control> = new Set([
-  "customerObjective", "detailedRequirement", "whyItMatters",
-  "endCustomerBusinessValue", "customerConversationTrack", "failCondition",
-  "evidenceOfCompletion",
-]);
 
 function controlToCSVRow(c: Control): Record<string, string> {
   return {
@@ -71,43 +53,97 @@ function controlToCSVRow(c: Control): Record<string, string> {
   };
 }
 
+function ChipFilter({ label, options, selected, onChange }: {
+  label: string; options: string[]; selected: Set<string>;
+  onChange: (next: Set<string>) => void;
+}) {
+  if (options.length === 0) return null;
+  const toggle = (v: string) => {
+    const next = new Set(selected);
+    if (next.has(v)) next.delete(v); else next.add(v);
+    onChange(next);
+  };
+  return (
+    <div className="flex items-center gap-1 flex-wrap">
+      <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground shrink-0">{label}</span>
+      {options.map((o) => (
+        <button key={o} onClick={() => toggle(o)}
+          className={`text-[10px] font-medium px-2 py-0.5 rounded-full border transition-colors ${
+            selected.has(o) ? "bg-primary text-primary-foreground border-primary"
+              : "bg-card text-muted-foreground border-border hover:border-primary/40"
+          }`}>{o}</button>
+      ))}
+    </div>
+  );
+}
+
 export default function Admin() {
   const { data: loadedControls = [], isLoading } = useControls();
   const [controls, setControls] = useState<Control[] | null>(null);
   const [search, setSearch] = useState("");
-  const [editing, setEditing] = useState<Control | null>(null);
-  const [isNew, setIsNew] = useState(false);
+  const [activeControl, setActiveControl] = useState<Control | null>(null);
   const [dirty, setDirty] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
+  const [gateFilter, setGateFilter] = useState<Set<string>>(new Set());
+  const [aiModalityFilter, setAiModalityFilter] = useState<Set<string>>(new Set());
 
   const allControls = controls ?? loadedControls;
 
-  const filtered = useMemo(() => {
-    if (!search) return allControls;
-    const q = search.toLowerCase();
-    return allControls.filter(c =>
-      c.controlId.toLowerCase().includes(q) ||
-      c.safeguardTitle.toLowerCase().includes(q) ||
-      c.pillar.toLowerCase().includes(q)
-    );
-  }, [allControls, search]);
+  const gateTypes = useMemo(() => {
+    const set = new Set<string>();
+    allControls.forEach(c => { if (c.gateType) set.add(c.gateType); });
+    return Array.from(set).sort();
+  }, [allControls]);
 
-  const startEdit = (c: Control) => { setEditing({ ...c }); setIsNew(false); };
-  const startNew = () => { setEditing({ ...EMPTY_CONTROL }); setIsNew(true); };
+  const activeFilterCount = [lifecycleFilter, gateFilter, aiModalityFilter].reduce((n, s) => n + s.size, 0);
+  const clearAllFilters = () => { setLifecycleFilter(new Set()); setGateFilter(new Set()); setAiModalityFilter(new Set()); };
 
-  const saveEdit = () => {
-    if (!editing) return;
-    const updated = isNew
-      ? [...allControls, editing]
-      : allControls.map(c => c.controlId === editing.controlId ? editing : c);
-    setControls(updated);
-    setEditing(null);
+  const filteredControls = useMemo(() => {
+    return allControls.filter((c) => {
+      if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
+      if (gateFilter.size && !gateFilter.has(c.gateType)) return false;
+      if (aiModalityFilter.size) {
+        const match = AI_MODALITIES.some(m => aiModalityFilter.has(m.label) && c[m.key] === "Yes");
+        if (!match) return false;
+      }
+      if (search) {
+        const q = search.toLowerCase();
+        return c.controlId.toLowerCase().includes(q) || c.safeguardTitle.toLowerCase().includes(q) || c.customerObjective.toLowerCase().includes(q);
+      }
+      return true;
+    });
+  }, [allControls, search, lifecycleFilter, gateFilter, aiModalityFilter]);
+
+  const grid = useMemo(() => {
+    const map: Record<string, Record<string, Control[]>> = {};
+    for (const p of PILLARS) {
+      map[p.id] = {};
+      for (const ig of IG_LEVELS) {
+        map[p.id][ig] = filteredControls.filter(c => c.controlId.startsWith(p.id) && c.ig === ig);
+      }
+    }
+    return map;
+  }, [filteredControls]);
+
+  const handleSave = useCallback((updated: Control) => {
+    const existing = allControls.find(c => c.controlId === updated.controlId);
+    const newList = existing
+      ? allControls.map(c => c.controlId === updated.controlId ? updated : c)
+      : [...allControls, updated];
+    setControls(newList);
+    setActiveControl(null);
     setDirty(true);
-  };
+  }, [allControls]);
 
-  const deleteControl = (id: string) => {
-    if (!confirm(`Delete ${id}?`)) return;
+  const handleDelete = useCallback((id: string) => {
     setControls(allControls.filter(c => c.controlId !== id));
+    setActiveControl(null);
     setDirty(true);
+  }, [allControls]);
+
+  const handleNew = () => {
+    setActiveControl({ ...EMPTY_CONTROL });
   };
 
   const downloadCSV = useCallback(() => {
@@ -116,9 +152,7 @@ export default function Admin() {
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url;
-    a.download = "controls.csv";
-    a.click();
+    a.href = url; a.download = "controls.csv"; a.click();
     URL.revokeObjectURL(url);
     setDirty(false);
   }, [allControls]);
@@ -126,30 +160,40 @@ export default function Admin() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-pulse text-muted-foreground">Loading…</div>
+        <div className="animate-pulse text-muted-foreground">Loading framework…</div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-2 flex items-center gap-3 shadow-sm">
+      {/* Top Bar */}
+      <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-1.5 flex items-center gap-3 shadow-sm min-w-[1200px]">
         <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
         </Link>
-        <h1 className="text-sm font-serif font-semibold">Admin — Controls Editor</h1>
-
-        <div className="relative flex-1 max-w-xs ml-4">
+        <h1 className="text-sm font-serif font-semibold mr-3 hidden sm:block">Admin — Controls Editor</h1>
+        <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-          <input
-            type="text" placeholder="Search controls…" value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 rounded-md border border-input bg-background text-xs focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
-          />
+          <input type="text" placeholder="Search controls…" value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-8 pr-3 py-1.5 rounded-md border border-input bg-background text-xs focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground" />
         </div>
 
-        <button onClick={startNew}
+        <button onClick={() => setShowFilters(v => !v)}
+          className={`text-xs font-medium px-2.5 py-1.5 rounded-md border transition-colors active:scale-95 ${
+            showFilters || activeFilterCount > 0 ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border hover:bg-muted"
+          }`}>
+          Filters{activeFilterCount > 0 && ` (${activeFilterCount})`}
+        </button>
+
+        {activeFilterCount > 0 && (
+          <button onClick={clearAllFilters} className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-0.5">
+            <X className="w-3 h-3" /> Clear
+          </button>
+        )}
+
+        <button onClick={handleNew}
           className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-primary bg-primary text-primary-foreground hover:bg-primary/90 transition-colors active:scale-95 ml-auto flex items-center gap-1">
           <Plus className="w-3.5 h-3.5" /> New Control
         </button>
@@ -163,128 +207,88 @@ export default function Admin() {
         </button>
       </header>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs border-collapse">
-          <thead className="sticky top-[41px] z-10 bg-muted">
-            <tr>
-              <th className="text-left px-3 py-2 font-semibold border-b border-border">Control ID</th>
-              <th className="text-left px-3 py-2 font-semibold border-b border-border">Pillar</th>
-              <th className="text-left px-3 py-2 font-semibold border-b border-border">IG</th>
-              <th className="text-left px-3 py-2 font-semibold border-b border-border">Safeguard Title</th>
-              <th className="text-left px-3 py-2 font-semibold border-b border-border">Gate Type</th>
-              <th className="text-left px-3 py-2 font-semibold border-b border-border">First Required</th>
-              <th className="text-left px-3 py-2 font-semibold border-b border-border w-[100px]">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(c => (
-              <tr key={c.controlId} className="border-b border-border hover:bg-muted/50 transition-colors">
-                <td className="px-3 py-2 font-mono text-muted-foreground">{c.controlId}</td>
-                <td className="px-3 py-2">{c.pillar}</td>
-                <td className="px-3 py-2">{c.ig}</td>
-                <td className="px-3 py-2 max-w-[300px] truncate">{c.safeguardTitle}</td>
-                <td className="px-3 py-2">{c.gateType}</td>
-                <td className="px-3 py-2">{c.firstRequiredWhen}</td>
-                <td className="px-3 py-2">
-                  <div className="flex items-center gap-1">
-                    <button onClick={() => startEdit(c)} className="p-1 rounded hover:bg-primary/10 text-primary transition-colors" title="Edit">
-                      <Pencil className="w-3.5 h-3.5" />
-                    </button>
-                    <button onClick={() => deleteControl(c.controlId)} className="p-1 rounded hover:bg-destructive/10 text-destructive transition-colors" title="Delete">
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+      {/* Filter Panel */}
+      {showFilters && (
+        <div className="bg-card border-b border-border px-4 py-3 space-y-2 min-w-[1200px] shadow-sm">
+          <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
+          <ChipFilter label="Gate Type" options={gateTypes} selected={gateFilter} onChange={setGateFilter} />
+          <ChipFilter label="AI Type" options={AI_MODALITIES.map(m => m.label)} selected={aiModalityFilter} onChange={setAiModalityFilter} />
+        </div>
+      )}
+
+      {/* Kanban Board */}
+      <div className="min-w-[1200px]">
+        {/* Pillar Headers */}
+        <div className="sticky top-[37px] z-20 bg-background border-b border-border grid grid-cols-[100px_repeat(7,1fr)]">
+          <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-end" />
+          {PILLARS.map((p) => (
+            <div key={p.id} className="px-2 py-1.5 border-l border-border">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: `hsl(${PILLAR_COLORS[p.id]})` }} />
+                <span className="text-xs font-bold truncate">{p.id}</span>
+              </div>
+              <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 truncate">{p.name}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* IG Rows */}
+        {IG_LEVELS.map((ig) => {
+          const meta = IG_META[ig];
+          const igColorVar = ig === "IG1" ? "--ig1" : ig === "IG2" ? "--ig2" : "--ig3";
+          const igBgVar = ig === "IG1" ? "--ig1-bg" : ig === "IG2" ? "--ig2-bg" : "--ig3-bg";
+
+          return (
+            <div key={ig} className="grid grid-cols-[100px_repeat(7,1fr)] border-b border-border">
+              <div className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10" style={{ background: `hsl(var(${igBgVar}))` }}>
+                <span className="text-xs font-bold" style={{ color: `hsl(var(${igColorVar}))` }}>{ig}</span>
+                <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta.sub}</span>
+              </div>
+              {PILLARS.map((pillar) => {
+                const items = grid[pillar.id]?.[ig] || [];
+                return (
+                  <div key={`${pillar.id}-${ig}`} className="border-l border-border px-1.5 py-1.5 space-y-1 bg-card/50">
+                    {items.map((c) => (
+                      <button key={c.controlId} onClick={() => setActiveControl(c)}
+                        className="w-full rounded-md border text-[11px] transition-all text-left px-1.5 py-1.5 hover:shadow-md active:scale-[0.97] cursor-pointer bg-card border-border hover:border-primary/40">
+                        <div className="flex items-start gap-1.5">
+                          <div className="flex-1 min-w-0">
+                            <span className="leading-tight block">{c.safeguardTitle}</span>
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <span className="text-[9px] font-mono text-muted-foreground">{c.controlId}</span>
+                              <span className={`text-[8px] font-semibold px-1 py-0.5 rounded ${
+                                c.gateType === "Baseline Gate" ? "bg-destructive/15 text-destructive"
+                                  : c.gateType === "Scale Gate" ? "bg-status-yellow/20 text-foreground"
+                                  : "bg-muted text-muted-foreground"
+                              }`}>
+                                {c.gateType === "Baseline Gate" ? "BASE" : c.gateType === "Scale Gate" ? "SCALE" : c.gateType === "Advanced Score" ? "ADV" : ""}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                    {items.length === 0 && (
+                      <div className="text-[10px] text-muted-foreground italic px-1 py-2">—</div>
+                    )}
                   </div>
-                </td>
-              </tr>
-            ))}
-            {filtered.length === 0 && (
-              <tr><td colSpan={7} className="text-center py-8 text-muted-foreground italic">No controls found.</td></tr>
-            )}
-          </tbody>
-        </table>
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
 
-      {/* Edit Modal */}
-      {editing && (
-        <EditModal
-          control={editing}
-          isNew={isNew}
-          onChange={setEditing}
-          onSave={saveEdit}
-          onCancel={() => setEditing(null)}
+      {/* Detail Panel with edit mode */}
+      {activeControl && (
+        <ControlDetailPanel
+          control={activeControl}
+          onClose={() => setActiveControl(null)}
+          editable
+          onSave={handleSave}
+          onDelete={handleDelete}
         />
       )}
     </div>
-  );
-}
-
-function EditModal({ control, isNew, onChange, onSave, onCancel }: {
-  control: Control; isNew: boolean;
-  onChange: (c: Control) => void; onSave: () => void; onCancel: () => void;
-}) {
-  const update = (key: keyof Control, value: string) => onChange({ ...control, [key]: value });
-  const fields = Object.keys(FIELD_LABELS) as (keyof Control)[];
-
-  return (
-    <>
-      <div className="fixed inset-0 bg-foreground/30 z-40" onClick={onCancel} />
-      <div className="fixed inset-4 md:inset-y-4 md:left-[15%] md:right-[15%] bg-card border border-border rounded-xl shadow-2xl z-50 flex flex-col overflow-hidden">
-        <div className="shrink-0 border-b border-border px-5 py-3 flex items-center justify-between bg-muted/30">
-          <h2 className="text-sm font-serif font-semibold">
-            {isNew ? "New Control" : `Edit ${control.controlId}`}
-          </h2>
-          <div className="flex items-center gap-2">
-            <button onClick={onSave}
-              className="text-xs font-medium px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors active:scale-95 flex items-center gap-1">
-              <Save className="w-3.5 h-3.5" /> Save
-            </button>
-            <button onClick={onCancel} className="p-1.5 rounded-md hover:bg-muted transition-colors">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-5 py-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {fields.map(key => {
-              const label = FIELD_LABELS[key];
-              const options = SELECT_FIELDS[key];
-              const isTextarea = TEXTAREA_FIELDS.has(key);
-
-              return (
-                <div key={key} className={`space-y-1 ${isTextarea ? "md:col-span-2 lg:col-span-3" : ""}`}>
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</label>
-                  {options ? (
-                    <select
-                      value={control[key]}
-                      onChange={e => update(key, e.target.value)}
-                      className="w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
-                    >
-                      <option value="">—</option>
-                      {options.map(o => <option key={o} value={o}>{o}</option>)}
-                    </select>
-                  ) : isTextarea ? (
-                    <textarea
-                      value={control[key]}
-                      onChange={e => update(key, e.target.value)}
-                      rows={3}
-                      className="w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring resize-y min-h-[60px]"
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      value={control[key]}
-                      onChange={e => update(key, e.target.value)}
-                      className="w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </>
   );
 }
