@@ -214,7 +214,6 @@ export default function Admin() {
     const others = allControls.filter(c => !(c.controlId.startsWith(pillar + "-") && c.ig === ig));
     setControls([...others, ...renumbered]);
     setDirty(true);
-    trackChange(controlId);
   }, [allControls, trackChange]);
 
   const handleSave = useCallback((updated: Control) => {
