@@ -180,6 +180,27 @@ export default function Admin() {
     toast.success(`Moved to ${targetPillar}-${targetIg}. IDs renumbered.`);
   }, [dragControlId, allControls]);
 
+  const swapOrder = useCallback((controlId: string, direction: -1 | 1) => {
+    const control = allControls.find(c => c.controlId === controlId);
+    if (!control) return;
+    const pillar = control.controlId.split("-")[0];
+    const ig = control.ig;
+    const cellItems = allControls
+      .filter(c => c.controlId.startsWith(pillar + "-") && c.ig === ig)
+      .sort((a, b) => a.controlId.localeCompare(b.controlId));
+    const idx = cellItems.findIndex(c => c.controlId === controlId);
+    const swapIdx = idx + direction;
+    if (swapIdx < 0 || swapIdx >= cellItems.length) return;
+    [cellItems[idx], cellItems[swapIdx]] = [cellItems[swapIdx], cellItems[idx]];
+    const renumbered = cellItems.map((c, i) => ({
+      ...c,
+      controlId: `${pillar}-${ig}-${String(i + 1).padStart(2, "0")}`,
+    }));
+    const others = allControls.filter(c => !(c.controlId.startsWith(pillar + "-") && c.ig === ig));
+    setControls([...others, ...renumbered]);
+    setDirty(true);
+  }, [allControls]);
+
   const handleSave = useCallback((updated: Control) => {
     const existing = allControls.find(c => c.controlId === updated.controlId);
     const newList = existing
