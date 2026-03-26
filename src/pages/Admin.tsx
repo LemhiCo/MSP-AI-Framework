@@ -282,7 +282,7 @@ export default function Admin() {
     const added: Control[] = [];
     const deleted: Control[] = [];
     const modified: { control: Control; changes: string[] }[] = [];
-    let reorderCount = 0;
+    const reordered: { from: string; to: string; title: string }[] = [];
 
     // Find deleted
     for (const orig of originalControls) {
