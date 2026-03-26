@@ -192,7 +192,6 @@ export default function Admin() {
     setDirty(true);
     setDragControlId(null);
     setDropTarget(null);
-    trackChange(dragControlId);
     toast.success(`Moved to ${targetPillar}-${targetIg}. IDs renumbered.`);
   }, [dragControlId, allControls, trackChange]);
 
