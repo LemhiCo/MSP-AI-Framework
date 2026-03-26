@@ -90,6 +90,25 @@ export default function Admin() {
   const [aiModalityFilter, setAiModalityFilter] = useState<Set<string>>(new Set());
 
   const allControls = controls ?? loadedControls;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadCSV = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const text = ev.target?.result as string;
+        const parsed = parseControlsCSV(text);
+        if (parsed.length === 0) { toast.error("CSV contained no valid controls"); return; }
+        setControls(parsed);
+        setDirty(true);
+        toast.success(`Loaded ${parsed.length} controls from CSV`);
+      } catch { toast.error("Failed to parse CSV"); }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  }, []);
 
   const gateTypes = useMemo(() => {
     const set = new Set<string>();
