@@ -230,7 +230,6 @@ export default function Admin() {
     setControls(allControls.filter(c => c.controlId !== id));
     setActiveControl(null);
     setDirty(true);
-    trackChange(id + " (deleted)");
   }, [allControls, trackChange]);
 
   const handleNew = () => {
