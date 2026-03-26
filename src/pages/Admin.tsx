@@ -84,6 +84,7 @@ export default function Admin() {
   const [controls, setControls] = useState<Control[] | null>(null);
   const [search, setSearch] = useState("");
   const [activeControl, setActiveControl] = useState<Control | null>(null);
+  const [isNewCard, setIsNewCard] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
