@@ -138,6 +138,11 @@ export default function Admin() {
     return map;
   }, [filteredControls, visiblePillars]);
 
+  // --- Change tracking ---
+  const trackChange = useCallback((id: string) => {
+    setChangedIds(prev => new Set(prev).add(id));
+  }, []);
+
   // --- Drag & Drop ---
   const [dragControlId, setDragControlId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<{ pillar: string; ig: string; index: number } | null>(null);
@@ -162,23 +167,17 @@ export default function Admin() {
     const sourcePillar = draggedControl.controlId.split("-")[0];
     const sourceIg = draggedControl.ig;
 
-    // Remove from source
     let newList = allControls.filter(c => c.controlId !== dragControlId);
-
-    // Renumber source cell
     newList = renumberCell(newList, sourcePillar, sourceIg);
 
-    // Get target cell items (after source removal & renumber)
     const targetItems = newList
       .filter(c => c.controlId.startsWith(targetPillar) && c.ig === targetIg)
       .sort((a, b) => a.controlId.localeCompare(b.controlId));
     const others = newList.filter(c => !(c.controlId.startsWith(targetPillar) && c.ig === targetIg));
 
-    // Insert at target index
     const updatedDragged = { ...draggedControl, pillar: targetPillar, ig: targetIg, controlId: "" };
     targetItems.splice(Math.min(targetIndex, targetItems.length), 0, updatedDragged);
 
-    // Renumber target cell
     const renumberedTarget = targetItems.map((c, i) => ({
       ...c,
       controlId: `${targetPillar}-${targetIg}-${String(i + 1).padStart(2, "0")}`,
@@ -211,11 +210,8 @@ export default function Admin() {
     const others = allControls.filter(c => !(c.controlId.startsWith(pillar + "-") && c.ig === ig));
     setControls([...others, ...renumbered]);
     setDirty(true);
-  }, [allControls]);
-
-  const trackChange = useCallback((id: string) => {
-    setChangedIds(prev => new Set(prev).add(id));
-  }, []);
+    trackChange(controlId);
+  }, [allControls, trackChange]);
 
   const handleSave = useCallback((updated: Control) => {
     const existing = allControls.find(c => c.controlId === updated.controlId);
