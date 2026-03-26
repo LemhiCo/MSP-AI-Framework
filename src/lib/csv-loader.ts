@@ -81,23 +81,6 @@ export function parseControlsCSV(csvText: string): Control[] {
   return (parsed.data as Record<string, string>[]).map(mapControlRow);
 }
 
-export async function loadAssessment(): Promise<AssessmentRow[]> {
-  return fetchCSV("/data/assessment.csv", (r) => ({
-    controlId: r["Control ID"] || "",
-    pillar: r["Pillar"] || "",
-    ig: r["IG"] || "",
-    safeguardTitle: r["Safeguard Title"] || "",
-    lifecycleTrigger: r["Lifecycle Trigger"] || "",
-    cadence: r["Cadence"] || "",
-    status: r["Status"] || "Not Started",
-    owner: r["Owner"] || "",
-    dueDate: r["Due Date"] || "",
-    microsoftTool: r["Microsoft Tool Recommendation"] || "",
-    genericTooling: r["Generic Tooling Category"] || "",
-    evidenceNotes: r["Evidence Link / Notes"] || "",
-    priority: r["Priority"] || "",
-  }));
-}
 
 export const PILLARS = [
   { id: "STR", name: "Strategy & Buy-In", color: "var(--pillar-str)" },
