@@ -193,7 +193,7 @@ export default function Admin() {
     setDragControlId(null);
     setDropTarget(null);
     toast.success(`Moved to ${targetPillar}-${targetIg}. IDs renumbered.`);
-  }, [dragControlId, allControls, trackChange]);
+  }, [dragControlId, allControls]);
 
   const swapOrder = useCallback((controlId: string, direction: -1 | 1) => {
     const control = allControls.find(c => c.controlId === controlId);
