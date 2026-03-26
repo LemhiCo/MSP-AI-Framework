@@ -374,6 +374,9 @@ const Index = () => {
         })}
       </div>
 
+      {/* Contributors */}
+      <ContributorsTicker />
+
       {/* Detail Panel (slide-over) */}
       {activeControl && (
         <ControlDetailPanel control={activeControl} onClose={() => setActiveControl(null)} />
