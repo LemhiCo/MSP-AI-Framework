@@ -374,7 +374,7 @@ export default function Admin() {
     const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
     window.open(url, "_blank");
   }, [changedIds, originalControls, buildChangeSummary, csvHash]);
-  }, [changedIds]);
+  
 
   if (isLoading) {
     return (
