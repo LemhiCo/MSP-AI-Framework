@@ -91,9 +91,8 @@ export default function Admin() {
   const [gateFilter, setGateFilter] = useState<Set<string>>(new Set());
   const [aiModalityFilter, setAiModalityFilter] = useState<Set<string>>(new Set());
   const [showCopilot, setShowCopilot] = useState(true);
-  const [changedIds, setChangedIds] = useState<Set<string>>(new Set());
-  const [showPrButton, setShowPrButton] = useState(false);
-  const [originalControls, setOriginalControls] = useState<Map<string, Control>>(new Map());
+  const [showIssueButton, setShowIssueButton] = useState(false);
+  const [originalControls, setOriginalControls] = useState<Control[]>([]);
   const [csvHash, setCsvHash] = useState("");
 
   const allControls = controls ?? loadedControls;
@@ -103,10 +102,8 @@ export default function Admin() {
 
   // Snapshot original controls for diff tracking
   useMemo(() => {
-    if (loadedControls.length > 0 && originalControls.size === 0) {
-      const map = new Map<string, Control>();
-      loadedControls.forEach(c => map.set(c.controlId, { ...c }));
-      setOriginalControls(map);
+    if (loadedControls.length > 0 && originalControls.length === 0) {
+      setOriginalControls(loadedControls.map(c => ({ ...c })));
     }
   }, [loadedControls]);
 
@@ -149,10 +146,7 @@ export default function Admin() {
     return map;
   }, [filteredControls, visiblePillars]);
 
-  // --- Change tracking ---
-  const trackChange = useCallback((id: string) => {
-    setChangedIds(prev => new Set(prev).add(id));
-  }, []);
+  // --- Change tracking (computed at diff time, not manually) ---
 
   // --- Drag & Drop ---
   const [dragControlId, setDragControlId] = useState<string | null>(null);
@@ -198,9 +192,8 @@ export default function Admin() {
     setDirty(true);
     setDragControlId(null);
     setDropTarget(null);
-    trackChange(dragControlId);
     toast.success(`Moved to ${targetPillar}-${targetIg}. IDs renumbered.`);
-  }, [dragControlId, allControls, trackChange]);
+  }, [dragControlId, allControls]);
 
   const swapOrder = useCallback((controlId: string, direction: -1 | 1) => {
     const control = allControls.find(c => c.controlId === controlId);
@@ -221,8 +214,7 @@ export default function Admin() {
     const others = allControls.filter(c => !(c.controlId.startsWith(pillar + "-") && c.ig === ig));
     setControls([...others, ...renumbered]);
     setDirty(true);
-    trackChange(controlId);
-  }, [allControls, trackChange]);
+  }, [allControls]);
 
   const handleSave = useCallback((updated: Control) => {
     const existing = allControls.find(c => c.controlId === updated.controlId);
@@ -232,15 +224,13 @@ export default function Admin() {
     setControls(newList);
     setActiveControl(null);
     setDirty(true);
-    trackChange(updated.controlId);
-  }, [allControls, trackChange]);
+  }, [allControls]);
 
   const handleDelete = useCallback((id: string) => {
     setControls(allControls.filter(c => c.controlId !== id));
     setActiveControl(null);
     setDirty(true);
-    trackChange(id + " (deleted)");
-  }, [allControls, trackChange]);
+  }, [allControls]);
 
   const handleNew = () => {
     setIsNewCard(true);
@@ -270,64 +260,68 @@ export default function Admin() {
     return Math.abs(hash).toString(16).slice(0, 6);
   }, []);
 
-  const buildChangeSummary = useCallback(() => {
-    const changedList = Array.from(changedIds);
-    const lines: string[] = [];
+  const computeDiff = useCallback(() => {
+    const origMap = new Map(originalControls.map(c => [c.controlId, c]));
+    const currMap = new Map(allControls.map(c => [c.controlId, c]));
+    const diffFields: { key: keyof Control; label: string }[] = [
+      { key: "safeguardTitle", label: "Safeguard Title" },
+      { key: "customerObjective", label: "Customer Objective" },
+      { key: "eli5", label: "ELI5" },
+      { key: "detailedRequirement", label: "Detailed Requirement" },
+      { key: "lifecycleTrigger", label: "Lifecycle Trigger" },
+      { key: "cadence", label: "Cadence" },
+      { key: "primaryStakeholder", label: "Primary Stakeholder" },
+      { key: "microsoftTool", label: "Microsoft Tool" },
+      { key: "genericTooling", label: "Generic Tooling" },
+      { key: "evidenceOfCompletion", label: "Evidence of Completion" },
+      { key: "gateType", label: "Gate Type" },
+      { key: "whyItMatters", label: "Why it Matters" },
+    ];
 
-    for (const id of changedList) {
-      if (id.endsWith(" (deleted)")) {
-        lines.push(`### ❌ Deleted: \`${id.replace(" (deleted)", "")}\`\n`);
-        const orig = originalControls.get(id.replace(" (deleted)", ""));
-        if (orig) {
-          lines.push(`- **Title:** ${orig.safeguardTitle}`);
-          lines.push(`- **Pillar:** ${orig.pillar} / ${orig.ig}\n`);
-        }
+    const added: Control[] = [];
+    const deleted: Control[] = [];
+    const modified: { control: Control; changes: string[] }[] = [];
+    let reorderCount = 0;
+
+    // Find deleted
+    for (const orig of originalControls) {
+      // Match by safeguardTitle to avoid false positives from renumbering
+      const stillExists = allControls.some(c => c.safeguardTitle === orig.safeguardTitle);
+      if (!stillExists) deleted.push(orig);
+    }
+
+    // Find added & modified
+    for (const curr of allControls) {
+      const origByTitle = originalControls.find(c => c.safeguardTitle === curr.safeguardTitle);
+      if (!origByTitle) {
+        added.push(curr);
         continue;
       }
-
-      const current = allControls.find(c => c.controlId === id);
-      const orig = originalControls.get(id);
-
-      if (!orig && current) {
-        lines.push(`### ➕ Added: \`${id}\``);
-        lines.push(`- **Title:** ${current.safeguardTitle}`);
-        lines.push(`- **Pillar:** ${current.pillar} / ${current.ig}`);
-        lines.push(`- **Customer Objective:** ${current.customerObjective || "_not set_"}`);
-        lines.push(`- **Gate Type:** ${current.gateType || "_not set_"}\n`);
-      } else if (orig && current) {
-        const diffs: string[] = [];
-        const fields: { key: keyof Control; label: string }[] = [
-          { key: "safeguardTitle", label: "Safeguard Title" },
-          { key: "pillar", label: "Pillar" },
-          { key: "ig", label: "IG" },
-          { key: "customerObjective", label: "Customer Objective" },
-          { key: "eli5", label: "ELI5" },
-          { key: "detailedRequirement", label: "Detailed Requirement" },
-          { key: "lifecycleTrigger", label: "Lifecycle Trigger" },
-          { key: "cadence", label: "Cadence" },
-          { key: "primaryStakeholder", label: "Primary Stakeholder" },
-          { key: "microsoftTool", label: "Microsoft Tool" },
-          { key: "genericTooling", label: "Generic Tooling" },
-          { key: "evidenceOfCompletion", label: "Evidence of Completion" },
-          { key: "gateType", label: "Gate Type" },
-          { key: "whyItMatters", label: "Why it Matters" },
-        ];
-        for (const f of fields) {
-          if (orig[f.key] !== current[f.key]) {
-            diffs.push(`- **${f.label}:** \`${orig[f.key] || "(empty)"}\` → \`${current[f.key] || "(empty)"}\``);
-          }
-        }
-        if (diffs.length > 0) {
-          lines.push(`### ✏️ Modified: \`${id}\` — ${current.safeguardTitle}`);
-          lines.push(...diffs);
-          lines.push("");
-        } else {
-          lines.push(`### 🔀 Reordered: \`${id}\` — ${current.safeguardTitle}\n`);
+      // Check for content changes (ignore controlId since it's positional)
+      const changes: string[] = [];
+      for (const f of diffFields) {
+        if (f.key === "safeguardTitle") continue; // used as identity
+        if (origByTitle[f.key] !== curr[f.key]) {
+          changes.push(`- **${f.label}:** \`${origByTitle[f.key] || "(empty)"}\` → \`${curr[f.key] || "(empty)"}\``);
         }
       }
+      // Check pillar/IG move
+      if (origByTitle.controlId !== curr.controlId) {
+        const origPillar = origByTitle.controlId.split("-")[0];
+        const currPillar = curr.controlId.split("-")[0];
+        if (origPillar !== currPillar || origByTitle.ig !== curr.ig) {
+          changes.push(`- **Moved:** \`${origByTitle.controlId}\` → \`${curr.controlId}\``);
+        } else {
+          reorderCount++;
+        }
+      }
+      if (changes.length > 0) {
+        modified.push({ control: curr, changes });
+      }
     }
-    return lines.join("\n");
-  }, [changedIds, allControls, originalControls]);
+
+    return { added, deleted, modified, reorderCount };
+  }, [allControls, originalControls]);
 
   const downloadCSV = useCallback(() => {
     const rows = allControls.map(controlToCSVRow);
@@ -340,32 +334,50 @@ export default function Admin() {
     a.href = url; a.download = `controls-${hash}.csv`; a.click();
     URL.revokeObjectURL(url);
     setDirty(false);
-    if (changedIds.size > 0) {
-      setShowPrButton(true);
+    const { added, deleted, modified, reorderCount } = computeDiff();
+    if (added.length + deleted.length + modified.length + reorderCount > 0) {
+      setShowIssueButton(true);
     }
-  }, [allControls, changedIds, generateHash]);
+  }, [allControls, generateHash, computeDiff]);
 
   const openIssue = useCallback(() => {
     const today = new Date().toISOString().split("T")[0];
-    const changedList = Array.from(changedIds);
-    const addedCount = changedList.filter(id => !id.endsWith(" (deleted)") && !originalControls.has(id)).length;
-    const editedCount = changedList.filter(id => !id.endsWith(" (deleted)") && originalControls.has(id)).length;
-    const deletedCount = changedList.filter(id => id.endsWith(" (deleted)")).length;
+    const { added, deleted, modified, reorderCount } = computeDiff();
+    const totalChanges = added.length + deleted.length + modified.length + (reorderCount > 0 ? 1 : 0);
 
     const summaryParts: string[] = [];
-    if (addedCount) summaryParts.push(`${addedCount} added`);
-    if (editedCount) summaryParts.push(`${editedCount} edited`);
-    if (deletedCount) summaryParts.push(`${deletedCount} removed`);
+    if (added.length) summaryParts.push(`${added.length} added`);
+    if (modified.length) summaryParts.push(`${modified.length} edited`);
+    if (deleted.length) summaryParts.push(`${deleted.length} removed`);
+    if (reorderCount > 0) summaryParts.push(`${reorderCount} reordered`);
 
     const title = encodeURIComponent(`[CSV Change]: ${summaryParts.join(", ")} — ${today}`);
-    const changeSummary = buildChangeSummary();
+
+    const lines: string[] = [];
+    for (const c of deleted) {
+      lines.push(`### ❌ Deleted: \`${c.controlId}\` — ${c.safeguardTitle}\n`);
+    }
+    for (const c of added) {
+      lines.push(`### ➕ Added: \`${c.controlId}\` — ${c.safeguardTitle}`);
+      if (c.customerObjective) lines.push(`- **Customer Objective:** ${c.customerObjective}`);
+      lines.push("");
+    }
+    for (const { control, changes } of modified) {
+      lines.push(`### ✏️ Modified: \`${control.controlId}\` — ${control.safeguardTitle}`);
+      lines.push(...changes);
+      lines.push("");
+    }
+    if (reorderCount > 0) {
+      lines.push(`### 🔀 Reordered: ${reorderCount} control(s) repositioned within their pillar\n`);
+    }
+
     const filename = csvHash ? `controls-${csvHash}.csv` : "controls.csv";
     const body = encodeURIComponent(
       `## Proposed Framework Changes\n\n` +
       `**Date:** ${today}\n` +
-      `**Controls affected:** ${changedList.length} (${summaryParts.join(", ")})\n\n` +
+      `**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n` +
       `---\n\n` +
-      `## Detailed Changes\n\n${changeSummary}\n` +
+      `## Detailed Changes\n\n${lines.join("\n")}\n` +
       `---\n\n` +
       `## Why this change should be made\n\n_Explain the reasoning, evidence, or implementation context for this recommendation._\n\n` +
       `---\n\n` +
@@ -373,8 +385,7 @@ export default function Admin() {
     );
     const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
     window.open(url, "_blank");
-  }, [changedIds, originalControls, buildChangeSummary, csvHash]);
-  
+  }, [computeDiff, csvHash]);
 
   if (isLoading) {
     return (
@@ -436,11 +447,11 @@ export default function Admin() {
           {dirty ? "Save CSV ⬇" : "Download CSV"}
         </button>
 
-        {showPrButton && changedIds.size > 0 && (
+        {showIssueButton && (
           <button onClick={openIssue}
             className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-green-600 bg-green-600 text-white hover:bg-green-700 transition-colors active:scale-95 flex items-center gap-1">
             <ExternalLink className="w-3.5 h-3.5" />
-            Suggest Change ({changedIds.size})
+            Suggest Change
           </button>
         )}
       </header>
