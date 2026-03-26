@@ -369,8 +369,12 @@ export default function Admin() {
       lines.push(...changes);
       lines.push("");
     }
-    if (reorderCount > 0) {
-      lines.push(`### 🔀 Reordered: ${reorderCount} control(s) repositioned within their pillar\n`);
+    if (reordered.length > 0) {
+      lines.push(`### 🔀 Reordered`);
+      for (const r of reordered) {
+        lines.push(`- \`${r.from}\` → \`${r.to}\` — ${r.title}`);
+      }
+      lines.push("");
     }
 
     const filename = csvHash ? `controls-${csvHash}.csv` : "controls.csv";
