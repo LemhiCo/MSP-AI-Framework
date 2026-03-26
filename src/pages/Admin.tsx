@@ -146,10 +146,7 @@ export default function Admin() {
     return map;
   }, [filteredControls, visiblePillars]);
 
-  // --- Change tracking ---
-  const trackChange = useCallback((id: string) => {
-    setChangedIds(prev => new Set(prev).add(id));
-  }, []);
+  // --- Change tracking (computed at diff time, not manually) ---
 
   // --- Drag & Drop ---
   const [dragControlId, setDragControlId] = useState<string | null>(null);
