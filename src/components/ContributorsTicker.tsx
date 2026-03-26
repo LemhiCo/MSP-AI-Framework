@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import Papa from "papaparse";
+import { Heart } from "lucide-react";
 
 interface Contributor {
   handle: string;
+  date: string;
 }
 
 export default function ContributorsTicker() {
@@ -19,19 +21,20 @@ export default function ContributorsTicker() {
 
   if (contributors.length === 0) return null;
 
-  // Double the list for seamless loop
-  const items = [...contributors, ...contributors];
-
   return (
-    <div className="border-t border-border bg-card/80 overflow-hidden py-1.5">
-      <div className="flex items-center gap-6 animate-ticker whitespace-nowrap">
-        {items.map((c, i) => (
+    <div className="sticky bottom-0 z-20 border-t border-border bg-card px-4 py-1.5 flex items-center gap-3">
+      <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1 shrink-0">
+        <Heart className="w-2.5 h-2.5 text-destructive" /> Contributors
+      </span>
+      <div className="flex items-center gap-3 overflow-x-auto">
+        {contributors.map((c) => (
           <a
-            key={i}
+            key={c.handle}
             href={`https://github.com/${c.handle.replace("@", "")}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[10px] text-muted-foreground hover:text-primary transition-colors shrink-0"
+            title={`Joined ${c.date}`}
           >
             {c.handle}
           </a>
