@@ -230,7 +230,7 @@ export default function Admin() {
     setControls(allControls.filter(c => c.controlId !== id));
     setActiveControl(null);
     setDirty(true);
-  }, [allControls, trackChange]);
+  }, [allControls]);
 
   const handleNew = () => {
     setIsNewCard(true);
