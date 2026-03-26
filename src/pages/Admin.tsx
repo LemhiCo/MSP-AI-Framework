@@ -425,6 +425,13 @@ export default function Admin() {
                     {items.length === 0 && !dropTarget?.pillar && (
                       <div className="text-[10px] text-muted-foreground italic px-1 py-2">—</div>
                     )}
+                    <button
+                      onClick={() => handleNewInCell(pillar.id, ig)}
+                      className="w-full text-[10px] text-muted-foreground hover:text-primary py-1 flex items-center justify-center gap-0.5 rounded hover:bg-muted/50 transition-colors"
+                      title={`Add control to ${pillar.id} ${ig}`}
+                    >
+                      <Plus className="w-3 h-3" /> Add
+                    </button>
                   </div>
                 );
               })}
