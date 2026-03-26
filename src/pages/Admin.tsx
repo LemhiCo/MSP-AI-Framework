@@ -338,7 +338,7 @@ export default function Admin() {
                 <span className="text-xs font-bold" style={{ color: `hsl(var(${igColorVar}))` }}>{ig}</span>
                 <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta.sub}</span>
               </div>
-              {PILLARS.map((pillar) => {
+              {visiblePillars.map((pillar) => {
                 const items = grid[pillar.id]?.[ig] || [];
                 return (
                   <div key={`${pillar.id}-${ig}`}
