@@ -273,7 +273,7 @@ const Index = () => {
                 </span>
               </div>
 
-              {PILLARS.map((pillar) => {
+              {visiblePillars.map((pillar) => {
                 const items = grid[pillar.id]?.[ig] || [];
                 return (
                   <div key={`${pillar.id}-${ig}`} className="border-l border-border px-1.5 py-1.5 space-y-1 bg-card/50">
