@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { Search, Plus, Download, ArrowLeft, X } from "lucide-react";
+import { Search, Plus, Download, ArrowLeft, X, ChevronUp, ChevronDown } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, AI_MODALITIES, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
 import { Link } from "react-router-dom";
@@ -180,6 +180,27 @@ export default function Admin() {
     toast.success(`Moved to ${targetPillar}-${targetIg}. IDs renumbered.`);
   }, [dragControlId, allControls]);
 
+  const swapOrder = useCallback((controlId: string, direction: -1 | 1) => {
+    const control = allControls.find(c => c.controlId === controlId);
+    if (!control) return;
+    const pillar = control.controlId.split("-")[0];
+    const ig = control.ig;
+    const cellItems = allControls
+      .filter(c => c.controlId.startsWith(pillar + "-") && c.ig === ig)
+      .sort((a, b) => a.controlId.localeCompare(b.controlId));
+    const idx = cellItems.findIndex(c => c.controlId === controlId);
+    const swapIdx = idx + direction;
+    if (swapIdx < 0 || swapIdx >= cellItems.length) return;
+    [cellItems[idx], cellItems[swapIdx]] = [cellItems[swapIdx], cellItems[idx]];
+    const renumbered = cellItems.map((c, i) => ({
+      ...c,
+      controlId: `${pillar}-${ig}-${String(i + 1).padStart(2, "0")}`,
+    }));
+    const others = allControls.filter(c => !(c.controlId.startsWith(pillar + "-") && c.ig === ig));
+    setControls([...others, ...renumbered]);
+    setDirty(true);
+  }, [allControls]);
+
   const handleSave = useCallback((updated: Control) => {
     const existing = allControls.find(c => c.controlId === updated.controlId);
     const newList = existing
@@ -309,9 +330,7 @@ export default function Admin() {
                     onDragOver={(e) => {
                       e.preventDefault();
                       e.dataTransfer.dropEffect = "move";
-                      // Calculate drop index from mouse position
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const children = Array.from(e.currentTarget.children).filter(el => el.getAttribute("draggable") === "true");
+                      const children = Array.from(e.currentTarget.querySelectorAll("[data-card-wrapper]"));
                       let idx = children.length;
                       for (let i = 0; i < children.length; i++) {
                         const cr = children[i].getBoundingClientRect();
@@ -326,34 +345,48 @@ export default function Admin() {
                     }}
                   >
                     {items.map((c, idx) => (
-                      <div key={c.controlId}>
+                      <div key={c.controlId} data-card-wrapper>
                         {dropTarget?.pillar === pillar.id && dropTarget?.ig === ig && dropTarget?.index === idx && (
                           <div className="h-0.5 bg-primary rounded-full my-0.5" />
                         )}
-                        <button
-                          draggable
-                          onDragStart={() => setDragControlId(c.controlId)}
-                          onDragEnd={() => { setDragControlId(null); setDropTarget(null); }}
-                          onClick={() => setActiveControl(c)}
-                          className={`w-full rounded-md border text-[11px] transition-all text-left px-1.5 py-1.5 hover:shadow-md active:scale-[0.97] cursor-grab bg-card border-border hover:border-primary/40 ${
-                            dragControlId === c.controlId ? "opacity-40 scale-95" : ""
-                          }`}>
-                          <div className="flex items-start gap-1.5">
-                            <div className="flex-1 min-w-0">
-                              <span className="leading-tight block">{c.safeguardTitle}</span>
-                              <div className="flex items-center gap-1 mt-0.5">
-                                <span className="text-[9px] font-mono text-muted-foreground">{c.controlId}</span>
-                                <span className={`text-[8px] font-semibold px-1 py-0.5 rounded ${
-                                  c.gateType === "Baseline Gate" ? "bg-destructive/15 text-destructive"
-                                    : c.gateType === "Scale Gate" ? "bg-status-yellow/20 text-foreground"
-                                    : "bg-muted text-muted-foreground"
-                                }`}>
-                                  {c.gateType === "Baseline Gate" ? "BASE" : c.gateType === "Scale Gate" ? "SCALE" : c.gateType === "Advanced Score" ? "ADV" : ""}
-                                </span>
-                              </div>
+                        <div className={`flex items-stretch gap-0 rounded-md border transition-all bg-card border-border hover:border-primary/40 ${
+                          dragControlId === c.controlId ? "opacity-40 scale-95" : ""
+                        }`}>
+                          <button
+                            draggable
+                            onDragStart={() => setDragControlId(c.controlId)}
+                            onDragEnd={() => { setDragControlId(null); setDropTarget(null); }}
+                            onClick={() => setActiveControl(c)}
+                            className="flex-1 text-[11px] text-left px-1.5 py-1.5 cursor-grab min-w-0">
+                            <span className="leading-tight block">{c.safeguardTitle}</span>
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <span className="text-[9px] font-mono text-muted-foreground">{c.controlId}</span>
+                              <span className={`text-[8px] font-semibold px-1 py-0.5 rounded ${
+                                c.gateType === "Baseline Gate" ? "bg-destructive/15 text-destructive"
+                                  : c.gateType === "Scale Gate" ? "bg-status-yellow/20 text-foreground"
+                                  : "bg-muted text-muted-foreground"
+                              }`}>
+                                {c.gateType === "Baseline Gate" ? "BASE" : c.gateType === "Scale Gate" ? "SCALE" : c.gateType === "Advanced Score" ? "ADV" : ""}
+                              </span>
                             </div>
+                          </button>
+                          <div className="flex flex-col border-l border-border">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); swapOrder(c.controlId, -1); }}
+                              disabled={idx === 0}
+                              className="flex-1 px-0.5 hover:bg-muted disabled:opacity-20 transition-colors"
+                              title="Move up">
+                              <ChevronUp className="w-3 h-3 text-muted-foreground" />
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); swapOrder(c.controlId, 1); }}
+                              disabled={idx === items.length - 1}
+                              className="flex-1 px-0.5 hover:bg-muted disabled:opacity-20 transition-colors"
+                              title="Move down">
+                              <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                            </button>
                           </div>
-                        </button>
+                        </div>
                       </div>
                     ))}
                     {dropTarget?.pillar === pillar.id && dropTarget?.ig === ig && dropTarget?.index === items.length && (
