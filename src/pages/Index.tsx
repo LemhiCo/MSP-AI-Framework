@@ -237,16 +237,16 @@ const Index = () => {
         </button>
 
         <div className="relative">
-          <Link
-            to="/admin"
-            className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95 flex items-center gap-1"
+          <button
             onClick={() => {
               setShowContributeTooltip(false);
               localStorage.setItem("lemhi-contribute-tooltip-seen", "true");
+              setShowContributeModal(true);
             }}
+            className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95 flex items-center gap-1"
           >
             <Heart className="w-3.5 h-3.5 text-destructive" /> Contribute
-          </Link>
+          </button>
 
           {showContributeTooltip && (
             <div className="absolute right-0 top-full mt-2 w-72 bg-card border border-border rounded-xl shadow-2xl p-4 z-50 animate-fade-up" style={{ animationDuration: "300ms" }}>
