@@ -126,14 +126,14 @@ export default function Admin() {
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
-    for (const p of PILLARS) {
+    for (const p of visiblePillars) {
       map[p.id] = {};
       for (const ig of IG_LEVELS) {
         map[p.id][ig] = filteredControls.filter(c => c.controlId.startsWith(p.id) && c.ig === ig);
       }
     }
     return map;
-  }, [filteredControls]);
+  }, [filteredControls, visiblePillars]);
 
   // --- Drag & Drop ---
   const [dragControlId, setDragControlId] = useState<string | null>(null);
