@@ -258,7 +258,21 @@ export default function Admin() {
     a.href = url; a.download = "controls.csv"; a.click();
     URL.revokeObjectURL(url);
     setDirty(false);
-  }, [allControls]);
+    if (changedIds.size > 0) {
+      setShowPrButton(true);
+    }
+  }, [allControls, changedIds]);
+
+  const openPR = useCallback(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const changedList = Array.from(changedIds);
+    const title = encodeURIComponent(`Framework contribution ${today}`);
+    const body = encodeURIComponent(
+      `## Controls Changed\n\n${changedList.map(id => `- ${id}`).join("\n")}\n\n---\n_Exported from the AI Controls Framework editor_`
+    );
+    const url = `https://github.com/LemhiCo/MSP-AI-Framework/compare/main...main?quick_pull=1&title=${title}&body=${body}&labels=enhancement`;
+    window.open(url, "_blank");
+  }, [changedIds]);
 
   if (isLoading) {
     return (
