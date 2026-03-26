@@ -211,6 +211,7 @@ function EditView({ draft, onChange }: { draft: Control; onChange: (key: keyof C
     {
       title: "Overview", icon: Shield,
       fields: [
+        { key: "eli5", label: "ELI5" },
         { key: "customerObjective", label: "Customer Objective" },
         { key: "detailedRequirement", label: "Detailed Requirement" },
         { key: "lifecycleTrigger", label: "Lifecycle Trigger" },
