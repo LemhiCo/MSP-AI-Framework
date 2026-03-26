@@ -333,6 +333,14 @@ export default function Admin() {
           <Download className="w-3.5 h-3.5" />
           {dirty ? "Save CSV ⬇" : "Download CSV"}
         </button>
+
+        {showPrButton && changedIds.size > 0 && (
+          <button onClick={openPR}
+            className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-green-600 bg-green-600 text-white hover:bg-green-700 transition-colors active:scale-95 flex items-center gap-1">
+            <ExternalLink className="w-3.5 h-3.5" />
+            Open PR ({changedIds.size} change{changedIds.size !== 1 ? "s" : ""})
+          </button>
+        )}
       </header>
 
       {/* Filter Panel */}
