@@ -19,7 +19,7 @@ const SELECT_FIELDS: Partial<Record<keyof Control, string[]>> = {
 };
 
 const TEXTAREA_FIELDS: Set<keyof Control> = new Set([
-  "customerObjective", "detailedRequirement", "whyItMatters",
+  "customerObjective", "eli5", "detailedRequirement", "whyItMatters",
   "endCustomerBusinessValue", "customerConversationTrack", "failCondition",
   "evidenceOfCompletion",
 ]);
@@ -211,6 +211,7 @@ function EditView({ draft, onChange }: { draft: Control; onChange: (key: keyof C
     {
       title: "Overview", icon: Shield,
       fields: [
+        { key: "eli5", label: "ELI5" },
         { key: "customerObjective", label: "Customer Objective" },
         { key: "detailedRequirement", label: "Detailed Requirement" },
         { key: "lifecycleTrigger", label: "Lifecycle Trigger" },
@@ -317,6 +318,7 @@ function ExpandedView({ control }: { control: Control }) {
   return (
     <div className="grid grid-cols-2 gap-x-6 gap-y-4">
       <div className="space-y-4 col-span-2">
+        <Section title="ELI5" value={control.eli5} />
         <Section title="Customer Objective" value={control.customerObjective} />
         <Section title="Detailed Requirement" value={control.detailedRequirement} />
       </div>
@@ -424,6 +426,7 @@ function CompactView({ control }: { control: Control }) {
 function OverviewContent({ control }: { control: Control }) {
   return (
     <>
+      <Section title="ELI5" value={control.eli5} />
       <Section title="Customer Objective" value={control.customerObjective} />
       <Section title="Detailed Requirement" value={control.detailedRequirement} />
       <div className="grid grid-cols-2 gap-3">

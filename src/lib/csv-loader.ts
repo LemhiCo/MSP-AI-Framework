@@ -6,6 +6,7 @@ export interface Control {
   ig: string;
   safeguardTitle: string;
   customerObjective: string;
+  eli5: string;
   detailedRequirement: string;
   lifecycleTrigger: string;
   cadence: string;
@@ -60,6 +61,7 @@ const mapControlRow = (r: Record<string, string>): Control => ({
   ig: r["IG"] || "",
   safeguardTitle: r["Safeguard Title"] || "",
   customerObjective: r["Customer Objective"] || "",
+  eli5: r["ELI5"] || "",
   detailedRequirement: r["Detailed Requirement"] || "",
   lifecycleTrigger: r["Lifecycle Trigger"] || "",
   cadence: r["Cadence"] || "",
