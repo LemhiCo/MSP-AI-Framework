@@ -193,7 +193,7 @@ const Index = () => {
 
       {/* Top Bar */}
       <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-1.5 flex items-center gap-3 shadow-sm min-w-[1200px]">
-        <h1 className="text-sm font-serif font-semibold mr-3 hidden sm:block">AI Enablement Framework</h1>
+        <h1 className="text-sm font-serif font-semibold mr-3 hidden sm:block">MSP AI Enablement Framework</h1>
         {/* Search */}
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
