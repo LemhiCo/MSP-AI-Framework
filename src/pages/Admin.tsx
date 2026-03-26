@@ -212,6 +212,10 @@ export default function Admin() {
     setDirty(true);
   }, [allControls]);
 
+  const trackChange = useCallback((id: string) => {
+    setChangedIds(prev => new Set(prev).add(id));
+  }, []);
+
   const handleSave = useCallback((updated: Control) => {
     const existing = allControls.find(c => c.controlId === updated.controlId);
     const newList = existing
@@ -220,13 +224,15 @@ export default function Admin() {
     setControls(newList);
     setActiveControl(null);
     setDirty(true);
-  }, [allControls]);
+    trackChange(updated.controlId);
+  }, [allControls, trackChange]);
 
   const handleDelete = useCallback((id: string) => {
     setControls(allControls.filter(c => c.controlId !== id));
     setActiveControl(null);
     setDirty(true);
-  }, [allControls]);
+    trackChange(id + " (deleted)");
+  }, [allControls, trackChange]);
 
   const handleNew = () => {
     setIsNewCard(true);
