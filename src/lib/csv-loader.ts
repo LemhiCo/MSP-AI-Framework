@@ -6,6 +6,7 @@ export interface Control {
   ig: string;
   safeguardTitle: string;
   customerObjective: string;
+  eli5: string;
   detailedRequirement: string;
   lifecycleTrigger: string;
   cadence: string;
