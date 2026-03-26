@@ -335,8 +335,8 @@ export default function Admin() {
     a.href = url; a.download = `controls-${hash}.csv`; a.click();
     URL.revokeObjectURL(url);
     setDirty(false);
-    const { added, deleted, modified, reorderCount } = computeDiff();
-    if (added.length + deleted.length + modified.length + reorderCount > 0) {
+    const { added, deleted, modified, reordered } = computeDiff();
+    if (added.length + deleted.length + modified.length + reordered.length > 0) {
       setShowIssueButton(true);
       setShowContributePrompt(true);
     }
