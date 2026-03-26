@@ -224,7 +224,6 @@ export default function Admin() {
     setControls(newList);
     setActiveControl(null);
     setDirty(true);
-    trackChange(updated.controlId);
   }, [allControls, trackChange]);
 
   const handleDelete = useCallback((id: string) => {
