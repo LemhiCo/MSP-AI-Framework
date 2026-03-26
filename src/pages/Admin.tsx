@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { Search, Plus, Download, ArrowLeft, X, ChevronUp, ChevronDown } from "lucide-react";
+import { Search, Plus, Download, ArrowLeft, X, ChevronUp, ChevronDown, ExternalLink } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, AI_MODALITIES, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
 import { Link } from "react-router-dom";
@@ -91,6 +91,8 @@ export default function Admin() {
   const [gateFilter, setGateFilter] = useState<Set<string>>(new Set());
   const [aiModalityFilter, setAiModalityFilter] = useState<Set<string>>(new Set());
   const [showCopilot, setShowCopilot] = useState(true);
+  const [changedIds, setChangedIds] = useState<Set<string>>(new Set());
+  const [showPrButton, setShowPrButton] = useState(false);
 
   const allControls = controls ?? loadedControls;
   const visiblePillars = useMemo(() =>
@@ -136,6 +138,11 @@ export default function Admin() {
     return map;
   }, [filteredControls, visiblePillars]);
 
+  // --- Change tracking ---
+  const trackChange = useCallback((id: string) => {
+    setChangedIds(prev => new Set(prev).add(id));
+  }, []);
+
   // --- Drag & Drop ---
   const [dragControlId, setDragControlId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<{ pillar: string; ig: string; index: number } | null>(null);
@@ -160,23 +167,17 @@ export default function Admin() {
     const sourcePillar = draggedControl.controlId.split("-")[0];
     const sourceIg = draggedControl.ig;
 
-    // Remove from source
     let newList = allControls.filter(c => c.controlId !== dragControlId);
-
-    // Renumber source cell
     newList = renumberCell(newList, sourcePillar, sourceIg);
 
-    // Get target cell items (after source removal & renumber)
     const targetItems = newList
       .filter(c => c.controlId.startsWith(targetPillar) && c.ig === targetIg)
       .sort((a, b) => a.controlId.localeCompare(b.controlId));
     const others = newList.filter(c => !(c.controlId.startsWith(targetPillar) && c.ig === targetIg));
 
-    // Insert at target index
     const updatedDragged = { ...draggedControl, pillar: targetPillar, ig: targetIg, controlId: "" };
     targetItems.splice(Math.min(targetIndex, targetItems.length), 0, updatedDragged);
 
-    // Renumber target cell
     const renumberedTarget = targetItems.map((c, i) => ({
       ...c,
       controlId: `${targetPillar}-${targetIg}-${String(i + 1).padStart(2, "0")}`,
@@ -186,8 +187,9 @@ export default function Admin() {
     setDirty(true);
     setDragControlId(null);
     setDropTarget(null);
+    trackChange(dragControlId);
     toast.success(`Moved to ${targetPillar}-${targetIg}. IDs renumbered.`);
-  }, [dragControlId, allControls]);
+  }, [dragControlId, allControls, trackChange]);
 
   const swapOrder = useCallback((controlId: string, direction: -1 | 1) => {
     const control = allControls.find(c => c.controlId === controlId);
@@ -208,7 +210,8 @@ export default function Admin() {
     const others = allControls.filter(c => !(c.controlId.startsWith(pillar + "-") && c.ig === ig));
     setControls([...others, ...renumbered]);
     setDirty(true);
-  }, [allControls]);
+    trackChange(controlId);
+  }, [allControls, trackChange]);
 
   const handleSave = useCallback((updated: Control) => {
     const existing = allControls.find(c => c.controlId === updated.controlId);
@@ -218,13 +221,15 @@ export default function Admin() {
     setControls(newList);
     setActiveControl(null);
     setDirty(true);
-  }, [allControls]);
+    trackChange(updated.controlId);
+  }, [allControls, trackChange]);
 
   const handleDelete = useCallback((id: string) => {
     setControls(allControls.filter(c => c.controlId !== id));
     setActiveControl(null);
     setDirty(true);
-  }, [allControls]);
+    trackChange(id + " (deleted)");
+  }, [allControls, trackChange]);
 
   const handleNew = () => {
     setIsNewCard(true);
@@ -253,7 +258,21 @@ export default function Admin() {
     a.href = url; a.download = "controls.csv"; a.click();
     URL.revokeObjectURL(url);
     setDirty(false);
-  }, [allControls]);
+    if (changedIds.size > 0) {
+      setShowPrButton(true);
+    }
+  }, [allControls, changedIds]);
+
+  const openPR = useCallback(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const changedList = Array.from(changedIds);
+    const title = encodeURIComponent(`Framework contribution ${today}`);
+    const body = encodeURIComponent(
+      `## Controls Changed\n\n${changedList.map(id => `- ${id}`).join("\n")}\n\n---\n_Exported from the AI Controls Framework editor_`
+    );
+    const url = `https://github.com/LemhiCo/MSP-AI-Framework/compare/main...main?quick_pull=1&title=${title}&body=${body}&labels=enhancement`;
+    window.open(url, "_blank");
+  }, [changedIds]);
 
   if (isLoading) {
     return (
@@ -314,6 +333,14 @@ export default function Admin() {
           <Download className="w-3.5 h-3.5" />
           {dirty ? "Save CSV ⬇" : "Download CSV"}
         </button>
+
+        {showPrButton && changedIds.size > 0 && (
+          <button onClick={openPR}
+            className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-green-600 bg-green-600 text-white hover:bg-green-700 transition-colors active:scale-95 flex items-center gap-1">
+            <ExternalLink className="w-3.5 h-3.5" />
+            Open PR ({changedIds.size} change{changedIds.size !== 1 ? "s" : ""})
+          </button>
+        )}
       </header>
 
       {/* Filter Panel */}
