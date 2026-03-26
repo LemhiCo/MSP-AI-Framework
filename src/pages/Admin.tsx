@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import Papa from "papaparse";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
 import { toast } from "sonner";
+import ContributorsTicker from "@/components/ContributorsTicker";
 
 const EMPTY_CONTROL: Control = {
   controlId: "", pillar: "", ig: "", safeguardTitle: "", customerObjective: "", eli5: "",
