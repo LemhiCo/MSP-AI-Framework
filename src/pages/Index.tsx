@@ -234,12 +234,51 @@ const Index = () => {
           XLSX
         </button>
 
-        <Link
-          to="/admin"
-          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95 flex items-center gap-1"
-        >
-          <Heart className="w-3.5 h-3.5 text-destructive" /> Contribute
-        </Link>
+        <div className="relative">
+          <Link
+            to="/admin"
+            className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95 flex items-center gap-1"
+            onClick={() => {
+              setShowContributeTooltip(false);
+              localStorage.setItem("lemhi-contribute-tooltip-seen", "true");
+            }}
+          >
+            <Heart className="w-3.5 h-3.5 text-destructive" /> Contribute
+          </Link>
+
+          {showContributeTooltip && (
+            <div className="absolute right-0 top-full mt-2 w-72 bg-card border border-border rounded-xl shadow-2xl p-4 z-50 animate-fade-up" style={{ animationDuration: "300ms" }}>
+              <div className="absolute -top-1.5 right-4 w-3 h-3 bg-card border-l border-t border-border rotate-45" />
+              <div className="flex items-start gap-2 mb-2">
+                <span className="text-lg">🤝</span>
+                <div>
+                  <p className="text-sm font-semibold">This is a community project!</p>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    The AI Controls Framework is open source. You can review, improve, and suggest changes to help MSPs and advisors worldwide.
+                  </p>
+                </div>
+              </div>
+              <a
+                href="https://github.com/LemhiCo/MSP-AI-Framework/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs text-primary hover:underline mt-2"
+              >
+                <ExternalLink className="w-3 h-3" /> View on GitHub
+              </a>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowContributeTooltip(false);
+                  localStorage.setItem("lemhi-contribute-tooltip-seen", "true");
+                }}
+                className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+        </div>
       </header>
 
       {/* Filter Panel */}
