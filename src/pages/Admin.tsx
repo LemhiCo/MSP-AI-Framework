@@ -321,7 +321,7 @@ export default function Admin() {
       }
     }
 
-    return { added, deleted, modified, reorderCount };
+    return { added, deleted, modified, reordered };
   }, [allControls, originalControls]);
 
   const downloadCSV = useCallback(() => {
