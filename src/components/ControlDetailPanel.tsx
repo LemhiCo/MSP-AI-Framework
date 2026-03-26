@@ -7,9 +7,9 @@ const DEFAULT_WIDTH = 480;
 const EXPAND_THRESHOLD = 640;
 
 const SELECT_FIELDS: Partial<Record<keyof Control, string[]>> = {
-  pillar: PILLARS.map(p => p.id),
+  pillar: PILLARS.map(p => p.name),
   ig: [...IG_LEVELS],
-  gateType: ["Baseline Gate", "Scale Gate", "Advanced Score"],
+  gateType: ["Baseline Gate", "Scale Gate", "Advanced Score", "Weighted Control"],
   lifecycleTrigger: [...LIFECYCLE_TRIGGERS],
   relevantGenAI: ["Yes", "No"],
   relevantCustomGPTs: ["Yes", "No"],
