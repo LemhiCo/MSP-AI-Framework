@@ -101,6 +101,15 @@ export default function Admin() {
     showCopilot ? PILLARS : PILLARS.filter(p => !("optional" in p)),
   [showCopilot]);
 
+  // Snapshot original controls for diff tracking
+  useMemo(() => {
+    if (loadedControls.length > 0 && originalControls.size === 0) {
+      const map = new Map<string, Control>();
+      loadedControls.forEach(c => map.set(c.controlId, { ...c }));
+      setOriginalControls(map);
+    }
+  }, [loadedControls]);
+
   const gateTypes = useMemo(() => {
     const set = new Set<string>();
     allControls.forEach(c => { if (c.gateType) set.add(c.gateType); });
