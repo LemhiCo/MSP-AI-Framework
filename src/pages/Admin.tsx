@@ -229,6 +229,18 @@ export default function Admin() {
     setActiveControl({ ...EMPTY_CONTROL });
   };
 
+  const handleNewInCell = (pillarId: string, ig: string) => {
+    const cellItems = allControls.filter(c => c.controlId.startsWith(pillarId + "-") && c.ig === ig);
+    const nextNum = String(cellItems.length + 1).padStart(2, "0");
+    const pillarObj = PILLARS.find(p => p.id === pillarId);
+    setActiveControl({
+      ...EMPTY_CONTROL,
+      controlId: `${pillarId}-${ig}-${nextNum}`,
+      pillar: pillarObj?.name || pillarId,
+      ig,
+    });
+  };
+
   const downloadCSV = useCallback(() => {
     const rows = allControls.map(controlToCSVRow);
     const csv = Papa.unparse(rows);
@@ -413,6 +425,13 @@ export default function Admin() {
                     {items.length === 0 && !dropTarget?.pillar && (
                       <div className="text-[10px] text-muted-foreground italic px-1 py-2">—</div>
                     )}
+                    <button
+                      onClick={() => handleNewInCell(pillar.id, ig)}
+                      className="w-full text-[10px] text-muted-foreground hover:text-primary py-1 flex items-center justify-center gap-0.5 rounded hover:bg-muted/50 transition-colors"
+                      title={`Add control to ${pillar.id} ${ig}`}
+                    >
+                      <Plus className="w-3 h-3" /> Add
+                    </button>
                   </div>
                 );
               })}
