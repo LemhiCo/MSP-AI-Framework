@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ContributorsTicker from "./ContributorsTicker";
 
 const WAITLIST_KEY = "lemhi-waitlist-signed-up";
 const ENDPOINT = "https://vpewefckhacxgbypzbmh.supabase.co/functions/v1/notify-waitlist";
