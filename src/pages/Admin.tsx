@@ -229,6 +229,18 @@ export default function Admin() {
     setActiveControl({ ...EMPTY_CONTROL });
   };
 
+  const handleNewInCell = (pillarId: string, ig: string) => {
+    const cellItems = allControls.filter(c => c.controlId.startsWith(pillarId + "-") && c.ig === ig);
+    const nextNum = String(cellItems.length + 1).padStart(2, "0");
+    const pillarObj = PILLARS.find(p => p.id === pillarId);
+    setActiveControl({
+      ...EMPTY_CONTROL,
+      controlId: `${pillarId}-${ig}-${nextNum}`,
+      pillar: pillarObj?.name || pillarId,
+      ig,
+    });
+  };
+
   const downloadCSV = useCallback(() => {
     const rows = allControls.map(controlToCSVRow);
     const csv = Papa.unparse(rows);
