@@ -38,6 +38,11 @@ export default function ControlDetailPanel({ control, onClose, editable, onSave,
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Control>({ ...control });
 
+  useEffect(() => {
+    setDraft({ ...control });
+    setEditing(false);
+  }, [control]);
+
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
     dragging.current = true;
