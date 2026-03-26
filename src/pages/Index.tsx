@@ -223,6 +223,9 @@ const Index = () => {
           <Download className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
           XLSX
         </button>
+      </header>
+
+      {/* Filter Panel */}
       {showFilters && (
         <div className="bg-card border-b border-border px-4 py-3 space-y-2 min-w-[1200px] shadow-sm">
           <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
