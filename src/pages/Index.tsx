@@ -77,10 +77,18 @@ const Index = () => {
   const [showCopilotTooltip, setShowCopilotTooltip] = useState(false);
 
   useEffect(() => {
-    const key = "lemhi-contribute-tooltip-seen";
-    if (!localStorage.getItem(key)) {
-      const timer = setTimeout(() => setShowContributeTooltip(true), 2000);
-      return () => clearTimeout(timer);
+    const contribKey = "lemhi-contribute-tooltip-seen";
+    const copilotKey = "lemhi-copilot-tooltip-seen";
+    if (!localStorage.getItem(copilotKey)) {
+      const t1 = setTimeout(() => setShowCopilotTooltip(true), 1500);
+      if (!localStorage.getItem(contribKey)) {
+        const t2 = setTimeout(() => setShowContributeTooltip(true), 4000);
+        return () => { clearTimeout(t1); clearTimeout(t2); };
+      }
+      return () => clearTimeout(t1);
+    } else if (!localStorage.getItem(contribKey)) {
+      const t = setTimeout(() => setShowContributeTooltip(true), 2000);
+      return () => clearTimeout(t);
     }
   }, []);
 
