@@ -282,7 +282,7 @@ export default function Admin() {
     const added: Control[] = [];
     const deleted: Control[] = [];
     const modified: { control: Control; changes: string[] }[] = [];
-    let reorderCount = 0;
+    const reordered: { from: string; to: string; title: string }[] = [];
 
     // Find deleted
     for (const orig of originalControls) {
@@ -313,7 +313,7 @@ export default function Admin() {
         if (origPillar !== currPillar || origByTitle.ig !== curr.ig) {
           changes.push(`- **Moved:** \`${origByTitle.controlId}\` → \`${curr.controlId}\``);
         } else {
-          reorderCount++;
+          reordered.push({ from: origByTitle.controlId, to: curr.controlId, title: curr.safeguardTitle });
         }
       }
       if (changes.length > 0) {
@@ -321,7 +321,7 @@ export default function Admin() {
       }
     }
 
-    return { added, deleted, modified, reorderCount };
+    return { added, deleted, modified, reordered };
   }, [allControls, originalControls]);
 
   const downloadCSV = useCallback(() => {
@@ -335,8 +335,8 @@ export default function Admin() {
     a.href = url; a.download = `controls-${hash}.csv`; a.click();
     URL.revokeObjectURL(url);
     setDirty(false);
-    const { added, deleted, modified, reorderCount } = computeDiff();
-    if (added.length + deleted.length + modified.length + reorderCount > 0) {
+    const { added, deleted, modified, reordered } = computeDiff();
+    if (added.length + deleted.length + modified.length + reordered.length > 0) {
       setShowIssueButton(true);
       setShowContributePrompt(true);
     }
@@ -344,14 +344,14 @@ export default function Admin() {
 
   const openIssue = useCallback(() => {
     const today = new Date().toISOString().split("T")[0];
-    const { added, deleted, modified, reorderCount } = computeDiff();
-    const totalChanges = added.length + deleted.length + modified.length + (reorderCount > 0 ? 1 : 0);
+    const { added, deleted, modified, reordered } = computeDiff();
+    const totalChanges = added.length + deleted.length + modified.length + reordered.length;
 
     const summaryParts: string[] = [];
     if (added.length) summaryParts.push(`${added.length} added`);
     if (modified.length) summaryParts.push(`${modified.length} edited`);
     if (deleted.length) summaryParts.push(`${deleted.length} removed`);
-    if (reorderCount > 0) summaryParts.push(`${reorderCount} reordered`);
+    if (reordered.length) summaryParts.push(`${reordered.length} reordered`);
 
     const title = encodeURIComponent(`[CSV Change]: ${summaryParts.join(", ")} — ${today}`);
 
@@ -369,8 +369,12 @@ export default function Admin() {
       lines.push(...changes);
       lines.push("");
     }
-    if (reorderCount > 0) {
-      lines.push(`### 🔀 Reordered: ${reorderCount} control(s) repositioned within their pillar\n`);
+    if (reordered.length > 0) {
+      lines.push(`### 🔀 Reordered`);
+      for (const r of reordered) {
+        lines.push(`- \`${r.from}\` → \`${r.to}\` — ${r.title}`);
+      }
+      lines.push("");
     }
 
     const filename = csvHash ? `controls-${csvHash}.csv` : "controls.csv";
