@@ -22,7 +22,7 @@ export default function DashboardOverview() {
       {/* Hero */}
       <div className="bg-card rounded-lg border border-border p-6 shadow-sm">
         <h1 className="text-xl font-bold mb-1" style={{ lineHeight: 1.1 }}>
-          Customer Environment AI Enablement Framework
+          MSP AI Enablement Framework
         </h1>
         <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
           CIS-inspired control model for deploying AI safely inside each customer environment.
