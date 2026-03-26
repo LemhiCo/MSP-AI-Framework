@@ -92,6 +92,7 @@ export default function Admin() {
   const [aiModalityFilter, setAiModalityFilter] = useState<Set<string>>(new Set());
   const [showCopilot, setShowCopilot] = useState(true);
   const [showIssueButton, setShowIssueButton] = useState(false);
+  const [showContributePrompt, setShowContributePrompt] = useState(false);
   const [originalControls, setOriginalControls] = useState<Control[]>([]);
   const [csvHash, setCsvHash] = useState("");
 
