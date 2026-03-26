@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { X, Shield, Wrench, Users, AlertTriangle, GripVertical, Pencil, Save, Trash2 } from "lucide-react";
 import { type Control, AI_MODALITIES, PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS } from "@/lib/csv-loader";
 
@@ -37,6 +37,11 @@ export default function ControlDetailPanel({ control, onClose, editable, onSave,
   const dragging = useRef(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Control>({ ...control });
+
+  useEffect(() => {
+    setDraft({ ...control });
+    setEditing(false);
+  }, [control]);
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
