@@ -206,6 +206,16 @@ const Index = () => {
         )}
 
         <button
+          onClick={() => setShowCopilot(v => !v)}
+          className={`text-xs font-medium px-2.5 py-1.5 rounded-md border transition-colors active:scale-95 ${
+            showCopilot ? "bg-[hsl(220_55%_50%)] text-white border-[hsl(220_55%_50%)]" : "bg-card border-border hover:bg-muted"
+          }`}
+          title="Toggle Copilot Readiness pillar"
+        >
+          {showCopilot ? "Copilot ✓" : "Copilot"}
+        </button>
+
+        <button
           onClick={handleDownloadXlsx}
           className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95 ml-auto"
           title="Download XLSX"
@@ -213,9 +223,6 @@ const Index = () => {
           <Download className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
           XLSX
         </button>
-      </header>
-
-      {/* Filter Panel */}
       {showFilters && (
         <div className="bg-card border-b border-border px-4 py-3 space-y-2 min-w-[1200px] shadow-sm">
           <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
