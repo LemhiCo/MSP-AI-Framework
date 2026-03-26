@@ -28,6 +28,7 @@ const PILLAR_COLORS: Record<string, string> = {
   STR: "90 37% 28%",
   GOV: "280 30% 40%",
   TEC: "168 40% 30%",
+  CPL: "220 55% 50%",
   PRC: "25 70% 46%",
   DAT: "340 45% 42%",
   OBS: "200 50% 36%",
@@ -88,8 +89,12 @@ export default function Admin() {
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
   const [gateFilter, setGateFilter] = useState<Set<string>>(new Set());
   const [aiModalityFilter, setAiModalityFilter] = useState<Set<string>>(new Set());
+  const [showCopilot, setShowCopilot] = useState(true);
 
   const allControls = controls ?? loadedControls;
+  const visiblePillars = useMemo(() =>
+    showCopilot ? PILLARS : PILLARS.filter(p => !("optional" in p)),
+  [showCopilot]);
 
   const gateTypes = useMemo(() => {
     const set = new Set<string>();
@@ -101,7 +106,10 @@ export default function Admin() {
   const clearAllFilters = () => { setLifecycleFilter(new Set()); setGateFilter(new Set()); setAiModalityFilter(new Set()); };
 
   const filteredControls = useMemo(() => {
+    const hiddenPillarIds = new Set<string>(PILLARS.filter(p => "optional" in p && !showCopilot).map(p => p.id));
     return allControls.filter((c) => {
+      const pillarId = c.controlId.split("-")[0];
+      if (hiddenPillarIds.has(pillarId)) return false;
       if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
       if (gateFilter.size && !gateFilter.has(c.gateType)) return false;
       if (aiModalityFilter.size) {
@@ -114,18 +122,18 @@ export default function Admin() {
       }
       return true;
     });
-  }, [allControls, search, lifecycleFilter, gateFilter, aiModalityFilter]);
+  }, [allControls, search, lifecycleFilter, gateFilter, aiModalityFilter, showCopilot]);
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
-    for (const p of PILLARS) {
+    for (const p of visiblePillars) {
       map[p.id] = {};
       for (const ig of IG_LEVELS) {
         map[p.id][ig] = filteredControls.filter(c => c.controlId.startsWith(p.id) && c.ig === ig);
       }
     }
     return map;
-  }, [filteredControls]);
+  }, [filteredControls, visiblePillars]);
 
   // --- Drag & Drop ---
   const [dragControlId, setDragControlId] = useState<string | null>(null);
@@ -269,8 +277,18 @@ export default function Admin() {
         )}
 
         <button onClick={handleNew}
-          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-primary bg-primary text-primary-foreground hover:bg-primary/90 transition-colors active:scale-95 ml-auto flex items-center gap-1">
+          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-primary bg-primary text-primary-foreground hover:bg-primary/90 transition-colors active:scale-95 flex items-center gap-1">
           <Plus className="w-3.5 h-3.5" /> New Control
+        </button>
+
+        <button
+          onClick={() => setShowCopilot(v => !v)}
+          className={`text-xs font-medium px-2.5 py-1.5 rounded-md border transition-colors active:scale-95 ${
+            showCopilot ? "bg-[hsl(220_55%_50%)] text-white border-[hsl(220_55%_50%)]" : "bg-card border-border hover:bg-muted"
+          }`}
+          title="Toggle Copilot Readiness pillar"
+        >
+          {showCopilot ? "Copilot ✓" : "Copilot"}
         </button>
 
 
@@ -295,9 +313,9 @@ export default function Admin() {
       {/* Kanban Board */}
       <div className="min-w-[1200px]">
         {/* Pillar Headers */}
-        <div className="sticky top-[37px] z-20 bg-background border-b border-border grid grid-cols-[100px_repeat(7,1fr)]">
+        <div className="sticky top-[37px] z-20 bg-background border-b border-border grid" style={{ gridTemplateColumns: `100px repeat(${visiblePillars.length},1fr)` }}>
           <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-end" />
-          {PILLARS.map((p) => (
+          {visiblePillars.map((p) => (
             <div key={p.id} className="px-2 py-1.5 border-l border-border">
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: `hsl(${PILLAR_COLORS[p.id]})` }} />
@@ -315,12 +333,12 @@ export default function Admin() {
           const igBgVar = ig === "IG1" ? "--ig1-bg" : ig === "IG2" ? "--ig2-bg" : "--ig3-bg";
 
           return (
-            <div key={ig} className="grid grid-cols-[100px_repeat(7,1fr)] border-b border-border">
+            <div key={ig} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${visiblePillars.length},1fr)` }}>
               <div className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10" style={{ background: `hsl(var(${igBgVar}))` }}>
                 <span className="text-xs font-bold" style={{ color: `hsl(var(${igColorVar}))` }}>{ig}</span>
                 <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta.sub}</span>
               </div>
-              {PILLARS.map((pillar) => {
+              {visiblePillars.map((pillar) => {
                 const items = grid[pillar.id]?.[ig] || [];
                 return (
                   <div key={`${pillar.id}-${ig}`}
