@@ -93,11 +93,22 @@ export default function Admin() {
   const [showCopilot, setShowCopilot] = useState(true);
   const [changedIds, setChangedIds] = useState<Set<string>>(new Set());
   const [showPrButton, setShowPrButton] = useState(false);
+  const [originalControls, setOriginalControls] = useState<Map<string, Control>>(new Map());
+  const [csvHash, setCsvHash] = useState("");
 
   const allControls = controls ?? loadedControls;
   const visiblePillars = useMemo(() =>
     showCopilot ? PILLARS : PILLARS.filter(p => !("optional" in p)),
   [showCopilot]);
+
+  // Snapshot original controls for diff tracking
+  useMemo(() => {
+    if (loadedControls.length > 0 && originalControls.size === 0) {
+      const map = new Map<string, Control>();
+      loadedControls.forEach(c => map.set(c.controlId, { ...c }));
+      setOriginalControls(map);
+    }
+  }, [loadedControls]);
 
   const gateTypes = useMemo(() => {
     const set = new Set<string>();
@@ -249,30 +260,121 @@ export default function Admin() {
     });
   };
 
+  const generateHash = useCallback((csv: string) => {
+    let hash = 0;
+    for (let i = 0; i < csv.length; i++) {
+      const chr = csv.charCodeAt(i);
+      hash = ((hash << 5) - hash) + chr;
+      hash |= 0;
+    }
+    return Math.abs(hash).toString(16).slice(0, 6);
+  }, []);
+
+  const buildChangeSummary = useCallback(() => {
+    const changedList = Array.from(changedIds);
+    const lines: string[] = [];
+
+    for (const id of changedList) {
+      if (id.endsWith(" (deleted)")) {
+        lines.push(`### ❌ Deleted: \`${id.replace(" (deleted)", "")}\`\n`);
+        const orig = originalControls.get(id.replace(" (deleted)", ""));
+        if (orig) {
+          lines.push(`- **Title:** ${orig.safeguardTitle}`);
+          lines.push(`- **Pillar:** ${orig.pillar} / ${orig.ig}\n`);
+        }
+        continue;
+      }
+
+      const current = allControls.find(c => c.controlId === id);
+      const orig = originalControls.get(id);
+
+      if (!orig && current) {
+        lines.push(`### ➕ Added: \`${id}\``);
+        lines.push(`- **Title:** ${current.safeguardTitle}`);
+        lines.push(`- **Pillar:** ${current.pillar} / ${current.ig}`);
+        lines.push(`- **Customer Objective:** ${current.customerObjective || "_not set_"}`);
+        lines.push(`- **Gate Type:** ${current.gateType || "_not set_"}\n`);
+      } else if (orig && current) {
+        const diffs: string[] = [];
+        const fields: { key: keyof Control; label: string }[] = [
+          { key: "safeguardTitle", label: "Safeguard Title" },
+          { key: "pillar", label: "Pillar" },
+          { key: "ig", label: "IG" },
+          { key: "customerObjective", label: "Customer Objective" },
+          { key: "eli5", label: "ELI5" },
+          { key: "detailedRequirement", label: "Detailed Requirement" },
+          { key: "lifecycleTrigger", label: "Lifecycle Trigger" },
+          { key: "cadence", label: "Cadence" },
+          { key: "primaryStakeholder", label: "Primary Stakeholder" },
+          { key: "microsoftTool", label: "Microsoft Tool" },
+          { key: "genericTooling", label: "Generic Tooling" },
+          { key: "evidenceOfCompletion", label: "Evidence of Completion" },
+          { key: "gateType", label: "Gate Type" },
+          { key: "whyItMatters", label: "Why it Matters" },
+        ];
+        for (const f of fields) {
+          if (orig[f.key] !== current[f.key]) {
+            diffs.push(`- **${f.label}:** \`${orig[f.key] || "(empty)"}\` → \`${current[f.key] || "(empty)"}\``);
+          }
+        }
+        if (diffs.length > 0) {
+          lines.push(`### ✏️ Modified: \`${id}\` — ${current.safeguardTitle}`);
+          lines.push(...diffs);
+          lines.push("");
+        } else {
+          lines.push(`### 🔀 Reordered: \`${id}\` — ${current.safeguardTitle}\n`);
+        }
+      }
+    }
+    return lines.join("\n");
+  }, [changedIds, allControls, originalControls]);
+
   const downloadCSV = useCallback(() => {
     const rows = allControls.map(controlToCSVRow);
     const csv = Papa.unparse(rows);
+    const hash = generateHash(csv);
+    setCsvHash(hash);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = "controls.csv"; a.click();
+    a.href = url; a.download = `controls-${hash}.csv`; a.click();
     URL.revokeObjectURL(url);
     setDirty(false);
     if (changedIds.size > 0) {
       setShowPrButton(true);
     }
-  }, [allControls, changedIds]);
+  }, [allControls, changedIds, generateHash]);
 
   const openIssue = useCallback(() => {
     const today = new Date().toISOString().split("T")[0];
     const changedList = Array.from(changedIds);
-    const title = encodeURIComponent(`[CSV Change]: Framework update ${today}`);
+    const addedCount = changedList.filter(id => !id.endsWith(" (deleted)") && !originalControls.has(id)).length;
+    const editedCount = changedList.filter(id => !id.endsWith(" (deleted)") && originalControls.has(id)).length;
+    const deletedCount = changedList.filter(id => id.endsWith(" (deleted)")).length;
+
+    const summaryParts: string[] = [];
+    if (addedCount) summaryParts.push(`${addedCount} added`);
+    if (editedCount) summaryParts.push(`${editedCount} edited`);
+    if (deletedCount) summaryParts.push(`${deletedCount} removed`);
+
+    const title = encodeURIComponent(`[CSV Change]: ${summaryParts.join(", ")} — ${today}`);
+    const changeSummary = buildChangeSummary();
+    const filename = csvHash ? `controls-${csvHash}.csv` : "controls.csv";
     const body = encodeURIComponent(
-      `## Controls Changed\n\n${changedList.map(id => `- \`${id}\``).join("\n")}\n\n## What was changed\n\n_Describe your changes here_\n\n## Why this change should be made\n\n_Explain the reasoning_\n\n---\n_Exported from the [AI Controls Framework editor](https://framework.elkhmi.ai/admin)_`
+      `## Proposed Framework Changes\n\n` +
+      `**Date:** ${today}\n` +
+      `**Controls affected:** ${changedList.length} (${summaryParts.join(", ")})\n\n` +
+      `---\n\n` +
+      `## Detailed Changes\n\n${changeSummary}\n` +
+      `---\n\n` +
+      `## Why this change should be made\n\n_Explain the reasoning, evidence, or implementation context for this recommendation._\n\n` +
+      `---\n\n` +
+      `📎 **Please attach the recommended CSV below** using "Paste, drop, or click to add files" and upload \`${filename}\`.`
     );
     const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
     window.open(url, "_blank");
-  }, [changedIds]);
+  }, [changedIds, originalControls, buildChangeSummary, csvHash]);
+  
 
   if (isLoading) {
     return (
