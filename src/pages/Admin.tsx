@@ -1,7 +1,7 @@
-import { useState, useMemo, useCallback, useRef } from "react";
-import { Search, Plus, Download, Upload, ArrowLeft, X } from "lucide-react";
+import { useState, useMemo, useCallback } from "react";
+import { Search, Plus, Download, ArrowLeft, X } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
-import { PILLARS, IG_LEVELS, AI_MODALITIES, LIFECYCLE_TRIGGERS, type Control, parseControlsCSV } from "@/lib/csv-loader";
+import { PILLARS, IG_LEVELS, AI_MODALITIES, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
 import { Link } from "react-router-dom";
 import Papa from "papaparse";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
@@ -90,25 +90,6 @@ export default function Admin() {
   const [aiModalityFilter, setAiModalityFilter] = useState<Set<string>>(new Set());
 
   const allControls = controls ?? loadedControls;
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleUploadCSV = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const text = ev.target?.result as string;
-        const parsed = parseControlsCSV(text);
-        if (parsed.length === 0) { toast.error("CSV contained no valid controls"); return; }
-        setControls(parsed);
-        setDirty(true);
-        toast.success(`Loaded ${parsed.length} controls from CSV`);
-      } catch { toast.error("Failed to parse CSV"); }
-    };
-    reader.readAsText(file);
-    e.target.value = "";
-  }, []);
 
   const gateTypes = useMemo(() => {
     const set = new Set<string>();
@@ -218,11 +199,6 @@ export default function Admin() {
           <Plus className="w-3.5 h-3.5" /> New Control
         </button>
 
-        <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleUploadCSV} />
-        <button onClick={() => fileInputRef.current?.click()}
-          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95 flex items-center gap-1">
-          <Upload className="w-3.5 h-3.5" /> Upload CSV
-        </button>
 
         <button onClick={downloadCSV}
           className={`text-xs font-medium px-2.5 py-1.5 rounded-md border transition-colors active:scale-95 flex items-center gap-1 ${
