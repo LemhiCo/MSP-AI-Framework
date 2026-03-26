@@ -382,6 +382,75 @@ const Index = () => {
       {activeControl && (
         <ControlDetailPanel control={activeControl} onClose={() => setActiveControl(null)} />
       )}
+
+      {/* Contribute Process Modal */}
+      {showContributeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowContributeModal(false)}>
+          <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 animate-fade-up relative" onClick={(e) => e.stopPropagation()} style={{ animationDuration: "300ms" }}>
+            <button onClick={() => setShowContributeModal(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="flex items-center gap-2 mb-4">
+              <Heart className="w-5 h-5 text-destructive" />
+              <h2 className="text-lg font-serif font-semibold">How to Contribute</h2>
+            </div>
+
+            <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+              The AI Controls Framework is a community-driven, open source project. Here's how you can suggest improvements:
+            </p>
+
+            <div className="space-y-4 mb-6">
+              <div className="flex gap-3">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">1</span>
+                <div>
+                  <p className="text-sm font-semibold">Edit controls</p>
+                  <p className="text-xs text-muted-foreground">Open the Controls Editor to review, modify, reorder, or add new controls to the framework.</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">2</span>
+                <div>
+                  <p className="text-sm font-semibold">Download your changes</p>
+                  <p className="text-xs text-muted-foreground">Export the updated CSV. The file includes a unique hash so maintainers can trace it.</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">3</span>
+                <div>
+                  <p className="text-sm font-semibold">Submit a GitHub Issue</p>
+                  <p className="text-xs text-muted-foreground">After downloading, you'll be prompted to open a pre-filled GitHub Issue with a summary of your changes. Attach the CSV and explain your reasoning.</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">4</span>
+                <div>
+                  <p className="text-sm font-semibold">Maintainers review &amp; merge</p>
+                  <p className="text-xs text-muted-foreground">The LemhiCo team triages suggestions and implements accepted changes via Pull Request.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Link
+                to="/admin"
+                onClick={() => setShowContributeModal(false)}
+                className="flex-1 flex items-center justify-center gap-2 text-sm font-medium px-4 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                Open Controls Editor <ArrowRight className="w-4 h-4" />
+              </Link>
+              <a
+                href="https://github.com/LemhiCo/MSP-AI-Framework/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
+              >
+                <ExternalLink className="w-3.5 h-3.5" /> GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
