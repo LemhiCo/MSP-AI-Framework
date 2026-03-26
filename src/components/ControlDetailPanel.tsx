@@ -19,7 +19,7 @@ const SELECT_FIELDS: Partial<Record<keyof Control, string[]>> = {
 };
 
 const TEXTAREA_FIELDS: Set<keyof Control> = new Set([
-  "customerObjective", "detailedRequirement", "whyItMatters",
+  "customerObjective", "eli5", "detailedRequirement", "whyItMatters",
   "endCustomerBusinessValue", "customerConversationTrack", "failCondition",
   "evidenceOfCompletion",
 ]);
