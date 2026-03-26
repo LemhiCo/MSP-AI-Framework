@@ -106,7 +106,10 @@ export default function Admin() {
   const clearAllFilters = () => { setLifecycleFilter(new Set()); setGateFilter(new Set()); setAiModalityFilter(new Set()); };
 
   const filteredControls = useMemo(() => {
+    const hiddenPillarIds = new Set<string>(PILLARS.filter(p => "optional" in p && !showCopilot).map(p => p.id));
     return allControls.filter((c) => {
+      const pillarId = c.controlId.split("-")[0];
+      if (hiddenPillarIds.has(pillarId)) return false;
       if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
       if (gateFilter.size && !gateFilter.has(c.gateType)) return false;
       if (aiModalityFilter.size) {
@@ -119,7 +122,7 @@ export default function Admin() {
       }
       return true;
     });
-  }, [allControls, search, lifecycleFilter, gateFilter, aiModalityFilter]);
+  }, [allControls, search, lifecycleFilter, gateFilter, aiModalityFilter, showCopilot]);
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
