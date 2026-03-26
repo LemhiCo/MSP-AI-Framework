@@ -32,21 +32,6 @@ export interface Control {
   firstRequiredWhen: string;
 }
 
-export interface AssessmentRow {
-  controlId: string;
-  pillar: string;
-  ig: string;
-  safeguardTitle: string;
-  lifecycleTrigger: string;
-  cadence: string;
-  status: string;
-  owner: string;
-  dueDate: string;
-  microsoftTool: string;
-  genericTooling: string;
-  evidenceNotes: string;
-  priority: string;
-}
 
 async function fetchCSV<T>(path: string, mapFn: (row: Record<string, string>) => T): Promise<T[]> {
   const res = await fetch(path);
