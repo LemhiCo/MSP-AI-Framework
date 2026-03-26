@@ -86,17 +86,18 @@ export default function WaitlistGate({ onComplete }: { onComplete: () => void })
         <div className="text-center mb-5">
           <h2 className="text-xl font-serif font-semibold">Join the Expedition</h2>
           <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-            Get access to the MSP AI Enablement Framework — the operational blueprint for embedding AI across your stack.
+            The AI Controls Framework is an open source, community-driven project built by MSPs and advisors who believe AI governance shouldn't be gatekept. Sign up to explore, contribute, and help shape the standard.
           </p>
         </div>
 
         <div className="mb-5 rounded-lg border border-border bg-muted/40 px-4 py-3 space-y-1.5">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">What you'll get</p>
           <ul className="text-xs text-foreground/80 space-y-1 leading-relaxed">
-            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>88 controls across 7 pillars — Strategy to Deployment</li>
+            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>88+ controls across 7 pillars — Strategy to Deployment</li>
             <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Gate-based scoring (Baseline, Scale, Advanced)</li>
-            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Microsoft & generic tooling recommendations per control</li>
-            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Downloadable XLSX for offline planning</li>
+            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Edit, improve, and suggest changes back to the community</li>
+            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Downloadable CSV/XLSX — take it with you, make it yours</li>
+            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Your name in the contributors list when your changes ship</li>
           </ul>
         </div>
 
@@ -145,6 +146,15 @@ export default function WaitlistGate({ onComplete }: { onComplete: () => void })
             {submitting ? "Submitting…" : "Join the Expedition"}
           </button>
         </form>
+
+        <a
+          href="https://github.com/LemhiCo/MSP-AI-Framework/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block text-center text-[11px] text-muted-foreground/60 hover:text-muted-foreground mt-4 transition-colors"
+        >
+          I'd rather not — just take me to the framework on GitHub →
+        </a>
       </div>
     </div>
   );
