@@ -54,37 +54,44 @@ async function fetchCSV<T>(path: string, mapFn: (row: Record<string, string>) =>
   return (parsed.data as Record<string, string>[]).map(mapFn);
 }
 
+const mapControlRow = (r: Record<string, string>): Control => ({
+  controlId: r["Control ID"] || "",
+  pillar: r["Pillar"] || "",
+  ig: r["IG"] || "",
+  safeguardTitle: r["Safeguard Title"] || "",
+  customerObjective: r["Customer Objective"] || "",
+  detailedRequirement: r["Detailed Requirement"] || "",
+  lifecycleTrigger: r["Lifecycle Trigger"] || "",
+  cadence: r["Cadence"] || "",
+  primaryStakeholder: r["Primary Stakeholder"] || "",
+  microsoftTool: r["Microsoft Tool Recommendation"] || "",
+  genericTooling: r["Generic Tooling Category"] || "",
+  evidenceOfCompletion: r["Evidence of Completion"] || "",
+  rawWeight: r["Raw Weight"] || "",
+  gateType: r["Gate Type"] || "",
+  minStatusToPass: r["Minimum Status to Pass"] || "",
+  minEvidenceToPass: r["Minimum Evidence to Pass"] || "",
+  failCondition: r["Fail Condition"] || "",
+  whyItMatters: r["Why it Matters"] || "",
+  appliesTo: r["Applies To"] || "",
+  endCustomerBusinessValue: r["End Customer Business Value"] || "",
+  customerConversationTrack: r["Customer Conversation Track"] || "",
+  whoCaresMost: r["Who Cares Most (Customer)"] || "",
+  relevantGenAI: r["Relevant: GenAI"] || "",
+  relevantCustomGPTs: r["Relevant: Custom GPTs"] || "",
+  relevantAgenticAI: r["Relevant: Agentic AI"] || "",
+  relevantDigitalWorkers: r["Relevant: Digital Workers"] || "",
+  relevantCowork: r["Relevant: Cowork"] || "",
+  firstRequiredWhen: r["First Required When"] || "",
+});
+
 export async function loadControls(): Promise<Control[]> {
-  return fetchCSV("/data/controls.csv", (r) => ({
-    controlId: r["Control ID"] || "",
-    pillar: r["Pillar"] || "",
-    ig: r["IG"] || "",
-    safeguardTitle: r["Safeguard Title"] || "",
-    customerObjective: r["Customer Objective"] || "",
-    detailedRequirement: r["Detailed Requirement"] || "",
-    lifecycleTrigger: r["Lifecycle Trigger"] || "",
-    cadence: r["Cadence"] || "",
-    primaryStakeholder: r["Primary Stakeholder"] || "",
-    microsoftTool: r["Microsoft Tool Recommendation"] || "",
-    genericTooling: r["Generic Tooling Category"] || "",
-    evidenceOfCompletion: r["Evidence of Completion"] || "",
-    rawWeight: r["Raw Weight"] || "",
-    gateType: r["Gate Type"] || "",
-    minStatusToPass: r["Minimum Status to Pass"] || "",
-    minEvidenceToPass: r["Minimum Evidence to Pass"] || "",
-    failCondition: r["Fail Condition"] || "",
-    whyItMatters: r["Why it Matters"] || "",
-    appliesTo: r["Applies To"] || "",
-    endCustomerBusinessValue: r["End Customer Business Value"] || "",
-    customerConversationTrack: r["Customer Conversation Track"] || "",
-    whoCaresMost: r["Who Cares Most (Customer)"] || "",
-    relevantGenAI: r["Relevant: GenAI"] || "",
-    relevantCustomGPTs: r["Relevant: Custom GPTs"] || "",
-    relevantAgenticAI: r["Relevant: Agentic AI"] || "",
-    relevantDigitalWorkers: r["Relevant: Digital Workers"] || "",
-    relevantCowork: r["Relevant: Cowork"] || "",
-    firstRequiredWhen: r["First Required When"] || "",
-  }));
+  return fetchCSV("/data/controls.csv", mapControlRow);
+}
+
+export function parseControlsCSV(csvText: string): Control[] {
+  const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+  return (parsed.data as Record<string, string>[]).map(mapControlRow);
 }
 
 export async function loadAssessment(): Promise<AssessmentRow[]> {
