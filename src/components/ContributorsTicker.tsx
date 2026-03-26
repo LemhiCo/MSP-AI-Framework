@@ -22,7 +22,7 @@ export default function ContributorsTicker() {
   if (contributors.length === 0) return null;
 
   return (
-    <div className="sticky bottom-0 z-20 border-t border-border bg-card px-4 py-1.5 flex items-center gap-3">
+    <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card px-4 py-1.5 flex items-center gap-3">
       <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1 shrink-0">
         <Heart className="w-2.5 h-2.5 text-destructive" /> Contributors
       </span>
