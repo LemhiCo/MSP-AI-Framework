@@ -102,10 +102,8 @@ export default function Admin() {
 
   // Snapshot original controls for diff tracking
   useMemo(() => {
-    if (loadedControls.length > 0 && originalControls.size === 0) {
-      const map = new Map<string, Control>();
-      loadedControls.forEach(c => map.set(c.controlId, { ...c }));
-      setOriginalControls(map);
+    if (loadedControls.length > 0 && originalControls.length === 0) {
+      setOriginalControls(loadedControls.map(c => ({ ...c })));
     }
   }, [loadedControls]);
 
