@@ -426,6 +426,7 @@ function CompactView({ control }: { control: Control }) {
 function OverviewContent({ control }: { control: Control }) {
   return (
     <>
+      <Section title="ELI5" value={control.eli5} />
       <Section title="Customer Objective" value={control.customerObjective} />
       <Section title="Detailed Requirement" value={control.detailedRequirement} />
       <div className="grid grid-cols-2 gap-3">

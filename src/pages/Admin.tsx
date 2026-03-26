@@ -8,7 +8,7 @@ import ControlDetailPanel from "@/components/ControlDetailPanel";
 import { toast } from "sonner";
 
 const EMPTY_CONTROL: Control = {
-  controlId: "", pillar: "", ig: "", safeguardTitle: "", customerObjective: "",
+  controlId: "", pillar: "", ig: "", safeguardTitle: "", customerObjective: "", eli5: "",
   detailedRequirement: "", lifecycleTrigger: "", cadence: "", primaryStakeholder: "",
   microsoftTool: "", genericTooling: "", evidenceOfCompletion: "", rawWeight: "",
   gateType: "", minStatusToPass: "", minEvidenceToPass: "", failCondition: "",
