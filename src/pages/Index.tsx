@@ -226,15 +226,46 @@ const Index = () => {
           </button>
         )}
 
-        <button
-          onClick={() => setShowCopilot(v => !v)}
-          className={`text-xs font-medium px-2.5 py-1.5 rounded-md border transition-colors active:scale-95 ${
-            showCopilot ? "bg-[hsl(220_55%_50%)] text-white border-[hsl(220_55%_50%)]" : "bg-card border-border hover:bg-muted"
-          }`}
-          title="Toggle Copilot Readiness pillar"
-        >
-          {showCopilot ? "Copilot ✓" : "Copilot"}
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => {
+              setShowCopilot(v => !v);
+              setShowCopilotTooltip(false);
+              localStorage.setItem("lemhi-copilot-tooltip-seen", "true");
+            }}
+            className={`text-xs font-medium px-2.5 py-1.5 rounded-md border transition-colors active:scale-95 ${
+              showCopilot ? "bg-[hsl(220_55%_50%)] text-white border-[hsl(220_55%_50%)]" : "bg-card border-border hover:bg-muted"
+            }`}
+            title="Toggle Copilot Readiness pillar"
+          >
+            {showCopilot ? "Copilot ✓" : "Copilot"}
+          </button>
+
+          {showCopilotTooltip && (
+            <div className="absolute right-0 top-full mt-2 w-72 bg-card border border-border rounded-xl shadow-2xl p-4 z-50 animate-fade-up" style={{ animationDuration: "300ms" }}>
+              <div className="absolute -top-1.5 right-4 w-3 h-3 bg-card border-l border-t border-border rotate-45" />
+              <div className="flex items-start gap-2 mb-1">
+                <span className="text-lg">💡</span>
+                <div>
+                  <p className="text-sm font-semibold">Not using Microsoft Copilot?</p>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    The Copilot Readiness pillar is optional. If your organization isn't rolling out Copilot, you can disable it to simplify the framework view.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowCopilotTooltip(false);
+                  localStorage.setItem("lemhi-copilot-tooltip-seen", "true");
+                }}
+                className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+        </div>
 
         <button
           onClick={handleDownloadXlsx}
