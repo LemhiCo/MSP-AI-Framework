@@ -644,6 +644,7 @@ export default function Admin() {
           </div>
         </div>
       )}
+      <ContributorsTicker />
     </div>
   );
 }
