@@ -464,8 +464,8 @@ const Index = () => {
               <div className="flex gap-3">
                 <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">4</span>
                 <div>
-                  <p className="text-sm font-semibold">Maintainers review &amp; merge</p>
-                  <p className="text-xs text-muted-foreground">The LemhiCo team triages suggestions and implements accepted changes via Pull Request.</p>
+                  <p className="text-sm font-semibold">Community votes &amp; we triage</p>
+                  <p className="text-xs text-muted-foreground">The community votes on recommended suggestions — they decide what gets approved. We handle triage and implementation via Pull Request.</p>
                 </div>
               </div>
               <div className="flex gap-3">
