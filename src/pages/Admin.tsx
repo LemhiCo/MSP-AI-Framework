@@ -199,11 +199,6 @@ export default function Admin() {
           <Plus className="w-3.5 h-3.5" /> New Control
         </button>
 
-        <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleUploadCSV} />
-        <button onClick={() => fileInputRef.current?.click()}
-          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95 flex items-center gap-1">
-          <Upload className="w-3.5 h-3.5" /> Upload CSV
-        </button>
 
         <button onClick={downloadCSV}
           className={`text-xs font-medium px-2.5 py-1.5 rounded-md border transition-colors active:scale-95 flex items-center gap-1 ${
