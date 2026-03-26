@@ -1,5 +1,5 @@
-import { useState, useMemo, useCallback } from "react";
-import { Search, Download, X, Heart } from "lucide-react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { Search, Download, X, Heart, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
 import { useControls } from "@/hooks/use-framework-data";
