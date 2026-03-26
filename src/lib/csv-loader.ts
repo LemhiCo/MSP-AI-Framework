@@ -54,8 +54,7 @@ async function fetchCSV<T>(path: string, mapFn: (row: Record<string, string>) =>
   return (parsed.data as Record<string, string>[]).map(mapFn);
 }
 
-export async function loadControls(): Promise<Control[]> {
-  return fetchCSV("/data/controls.csv", (r) => ({
+const mapControlRow = (r: Record<string, string>): Control => ({
     controlId: r["Control ID"] || "",
     pillar: r["Pillar"] || "",
     ig: r["IG"] || "",
