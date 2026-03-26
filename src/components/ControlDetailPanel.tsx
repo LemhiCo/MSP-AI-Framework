@@ -318,6 +318,7 @@ function ExpandedView({ control }: { control: Control }) {
   return (
     <div className="grid grid-cols-2 gap-x-6 gap-y-4">
       <div className="space-y-4 col-span-2">
+        <Section title="ELI5" value={control.eli5} />
         <Section title="Customer Objective" value={control.customerObjective} />
         <Section title="Detailed Requirement" value={control.detailedRequirement} />
       </div>
