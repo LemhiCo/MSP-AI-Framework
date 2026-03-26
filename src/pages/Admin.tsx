@@ -91,6 +91,8 @@ export default function Admin() {
   const [gateFilter, setGateFilter] = useState<Set<string>>(new Set());
   const [aiModalityFilter, setAiModalityFilter] = useState<Set<string>>(new Set());
   const [showCopilot, setShowCopilot] = useState(true);
+  const [changedIds, setChangedIds] = useState<Set<string>>(new Set());
+  const [showPrButton, setShowPrButton] = useState(false);
 
   const allControls = controls ?? loadedControls;
   const visiblePillars = useMemo(() =>
