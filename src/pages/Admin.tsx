@@ -277,8 +277,18 @@ export default function Admin() {
         )}
 
         <button onClick={handleNew}
-          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-primary bg-primary text-primary-foreground hover:bg-primary/90 transition-colors active:scale-95 ml-auto flex items-center gap-1">
+          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-primary bg-primary text-primary-foreground hover:bg-primary/90 transition-colors active:scale-95 flex items-center gap-1">
           <Plus className="w-3.5 h-3.5" /> New Control
+        </button>
+
+        <button
+          onClick={() => setShowCopilot(v => !v)}
+          className={`text-xs font-medium px-2.5 py-1.5 rounded-md border transition-colors active:scale-95 ${
+            showCopilot ? "bg-[hsl(220_55%_50%)] text-white border-[hsl(220_55%_50%)]" : "bg-card border-border hover:bg-muted"
+          }`}
+          title="Toggle Copilot Readiness pillar"
+        >
+          {showCopilot ? "Copilot ✓" : "Copilot"}
         </button>
 
 
