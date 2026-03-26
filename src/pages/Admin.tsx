@@ -333,7 +333,7 @@ export default function Admin() {
           const igBgVar = ig === "IG1" ? "--ig1-bg" : ig === "IG2" ? "--ig2-bg" : "--ig3-bg";
 
           return (
-            <div key={ig} className="grid grid-cols-[100px_repeat(7,1fr)] border-b border-border">
+            <div key={ig} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${visiblePillars.length},1fr)` }}>
               <div className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10" style={{ background: `hsl(var(${igBgVar}))` }}>
                 <span className="text-xs font-bold" style={{ color: `hsl(var(${igColorVar}))` }}>{ig}</span>
                 <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta.sub}</span>
