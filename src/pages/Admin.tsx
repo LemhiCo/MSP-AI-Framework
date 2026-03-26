@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react"; // v2
 import { Search, Plus, Download, ArrowLeft, X, ChevronUp, ChevronDown, ExternalLink } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, AI_MODALITIES, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
