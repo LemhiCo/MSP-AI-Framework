@@ -89,8 +89,12 @@ export default function Admin() {
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
   const [gateFilter, setGateFilter] = useState<Set<string>>(new Set());
   const [aiModalityFilter, setAiModalityFilter] = useState<Set<string>>(new Set());
+  const [showCopilot, setShowCopilot] = useState(true);
 
   const allControls = controls ?? loadedControls;
+  const visiblePillars = useMemo(() =>
+    showCopilot ? PILLARS : PILLARS.filter(p => !("optional" in p)),
+  [showCopilot]);
 
   const gateTypes = useMemo(() => {
     const set = new Set<string>();
