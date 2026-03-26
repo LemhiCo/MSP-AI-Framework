@@ -127,6 +127,59 @@ export default function Admin() {
     return map;
   }, [filteredControls]);
 
+  // --- Drag & Drop ---
+  const [dragControlId, setDragControlId] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<{ pillar: string; ig: string; index: number } | null>(null);
+
+  const renumberCell = (list: Control[], pillar: string, ig: string): Control[] => {
+    const inCell = list
+      .filter(c => c.controlId.startsWith(pillar) && c.ig === ig)
+      .sort((a, b) => a.controlId.localeCompare(b.controlId));
+    const rest = list.filter(c => !(c.controlId.startsWith(pillar) && c.ig === ig));
+    const renumbered = inCell.map((c, i) => ({
+      ...c,
+      controlId: `${pillar}-${ig}-${String(i + 1).padStart(2, "0")}`,
+    }));
+    return [...rest, ...renumbered];
+  };
+
+  const handleDrop = useCallback((targetPillar: string, targetIg: string, targetIndex: number) => {
+    if (!dragControlId) return;
+    const draggedControl = allControls.find(c => c.controlId === dragControlId);
+    if (!draggedControl) return;
+
+    const sourcePillar = draggedControl.controlId.split("-")[0];
+    const sourceIg = draggedControl.ig;
+
+    // Remove from source
+    let newList = allControls.filter(c => c.controlId !== dragControlId);
+
+    // Renumber source cell
+    newList = renumberCell(newList, sourcePillar, sourceIg);
+
+    // Get target cell items (after source removal & renumber)
+    const targetItems = newList
+      .filter(c => c.controlId.startsWith(targetPillar) && c.ig === targetIg)
+      .sort((a, b) => a.controlId.localeCompare(b.controlId));
+    const others = newList.filter(c => !(c.controlId.startsWith(targetPillar) && c.ig === targetIg));
+
+    // Insert at target index
+    const updatedDragged = { ...draggedControl, pillar: targetPillar, ig: targetIg, controlId: "" };
+    targetItems.splice(Math.min(targetIndex, targetItems.length), 0, updatedDragged);
+
+    // Renumber target cell
+    const renumberedTarget = targetItems.map((c, i) => ({
+      ...c,
+      controlId: `${targetPillar}-${targetIg}-${String(i + 1).padStart(2, "0")}`,
+    }));
+
+    setControls([...others, ...renumberedTarget]);
+    setDirty(true);
+    setDragControlId(null);
+    setDropTarget(null);
+    toast.success(`Moved to ${targetPillar}-${targetIg}. IDs renumbered.`);
+  }, [dragControlId, allControls]);
+
   const handleSave = useCallback((updated: Control) => {
     const existing = allControls.find(c => c.controlId === updated.controlId);
     const newList = existing
