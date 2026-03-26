@@ -227,6 +227,7 @@ export default function Admin() {
   }, [allControls]);
 
   const handleNew = () => {
+    setIsNewCard(true);
     setActiveControl({ ...EMPTY_CONTROL });
   };
 
@@ -234,6 +235,7 @@ export default function Admin() {
     const cellItems = allControls.filter(c => c.controlId.startsWith(pillarId + "-") && c.ig === ig);
     const nextNum = String(cellItems.length + 1).padStart(2, "0");
     const pillarObj = PILLARS.find(p => p.id === pillarId);
+    setIsNewCard(true);
     setActiveControl({
       ...EMPTY_CONTROL,
       controlId: `${pillarId}-${ig}-${nextNum}`,
