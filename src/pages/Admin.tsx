@@ -263,14 +263,14 @@ export default function Admin() {
     }
   }, [allControls, changedIds]);
 
-  const openPR = useCallback(() => {
+  const openIssue = useCallback(() => {
     const today = new Date().toISOString().split("T")[0];
     const changedList = Array.from(changedIds);
-    const title = encodeURIComponent(`Framework contribution ${today}`);
+    const title = encodeURIComponent(`[CSV Change]: Framework update ${today}`);
     const body = encodeURIComponent(
-      `## Controls Changed\n\n${changedList.map(id => `- ${id}`).join("\n")}\n\n---\n_Exported from the AI Controls Framework editor_`
+      `## Controls Changed\n\n${changedList.map(id => `- \`${id}\``).join("\n")}\n\n## What was changed\n\n_Describe your changes here_\n\n## Why this change should be made\n\n_Explain the reasoning_\n\n---\n_Exported from the [AI Controls Framework editor](https://framework.elkhmi.ai/admin)_`
     );
-    const url = `https://github.com/LemhiCo/MSP-AI-Framework/compare/main...main?quick_pull=1&title=${title}&body=${body}&labels=enhancement`;
+    const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
     window.open(url, "_blank");
   }, [changedIds]);
 
@@ -335,10 +335,10 @@ export default function Admin() {
         </button>
 
         {showPrButton && changedIds.size > 0 && (
-          <button onClick={openPR}
+          <button onClick={openIssue}
             className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-green-600 bg-green-600 text-white hover:bg-green-700 transition-colors active:scale-95 flex items-center gap-1">
             <ExternalLink className="w-3.5 h-3.5" />
-            Open PR ({changedIds.size} change{changedIds.size !== 1 ? "s" : ""})
+            Suggest Change ({changedIds.size})
           </button>
         )}
       </header>
