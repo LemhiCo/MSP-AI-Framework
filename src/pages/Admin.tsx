@@ -302,28 +302,64 @@ export default function Admin() {
               {PILLARS.map((pillar) => {
                 const items = grid[pillar.id]?.[ig] || [];
                 return (
-                  <div key={`${pillar.id}-${ig}`} className="border-l border-border px-1.5 py-1.5 space-y-1 bg-card/50">
-                    {items.map((c) => (
-                      <button key={c.controlId} onClick={() => setActiveControl(c)}
-                        className="w-full rounded-md border text-[11px] transition-all text-left px-1.5 py-1.5 hover:shadow-md active:scale-[0.97] cursor-pointer bg-card border-border hover:border-primary/40">
-                        <div className="flex items-start gap-1.5">
-                          <div className="flex-1 min-w-0">
-                            <span className="leading-tight block">{c.safeguardTitle}</span>
-                            <div className="flex items-center gap-1 mt-0.5">
-                              <span className="text-[9px] font-mono text-muted-foreground">{c.controlId}</span>
-                              <span className={`text-[8px] font-semibold px-1 py-0.5 rounded ${
-                                c.gateType === "Baseline Gate" ? "bg-destructive/15 text-destructive"
-                                  : c.gateType === "Scale Gate" ? "bg-status-yellow/20 text-foreground"
-                                  : "bg-muted text-muted-foreground"
-                              }`}>
-                                {c.gateType === "Baseline Gate" ? "BASE" : c.gateType === "Scale Gate" ? "SCALE" : c.gateType === "Advanced Score" ? "ADV" : ""}
-                              </span>
+                  <div key={`${pillar.id}-${ig}`}
+                    className={`border-l border-border px-1.5 py-1.5 space-y-1 transition-colors ${
+                      dropTarget?.pillar === pillar.id && dropTarget?.ig === ig ? "bg-primary/10" : "bg-card/50"
+                    }`}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = "move";
+                      // Calculate drop index from mouse position
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const children = Array.from(e.currentTarget.children).filter(el => el.getAttribute("draggable") === "true");
+                      let idx = children.length;
+                      for (let i = 0; i < children.length; i++) {
+                        const cr = children[i].getBoundingClientRect();
+                        if (e.clientY < cr.top + cr.height / 2) { idx = i; break; }
+                      }
+                      setDropTarget({ pillar: pillar.id, ig, index: idx });
+                    }}
+                    onDragLeave={() => setDropTarget(null)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      handleDrop(pillar.id, ig, dropTarget?.index ?? items.length);
+                    }}
+                  >
+                    {items.map((c, idx) => (
+                      <div key={c.controlId}>
+                        {dropTarget?.pillar === pillar.id && dropTarget?.ig === ig && dropTarget?.index === idx && (
+                          <div className="h-0.5 bg-primary rounded-full my-0.5" />
+                        )}
+                        <button
+                          draggable
+                          onDragStart={() => setDragControlId(c.controlId)}
+                          onDragEnd={() => { setDragControlId(null); setDropTarget(null); }}
+                          onClick={() => setActiveControl(c)}
+                          className={`w-full rounded-md border text-[11px] transition-all text-left px-1.5 py-1.5 hover:shadow-md active:scale-[0.97] cursor-grab bg-card border-border hover:border-primary/40 ${
+                            dragControlId === c.controlId ? "opacity-40 scale-95" : ""
+                          }`}>
+                          <div className="flex items-start gap-1.5">
+                            <div className="flex-1 min-w-0">
+                              <span className="leading-tight block">{c.safeguardTitle}</span>
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <span className="text-[9px] font-mono text-muted-foreground">{c.controlId}</span>
+                                <span className={`text-[8px] font-semibold px-1 py-0.5 rounded ${
+                                  c.gateType === "Baseline Gate" ? "bg-destructive/15 text-destructive"
+                                    : c.gateType === "Scale Gate" ? "bg-status-yellow/20 text-foreground"
+                                    : "bg-muted text-muted-foreground"
+                                }`}>
+                                  {c.gateType === "Baseline Gate" ? "BASE" : c.gateType === "Scale Gate" ? "SCALE" : c.gateType === "Advanced Score" ? "ADV" : ""}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </button>
+                        </button>
+                      </div>
                     ))}
-                    {items.length === 0 && (
+                    {dropTarget?.pillar === pillar.id && dropTarget?.ig === ig && dropTarget?.index === items.length && (
+                      <div className="h-0.5 bg-primary rounded-full my-0.5" />
+                    )}
+                    {items.length === 0 && !dropTarget?.pillar && (
                       <div className="text-[10px] text-muted-foreground italic px-1 py-2">—</div>
                     )}
                   </div>
