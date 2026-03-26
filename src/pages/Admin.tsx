@@ -389,7 +389,7 @@ export default function Admin() {
                             draggable
                             onDragStart={() => setDragControlId(c.controlId)}
                             onDragEnd={() => { setDragControlId(null); setDropTarget(null); }}
-                            onClick={() => setActiveControl(c)}
+                            onClick={() => { setIsNewCard(false); setActiveControl(c); }}
                             className="flex-1 text-[11px] text-left px-1.5 py-1.5 cursor-grab min-w-0">
                             <span className="leading-tight block">{c.safeguardTitle}</span>
                             <div className="flex items-center gap-1 mt-0.5">
