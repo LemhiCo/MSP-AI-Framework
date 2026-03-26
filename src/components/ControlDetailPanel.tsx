@@ -173,6 +173,14 @@ export default function ControlDetailPanel({ control, onClose, editable, onSave,
                 <button onClick={handleCancel} className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border hover:bg-muted transition-colors active:scale-95">
                   Cancel
                 </button>
+                <a
+                  href="https://github.com/LemhiCo/MSP-AI-Framework/issues"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+                >
+                  <ExternalLink className="w-3 h-3" /> View Open Contributions
+                </a>
               </>
             )}
             {!showEdit && (
