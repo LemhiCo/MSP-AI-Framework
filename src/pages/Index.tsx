@@ -74,6 +74,7 @@ const Index = () => {
   const [showCopilot, setShowCopilot] = useState(true);
   const [showContributeTooltip, setShowContributeTooltip] = useState(false);
   const [showContributeModal, setShowContributeModal] = useState(false);
+  const [showCopilotTooltip, setShowCopilotTooltip] = useState(false);
 
   useEffect(() => {
     const key = "lemhi-contribute-tooltip-seen";
