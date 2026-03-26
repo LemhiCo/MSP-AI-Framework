@@ -157,6 +157,8 @@ export default function WaitlistGate({ onComplete }: { onComplete: () => void })
           I'd rather not — just take me to the framework on GitHub →
         </a>
       </div>
+
+      <ContributorsTicker />
     </div>
   );
 }
