@@ -447,10 +447,12 @@ export default function Admin() {
       {activeControl && (
         <ControlDetailPanel
           control={activeControl}
-          onClose={() => setActiveControl(null)}
+          onClose={() => { setActiveControl(null); setIsNewCard(false); }}
           editable
           onSave={handleSave}
           onDelete={handleDelete}
+          defaultEditing={isNewCard}
+          defaultExpanded={isNewCard}
         />
       )}
     </div>
