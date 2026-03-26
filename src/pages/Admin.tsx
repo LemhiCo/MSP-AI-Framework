@@ -330,9 +330,7 @@ export default function Admin() {
                     onDragOver={(e) => {
                       e.preventDefault();
                       e.dataTransfer.dropEffect = "move";
-                      // Calculate drop index from mouse position
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const children = Array.from(e.currentTarget.children).filter(el => el.getAttribute("draggable") === "true");
+                      const children = Array.from(e.currentTarget.querySelectorAll("[data-card-wrapper]"));
                       let idx = children.length;
                       for (let i = 0; i < children.length; i++) {
                         const cr = children[i].getBoundingClientRect();
