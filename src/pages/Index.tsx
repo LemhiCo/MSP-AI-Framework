@@ -71,6 +71,15 @@ const Index = () => {
   const [activeControl, setActiveControl] = useState<Control | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [showCopilot, setShowCopilot] = useState(true);
+  const [showContributeTooltip, setShowContributeTooltip] = useState(false);
+
+  useEffect(() => {
+    const key = "lemhi-contribute-tooltip-seen";
+    if (!localStorage.getItem(key)) {
+      const timer = setTimeout(() => setShowContributeTooltip(true), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const visiblePillars = useMemo(() =>
     showCopilot ? PILLARS : PILLARS.filter(p => !("optional" in p)),
