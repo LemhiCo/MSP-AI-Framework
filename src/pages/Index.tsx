@@ -93,7 +93,7 @@ const Index = () => {
   };
 
   const filteredControls = useMemo(() => {
-    const hiddenPillarIds = new Set(PILLARS.filter(p => "optional" in p && !showCopilot).map(p => p.id));
+    const hiddenPillarIds = new Set<string>(PILLARS.filter(p => "optional" in p && !showCopilot).map(p => p.id));
     return controls.filter((c) => {
       const pillarId = c.controlId.split("-")[0];
       if (hiddenPillarIds.has(pillarId)) return false;
