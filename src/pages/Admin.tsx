@@ -313,7 +313,7 @@ export default function Admin() {
         if (origPillar !== currPillar || origByTitle.ig !== curr.ig) {
           changes.push(`- **Moved:** \`${origByTitle.controlId}\` → \`${curr.controlId}\``);
         } else {
-          reorderCount++;
+          reordered.push({ from: origByTitle.controlId, to: curr.controlId, title: curr.safeguardTitle });
         }
       }
       if (changes.length > 0) {
