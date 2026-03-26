@@ -6,6 +6,7 @@ import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, AI_MODALITIES, type Control } from "@/lib/csv-loader";
 import * as XLSX from "xlsx";
 import WaitlistGate, { useWaitlistGate } from "@/components/WaitlistGate";
+import ContributorsTicker from "@/components/ContributorsTicker";
 
 const IG_META: Record<string, { label: string; sub: string }> = {
   IG1: { label: "IG1 — Essential", sub: "Minimum safe floor" },
@@ -372,6 +373,9 @@ const Index = () => {
           );
         })}
       </div>
+
+      {/* Contributors */}
+      <ContributorsTicker />
 
       {/* Detail Panel (slide-over) */}
       {activeControl && (
