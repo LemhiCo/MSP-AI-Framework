@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { X, Shield, Wrench, Users, AlertTriangle, GripVertical, Pencil, Save, Trash2 } from "lucide-react";
+import { X, Shield, Wrench, Users, AlertTriangle, GripVertical, Pencil, Save, Trash2, ExternalLink } from "lucide-react";
 import { type Control, AI_MODALITIES, PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS } from "@/lib/csv-loader";
 
 const MIN_WIDTH = 420;
