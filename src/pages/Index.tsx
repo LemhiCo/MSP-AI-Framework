@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { Search, Download, X, Heart, ExternalLink } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Search, Download, X, Heart, ExternalLink, ArrowRight } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
 import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, AI_MODALITIES, type Control } from "@/lib/csv-loader";
@@ -73,6 +73,7 @@ const Index = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showCopilot, setShowCopilot] = useState(true);
   const [showContributeTooltip, setShowContributeTooltip] = useState(false);
+  const [showContributeModal, setShowContributeModal] = useState(false);
 
   useEffect(() => {
     const key = "lemhi-contribute-tooltip-seen";
@@ -236,16 +237,16 @@ const Index = () => {
         </button>
 
         <div className="relative">
-          <Link
-            to="/admin"
-            className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95 flex items-center gap-1"
+          <button
             onClick={() => {
               setShowContributeTooltip(false);
               localStorage.setItem("lemhi-contribute-tooltip-seen", "true");
+              setShowContributeModal(true);
             }}
+            className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95 flex items-center gap-1"
           >
             <Heart className="w-3.5 h-3.5 text-destructive" /> Contribute
-          </Link>
+          </button>
 
           {showContributeTooltip && (
             <div className="absolute right-0 top-full mt-2 w-72 bg-card border border-border rounded-xl shadow-2xl p-4 z-50 animate-fade-up" style={{ animationDuration: "300ms" }}>
@@ -380,6 +381,75 @@ const Index = () => {
       {/* Detail Panel (slide-over) */}
       {activeControl && (
         <ControlDetailPanel control={activeControl} onClose={() => setActiveControl(null)} />
+      )}
+
+      {/* Contribute Process Modal */}
+      {showContributeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowContributeModal(false)}>
+          <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 animate-fade-up relative" onClick={(e) => e.stopPropagation()} style={{ animationDuration: "300ms" }}>
+            <button onClick={() => setShowContributeModal(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="flex items-center gap-2 mb-4">
+              <Heart className="w-5 h-5 text-destructive" />
+              <h2 className="text-lg font-serif font-semibold">How to Contribute</h2>
+            </div>
+
+            <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+              The AI Controls Framework is a community-driven, open source project. Here's how you can suggest improvements:
+            </p>
+
+            <div className="space-y-4 mb-6">
+              <div className="flex gap-3">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">1</span>
+                <div>
+                  <p className="text-sm font-semibold">Edit controls</p>
+                  <p className="text-xs text-muted-foreground">Open the Controls Editor to review, modify, reorder, or add new controls to the framework.</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">2</span>
+                <div>
+                  <p className="text-sm font-semibold">Download your changes</p>
+                  <p className="text-xs text-muted-foreground">Export the updated CSV. The file includes a unique hash so maintainers can trace it.</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">3</span>
+                <div>
+                  <p className="text-sm font-semibold">Submit a GitHub Issue</p>
+                  <p className="text-xs text-muted-foreground">After downloading, you'll be prompted to open a pre-filled GitHub Issue with a summary of your changes. Attach the CSV and explain your reasoning.</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">4</span>
+                <div>
+                  <p className="text-sm font-semibold">Maintainers review &amp; merge</p>
+                  <p className="text-xs text-muted-foreground">The LemhiCo team triages suggestions and implements accepted changes via Pull Request.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Link
+                to="/admin"
+                onClick={() => setShowContributeModal(false)}
+                className="flex-1 flex items-center justify-center gap-2 text-sm font-medium px-4 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                Open Controls Editor <ArrowRight className="w-4 h-4" />
+              </Link>
+              <a
+                href="https://github.com/LemhiCo/MSP-AI-Framework/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
+              >
+                <ExternalLink className="w-3.5 h-3.5" /> GitHub
+              </a>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
