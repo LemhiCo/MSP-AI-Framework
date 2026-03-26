@@ -69,6 +69,11 @@ const Index = () => {
   const [search, setSearch] = useState("");
   const [activeControl, setActiveControl] = useState<Control | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [showCopilot, setShowCopilot] = useState(true);
+
+  const visiblePillars = useMemo(() =>
+    showCopilot ? PILLARS : PILLARS.filter(p => !("optional" in p)),
+  [showCopilot]);
 
   // Filter state
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
