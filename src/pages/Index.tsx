@@ -237,9 +237,9 @@ const Index = () => {
       {/* Kanban Board */}
       <div className="min-w-[1200px]">
         {/* Pillar Headers */}
-        <div className="sticky top-[37px] z-20 bg-background border-b border-border grid grid-cols-[100px_repeat(7,1fr)]">
+        <div className="sticky top-[37px] z-20 bg-background border-b border-border grid" style={{ gridTemplateColumns: `100px repeat(${visiblePillars.length},1fr)` }}>
           <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-end" />
-          {PILLARS.map((p) => (
+          {visiblePillars.map((p) => (
             <div key={p.id} className="px-2 py-1.5 border-l border-border">
               <div className="flex items-center gap-1.5">
                 <span
