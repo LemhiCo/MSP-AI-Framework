@@ -93,6 +93,8 @@ export default function Admin() {
   const [showCopilot, setShowCopilot] = useState(true);
   const [changedIds, setChangedIds] = useState<Set<string>>(new Set());
   const [showPrButton, setShowPrButton] = useState(false);
+  const [originalControls, setOriginalControls] = useState<Map<string, Control>>(new Map());
+  const [csvHash, setCsvHash] = useState("");
 
   const allControls = controls ?? loadedControls;
   const visiblePillars = useMemo(() =>
