@@ -30,12 +30,14 @@ interface Props {
   editable?: boolean;
   onSave?: (updated: Control) => void;
   onDelete?: (id: string) => void;
+  defaultEditing?: boolean;
+  defaultExpanded?: boolean;
 }
 
-export default function ControlDetailPanel({ control, onClose, editable, onSave, onDelete }: Props) {
-  const [width, setWidth] = useState(DEFAULT_WIDTH);
+export default function ControlDetailPanel({ control, onClose, editable, onSave, onDelete, defaultEditing, defaultExpanded }: Props) {
+  const [width, setWidth] = useState(defaultExpanded ? Math.max(EXPAND_THRESHOLD + 100, DEFAULT_WIDTH) : DEFAULT_WIDTH);
   const dragging = useRef(false);
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(!!defaultEditing);
   const [draft, setDraft] = useState<Control>({ ...control });
 
   useEffect(() => {

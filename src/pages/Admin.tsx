@@ -84,6 +84,7 @@ export default function Admin() {
   const [controls, setControls] = useState<Control[] | null>(null);
   const [search, setSearch] = useState("");
   const [activeControl, setActiveControl] = useState<Control | null>(null);
+  const [isNewCard, setIsNewCard] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
@@ -226,6 +227,7 @@ export default function Admin() {
   }, [allControls]);
 
   const handleNew = () => {
+    setIsNewCard(true);
     setActiveControl({ ...EMPTY_CONTROL });
   };
 
@@ -233,6 +235,7 @@ export default function Admin() {
     const cellItems = allControls.filter(c => c.controlId.startsWith(pillarId + "-") && c.ig === ig);
     const nextNum = String(cellItems.length + 1).padStart(2, "0");
     const pillarObj = PILLARS.find(p => p.id === pillarId);
+    setIsNewCard(true);
     setActiveControl({
       ...EMPTY_CONTROL,
       controlId: `${pillarId}-${ig}-${nextNum}`,
@@ -386,7 +389,7 @@ export default function Admin() {
                             draggable
                             onDragStart={() => setDragControlId(c.controlId)}
                             onDragEnd={() => { setDragControlId(null); setDropTarget(null); }}
-                            onClick={() => setActiveControl(c)}
+                            onClick={() => { setIsNewCard(false); setActiveControl(c); }}
                             className="flex-1 text-[11px] text-left px-1.5 py-1.5 cursor-grab min-w-0">
                             <span className="leading-tight block">{c.safeguardTitle}</span>
                             <div className="flex items-center gap-1 mt-0.5">
@@ -444,10 +447,12 @@ export default function Admin() {
       {activeControl && (
         <ControlDetailPanel
           control={activeControl}
-          onClose={() => setActiveControl(null)}
+          onClose={() => { setActiveControl(null); setIsNewCard(false); }}
           editable
           onSave={handleSave}
           onDelete={handleDelete}
+          defaultEditing={isNewCard}
+          defaultExpanded={isNewCard}
         />
       )}
     </div>
