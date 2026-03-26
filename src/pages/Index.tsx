@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
-import { Search, Download, X } from "lucide-react";
+import { Search, Download, X, Heart } from "lucide-react";
+import { Link } from "react-router-dom";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
 import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, AI_MODALITIES, type Control } from "@/lib/csv-loader";
@@ -223,6 +224,13 @@ const Index = () => {
           <Download className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
           XLSX
         </button>
+
+        <Link
+          to="/admin"
+          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95 flex items-center gap-1"
+        >
+          <Heart className="w-3.5 h-3.5 text-destructive" /> Contribute
+        </Link>
       </header>
 
       {/* Filter Panel */}
