@@ -344,14 +344,14 @@ export default function Admin() {
 
   const openIssue = useCallback(() => {
     const today = new Date().toISOString().split("T")[0];
-    const { added, deleted, modified, reorderCount } = computeDiff();
-    const totalChanges = added.length + deleted.length + modified.length + (reorderCount > 0 ? 1 : 0);
+    const { added, deleted, modified, reordered } = computeDiff();
+    const totalChanges = added.length + deleted.length + modified.length + reordered.length;
 
     const summaryParts: string[] = [];
     if (added.length) summaryParts.push(`${added.length} added`);
     if (modified.length) summaryParts.push(`${modified.length} edited`);
     if (deleted.length) summaryParts.push(`${deleted.length} removed`);
-    if (reorderCount > 0) summaryParts.push(`${reorderCount} reordered`);
+    if (reordered.length) summaryParts.push(`${reordered.length} reordered`);
 
     const title = encodeURIComponent(`[CSV Change]: ${summaryParts.join(", ")} — ${today}`);
 
