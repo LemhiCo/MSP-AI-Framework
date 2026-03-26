@@ -224,6 +224,13 @@ const Index = () => {
           <Download className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
           XLSX
         </button>
+
+        <Link
+          to="/admin"
+          className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95 flex items-center gap-1"
+        >
+          <Heart className="w-3.5 h-3.5 text-destructive" /> Contribute
+        </Link>
       </header>
 
       {/* Filter Panel */}
