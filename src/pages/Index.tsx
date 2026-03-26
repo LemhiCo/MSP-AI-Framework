@@ -16,6 +16,7 @@ const PILLAR_COLORS: Record<string, string> = {
   STR: "90 37% 28%",
   GOV: "280 30% 40%",
   TEC: "168 40% 30%",
+  CPL: "220 55% 50%",
   PRC: "25 70% 46%",
   DAT: "340 45% 42%",
   OBS: "200 50% 36%",
