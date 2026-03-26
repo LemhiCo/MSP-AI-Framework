@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
-import { Search, Download, X } from "lucide-react";
+import { Search, Download, X, Heart } from "lucide-react";
+import { Link } from "react-router-dom";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
 import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, AI_MODALITIES, type Control } from "@/lib/csv-loader";
