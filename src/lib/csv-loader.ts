@@ -118,6 +118,7 @@ export const PILLARS = [
   { id: "STR", name: "Strategy & Buy-In", color: "var(--pillar-str)" },
   { id: "GOV", name: "Policy & Governance", color: "var(--pillar-gov)" },
   { id: "TEC", name: "Technical Readiness", color: "var(--pillar-tec)" },
+  { id: "CPL", name: "Copilot Readiness", color: "var(--pillar-cpl)", optional: true },
   { id: "PRC", name: "Process Mapping", color: "var(--pillar-prc)" },
   { id: "DAT", name: "Data Security & Tagging", color: "var(--pillar-dat)" },
   { id: "OBS", name: "AI Observability", color: "var(--pillar-obs)" },
