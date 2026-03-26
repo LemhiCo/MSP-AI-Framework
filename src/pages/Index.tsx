@@ -93,7 +93,10 @@ const Index = () => {
   };
 
   const filteredControls = useMemo(() => {
+    const hiddenPillarIds = new Set(PILLARS.filter(p => "optional" in p && !showCopilot).map(p => p.id));
     return controls.filter((c) => {
+      const pillarId = c.controlId.split("-")[0];
+      if (hiddenPillarIds.has(pillarId)) return false;
       if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
       if (gateFilter.size && !gateFilter.has(c.gateType)) return false;
       if (aiModalityFilter.size) {
@@ -112,11 +115,11 @@ const Index = () => {
       }
       return true;
     });
-  }, [controls, search, lifecycleFilter, gateFilter, aiModalityFilter]);
+  }, [controls, search, lifecycleFilter, gateFilter, aiModalityFilter, showCopilot]);
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
-    for (const p of PILLARS) {
+    for (const p of visiblePillars) {
       map[p.id] = {};
       for (const ig of IG_LEVELS) {
         map[p.id][ig] = filteredControls.filter(
@@ -125,7 +128,7 @@ const Index = () => {
       }
     }
     return map;
-  }, [filteredControls]);
+  }, [filteredControls, visiblePillars]);
 
   const handleDownloadXlsx = useCallback(() => {
     const rows = controls.map((c) => ({
