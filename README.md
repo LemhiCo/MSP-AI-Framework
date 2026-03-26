@@ -8,7 +8,7 @@ The framework is designed to help MSPs, advisors, and internal IT teams operatio
 
 This CSV is the canonical source for the framework. It powers the web application at:
 
-**[framework.elkhmi.ai](https://framework.elkhmi.ai)**
+**[framework.lemhi.ai](framework.lemhi.ai)**
 
 The webapp provides a visual way to browse, review, and edit controls without needing to work directly in raw CSV format.
 
