@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ContributorsTicker from "./ContributorsTicker";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const WAITLIST_KEY = "lemhi-waitlist-signed-up";
 const ENDPOINT = "https://vpewefckhacxgbypzbmh.supabase.co/functions/v1/notify-waitlist";
@@ -45,6 +46,7 @@ export default function WaitlistGate({ onComplete }: { onComplete: () => void })
   const [role, setRole] = useState("MSP Owner");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const isMobile = useIsMobile();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,24 +85,29 @@ export default function WaitlistGate({ onComplete }: { onComplete: () => void })
       <div className="absolute inset-0 backdrop-blur-sm bg-background/40" />
 
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-md mx-4 bg-card border border-border rounded-xl shadow-2xl p-6 animate-fade-up" style={{ animationDuration: "400ms" }}>
-        <div className="text-center mb-5">
-          <h2 className="text-xl font-serif font-semibold">Join the Expedition</h2>
-          <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-            The AI Controls Framework is an open source, community-driven project built by MSPs and advisors who believe AI governance shouldn't be gatekept. Sign up to explore, contribute, and help shape the standard.
+      <div className={`relative z-10 w-full max-w-md mx-4 bg-card border border-border rounded-xl shadow-2xl animate-fade-up ${isMobile ? "p-4 max-h-[85vh] overflow-y-auto" : "p-6"}`} style={{ animationDuration: "400ms" }}>
+        <div className={`text-center ${isMobile ? "mb-3" : "mb-5"}`}>
+          <h2 className={`font-serif font-semibold ${isMobile ? "text-lg" : "text-xl"}`}>Join the Expedition</h2>
+          <p className={`text-muted-foreground mt-1 leading-relaxed ${isMobile ? "text-xs" : "text-sm mt-1.5"}`}>
+            {isMobile
+              ? "Open source AI governance — built by MSPs, for MSPs. Sign up to explore and contribute."
+              : "The AI Controls Framework is an open source, community-driven project built by MSPs and advisors who believe AI governance shouldn't be gatekept. Sign up to explore, contribute, and help shape the standard."
+            }
           </p>
         </div>
 
-        <div className="mb-5 rounded-lg border border-border bg-muted/40 px-4 py-3 space-y-1.5">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">What you'll get</p>
-          <ul className="text-xs text-foreground/80 space-y-1 leading-relaxed">
-            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>88+ controls across 7 pillars — Strategy to Deployment</li>
-            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Gate-based scoring (Baseline, Scale, Advanced)</li>
-            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Edit, improve, and suggest changes back to the community</li>
-            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Downloadable CSV/XLSX — take it with you, make it yours</li>
-            <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Your name in the contributors list when your changes ship</li>
-          </ul>
-        </div>
+        {!isMobile && (
+          <div className="mb-5 rounded-lg border border-border bg-muted/40 px-4 py-3 space-y-1.5">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">What you'll get</p>
+            <ul className="text-xs text-foreground/80 space-y-1 leading-relaxed">
+              <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>88+ controls across 7 pillars — Strategy to Deployment</li>
+              <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Gate-based scoring (Baseline, Scale, Advanced)</li>
+              <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Edit, improve, and suggest changes back to the community</li>
+              <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Downloadable CSV/XLSX — take it with you, make it yours</li>
+              <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Your name in the contributors list when your changes ship</li>
+            </ul>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <input
