@@ -1,12 +1,16 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { Search, Download, X, Heart, ExternalLink, ArrowRight } from "lucide-react";
+import { Search, Download, X, Heart, ExternalLink, ArrowRight, SlidersHorizontal } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
+import MobileControlList from "@/components/MobileControlList";
+import MobileDetailSheet from "@/components/MobileDetailSheet";
+import MobileFilterSheet from "@/components/MobileFilterSheet";
 import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, AI_MODALITIES, type Control } from "@/lib/csv-loader";
 import * as XLSX from "xlsx";
 import WaitlistGate, { useWaitlistGate } from "@/components/WaitlistGate";
 import ContributorsTicker from "@/components/ContributorsTicker";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const IG_META: Record<string, { label: string; sub: string }> = {
   IG1: { label: "IG1 — Essential", sub: "Minimum safe floor" },
