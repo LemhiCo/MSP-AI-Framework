@@ -70,11 +70,13 @@ function ChipFilter({ label, options, selected, onChange }: {
 }
 
 const Index = () => {
+  const isMobile = useIsMobile();
   const { data: controls = [], isLoading } = useControls();
   const { signedUp, markSignedUp } = useWaitlistGate();
   const [search, setSearch] = useState("");
   const [activeControl, setActiveControl] = useState<Control | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showCopilot, setShowCopilot] = useState(true);
   const [showContributeTooltip, setShowContributeTooltip] = useState(false);
   const [showContributeModal, setShowContributeModal] = useState(false);
