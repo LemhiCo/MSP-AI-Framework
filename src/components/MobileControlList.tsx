@@ -20,7 +20,7 @@ interface Props {
 
 export default function MobileControlList({ controls, visiblePillars, onSelect }: Props) {
   const grouped = useMemo(() => {
-    const result: { pillar: typeof PILLARS[0]; igs: { ig: string; controls: Control[] }[] }[] = [];
+    const result: { pillar: (typeof PILLARS)[number]; igs: { ig: string; controls: Control[] }[] }[] = [];
     for (const p of visiblePillars) {
       const pillarControls = controls.filter(c => c.controlId.startsWith(p.id));
       if (pillarControls.length === 0) continue;
