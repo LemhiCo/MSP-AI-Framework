@@ -14,7 +14,7 @@ const PILLAR_COLORS: Record<string, string> = {
 
 interface Props {
   controls: Control[];
-  visiblePillars: typeof PILLARS;
+  visiblePillars: readonly (typeof PILLARS)[number][];
   onSelect: (control: Control) => void;
 }
 
