@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ContributorsTicker from "./ContributorsTicker";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const WAITLIST_KEY = "lemhi-waitlist-signed-up";
 const ENDPOINT = "https://vpewefckhacxgbypzbmh.supabase.co/functions/v1/notify-waitlist";
