@@ -11,7 +11,7 @@ export default function ContributorsTicker() {
   const [contributors, setContributors] = useState<Contributor[]>([]);
 
   useEffect(() => {
-    fetch("/data/contributors.csv")
+    fetch("https://raw.githubusercontent.com/LemhiCo/MSP-AI-Framework/main/public/data/contributors.csv")
       .then((r) => r.text())
       .then((text) => {
         const parsed = Papa.parse<Contributor>(text, { header: true, skipEmptyLines: true });
