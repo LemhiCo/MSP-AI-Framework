@@ -73,7 +73,7 @@ const mapControlRow = (r: Record<string, string>): Control => ({
 });
 
 export async function loadControls(): Promise<Control[]> {
-  return fetchCSV("/data/controls.csv", mapControlRow);
+  return fetchCSV("https://raw.githubusercontent.com/LemhiCo/MSP-AI-Framework/main/public/data/controls.csv", mapControlRow);
 }
 
 export function parseControlsCSV(csvText: string): Control[] {
