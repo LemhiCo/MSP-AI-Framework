@@ -4,6 +4,7 @@ import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, AI_MODALITIES, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
 import { Link } from "react-router-dom";
 import Papa from "papaparse";
+import pako from "pako";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
 import { toast } from "sonner";
 import ContributorsTicker from "@/components/ContributorsTicker";
