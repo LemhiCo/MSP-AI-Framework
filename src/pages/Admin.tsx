@@ -4,6 +4,7 @@ import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, AI_MODALITIES, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
 import { Link } from "react-router-dom";
 import Papa from "papaparse";
+import pako from "pako";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
 import { toast } from "sonner";
 import ContributorsTicker from "@/components/ContributorsTicker";
@@ -378,30 +379,29 @@ export default function Admin() {
       lines.push("");
     }
 
-    // Build compact diff payload: only changed rows as +/- CSV lines
-    const headers = Object.keys(controlToCSVRow(EMPTY_CONTROL));
-    const toCsvLine = (c: Control) => headers.map(h => {
-      const v = controlToCSVRow(c)[h] || "";
-      return `"${v.replace(/"/g, '""')}"`;
-    }).join(",");
-
-    const diffLines: string[] = [];
-    for (const c of deleted) diffLines.push(`-${toCsvLine(c)}`);
-    for (const c of added) diffLines.push(`+${toCsvLine(c)}`);
+    // Build compact field-level diff + deflate compression
+    const patches: string[] = [];
+    for (const c of deleted) patches.push(`D|${c.controlId}`);
+    for (const c of added) {
+      const row = controlToCSVRow(c);
+      const fields = Object.entries(row).filter(([, v]) => v).map(([k, v]) => `${k}=${v}`).join("\t");
+      patches.push(`A|${c.controlId}|${fields}`);
+    }
     for (const { control } of modified) {
       const orig = originalControls.find(o => o.safeguardTitle === control.safeguardTitle);
-      if (orig) diffLines.push(`-${toCsvLine(orig)}`);
-      diffLines.push(`+${toCsvLine(control)}`);
+      if (!orig) continue;
+      const origRow = controlToCSVRow(orig);
+      const currRow = controlToCSVRow(control);
+      const diffs = Object.keys(currRow).filter(k => origRow[k] !== currRow[k]).map(k => `${k}=${currRow[k]}`).join("\t");
+      if (diffs) patches.push(`M|${control.controlId}|${diffs}`);
     }
     for (const r of reordered) {
-      const ctrl = allControls.find(c => c.controlId === r.to);
-      const orig = originalControls.find(c => c.safeguardTitle === ctrl?.safeguardTitle);
-      if (orig) diffLines.push(`-${toCsvLine(orig)}`);
-      if (ctrl) diffLines.push(`+${toCsvLine(ctrl)}`);
+      patches.push(`R|${r.from}|${r.to}`);
     }
 
-    const diffPayload = `H:${headers.join(",")}\n${diffLines.join("\n")}`;
-    const base64Payload = btoa(unescape(encodeURIComponent(diffPayload)));
+    const diffText = patches.join("\n");
+    const compressed = pako.deflate(new TextEncoder().encode(diffText));
+    const base64Payload = btoa(String.fromCharCode(...compressed));
 
     const body = encodeURIComponent(
       `## Proposed Framework Changes\n\n` +
@@ -412,7 +412,7 @@ export default function Admin() {
       `---\n\n` +
       `## Why this change should be made\n\n_Explain the reasoning, evidence, or implementation context for this recommendation._\n\n` +
       `---\n\n` +
-      `<!-- MSP_CONTROLS_DIFF_BASE64:${base64Payload} -->`
+      `<!-- MSP_PATCH_V2:${base64Payload} -->`
     );
     const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
     window.open(url, "_blank");
