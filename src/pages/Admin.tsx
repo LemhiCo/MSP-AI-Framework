@@ -378,10 +378,30 @@ export default function Admin() {
       lines.push("");
     }
 
-    // Build base64 payload of the full modified CSV for automated PR creation
-    const csvRows = allControls.map(controlToCSVRow);
-    const csvString = Papa.unparse(csvRows);
-    const base64Payload = btoa(unescape(encodeURIComponent(csvString)));
+    // Build compact diff payload: only changed rows as +/- CSV lines
+    const headers = Object.keys(controlToCSVRow(EMPTY_CONTROL));
+    const toCsvLine = (c: Control) => headers.map(h => {
+      const v = controlToCSVRow(c)[h] || "";
+      return `"${v.replace(/"/g, '""')}"`;
+    }).join(",");
+
+    const diffLines: string[] = [];
+    for (const c of deleted) diffLines.push(`-${toCsvLine(c)}`);
+    for (const c of added) diffLines.push(`+${toCsvLine(c)}`);
+    for (const { control } of modified) {
+      const orig = originalControls.find(o => o.safeguardTitle === control.safeguardTitle);
+      if (orig) diffLines.push(`-${toCsvLine(orig)}`);
+      diffLines.push(`+${toCsvLine(control)}`);
+    }
+    for (const r of reordered) {
+      const ctrl = allControls.find(c => c.controlId === r.to);
+      const orig = originalControls.find(c => c.safeguardTitle === ctrl?.safeguardTitle);
+      if (orig) diffLines.push(`-${toCsvLine(orig)}`);
+      if (ctrl) diffLines.push(`+${toCsvLine(ctrl)}`);
+    }
+
+    const diffPayload = `H:${headers.join(",")}\n${diffLines.join("\n")}`;
+    const base64Payload = btoa(unescape(encodeURIComponent(diffPayload)));
 
     const body = encodeURIComponent(
       `## Proposed Framework Changes\n\n` +
@@ -392,9 +412,7 @@ export default function Admin() {
       `---\n\n` +
       `## Why this change should be made\n\n_Explain the reasoning, evidence, or implementation context for this recommendation._\n\n` +
       `---\n\n` +
-      `## 🤖 Automated Payload\n\n` +
-      `> Do not edit below this line. This data is used by automation to create a PR.\n\n` +
-      `\`\`\`csv-base64\n${base64Payload}\n\`\`\`\n`
+      `<!-- MSP_CONTROLS_DIFF_BASE64:${base64Payload} -->`
     );
     const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
     window.open(url, "_blank");
