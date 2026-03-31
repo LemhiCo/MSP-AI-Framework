@@ -378,7 +378,11 @@ export default function Admin() {
       lines.push("");
     }
 
-    const filename = csvHash ? `controls-${csvHash}.csv` : "controls.csv";
+    // Build base64 payload of the full modified CSV for automated PR creation
+    const csvRows = allControls.map(controlToCSVRow);
+    const csvString = Papa.unparse(csvRows);
+    const base64Payload = btoa(unescape(encodeURIComponent(csvString)));
+
     const body = encodeURIComponent(
       `## Proposed Framework Changes\n\n` +
       `**Date:** ${today}\n` +
@@ -388,11 +392,13 @@ export default function Admin() {
       `---\n\n` +
       `## Why this change should be made\n\n_Explain the reasoning, evidence, or implementation context for this recommendation._\n\n` +
       `---\n\n` +
-      `📎 **Please attach the recommended CSV below** using "Paste, drop, or click to add files" and upload \`${filename}\`.`
+      `## 🤖 Automated Payload\n\n` +
+      `> Do not edit below this line. This data is used by automation to create a PR.\n\n` +
+      `\`\`\`csv-base64\n${base64Payload}\n\`\`\`\n`
     );
     const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
     window.open(url, "_blank");
-  }, [computeDiff, csvHash]);
+  }, [computeDiff, allControls]);
 
   if (isLoading) {
     return (
