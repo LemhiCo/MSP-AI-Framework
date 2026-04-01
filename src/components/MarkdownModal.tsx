@@ -66,14 +66,14 @@ export default function MarkdownModal({ src, open, onClose, title, icon, cta }: 
         <div
           className="overflow-y-auto flex-1 px-6 py-5 prose prose-sm dark:prose-invert max-w-none
             prose-headings:font-serif
-            prose-h2:text-base prose-h2:mt-6 prose-h2:mb-2 prose-h2:font-semibold
-            prose-h3:text-sm prose-h3:mt-4 prose-h3:mb-1.5 prose-h3:font-semibold
+            prose-h2:text-lg prose-h2:mt-8 prose-h2:mb-3 prose-h2:font-semibold
+            prose-h3:text-base prose-h3:mt-6 prose-h3:mb-2 prose-h3:font-semibold
             prose-p:text-[13px] prose-p:leading-relaxed prose-p:text-foreground/80 prose-p:my-1.5
             prose-li:text-[13px] prose-li:leading-relaxed prose-li:text-foreground/80
             prose-ul:my-2 prose-ul:pl-1
             prose-strong:text-foreground prose-strong:font-semibold
             prose-em:text-muted-foreground
-            prose-hr:border-border prose-hr:my-5"
+            prose-hr:border-border prose-hr:my-6"
           dangerouslySetInnerHTML={{ __html: html }}
         />
 
