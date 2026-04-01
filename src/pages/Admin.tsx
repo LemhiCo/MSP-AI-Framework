@@ -414,7 +414,6 @@ export default function Admin() {
     const { added, deleted, modified, reordered } = computeDiff();
     if (added.length + deleted.length + modified.length + reordered.length > 0) {
       setShowIssueButton(true);
-      setShowContributePrompt(true);
     }
   }, [allControls, generateHash, computeDiff]);
 
