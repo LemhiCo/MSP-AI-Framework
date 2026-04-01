@@ -1,238 +1,180 @@
-# AI Controls Framework CSV
+# MAGIC Framework
+**Managed AI Governance & Implementation Controls**
+_Run with the GSO Loop: Govern. Secure. Operate._
 
-This repository contains the source CSV for the **AI Controls Framework**, an open source community project for defining, reviewing, and improving practical AI governance controls across customer environments.
-
-The framework is designed to help MSPs, advisors, and internal IT teams operationalize AI readiness in a structured way across pillars such as strategy, governance, technical readiness, Copilot readiness, process, data, observability, and deployment.
+---
 
 ## What this is
 
-This CSV is the canonical source for the framework. It powers the web application at:
+The **MAGIC Framework** is an MSP-native, controls-first framework for enabling AI across customer environments in a way that is **repeatable, governable, and monetizable**.
 
-**[framework.lemhi.ai](framework.lemhi.ai)**
+MAGIC is not a theory of AI. It is not a list of tools. It is a **control system** designed for Managed Service Providers who are responsible for operating AI across dozens or hundreds of tenants, each with different risk profiles, data realities, and business goals.
 
-The webapp provides a visual way to browse, review, and edit controls without needing to work directly in raw CSV format.
+If CIS Controls are how MSPs made cybersecurity operational, **MAGIC is how MSPs make AI operational**.
 
-This is an **open source community project**. Anyone can review the framework, suggest improvements, and contribute updates.
+This repository contains the source CSV that powers the framework. It is an **open source community project** — anyone can review the controls, suggest improvements, and contribute updates.
 
----
-
-## Free access
-
-You can access the framework **for free** through the webapp.
-
-If you are sent to the registration page, the project includes a review-mode bypass for community access. Use the review query flag configured for the site to enter review mode and access the framework without registration.
-
-If you are sharing this README internally, include the exact review URL your deployment is using.
+The framework is browsable at **[framework.lemhi.ai](https://framework.lemhi.ai)**.
 
 ---
 
-## Visual reference
+## The Core Model: GSO
 
-The framework is also available in a visual editor experience inside the app.
+MAGIC is executed using a simple, durable operating loop:
 
-**App / UI reference:** `Admin — Controls Editor`
+### Govern
+Establish clear ownership, intent, and boundaries before AI spreads. Governance answers:
+- Who owns AI decisions in this tenant?
+- What outcomes are we trying to produce?
+- Which users, tools, and use cases are in scope right now?
+- How do changes get approved, reviewed, or rolled back?
 
-In the UI, controls are grouped by pillar and implementation group, and contributors can make edits directly in the admin editor, then export a revised CSV for contribution.
+Governance happens **before** broad enablement and continues throughout the lifecycle.
 
-You should see an interface with pillars such as:
+### Secure
+Reduce risk by making AI respect identity, data, and environment boundaries. Security in MAGIC assumes AI amplifies whatever already exists — good or bad. Controls focus on:
+- Identity and access hygiene before AI access is granted
+- Data scope, classification, and oversharing cleanup
+- Technical guardrails that enforce policy, not just document it
+- Auditability and evidence, not assumptions
 
-- STR
-- GOV
-- TEC
-- Copilot Readiness
-- PRC
-- DAT
-- OBS
-- DEP
+Security is not "lock everything down." It is **intentional containment**.
 
-Along with actions like:
+### Operate
+Run AI like a production service, not a pilot that never ends. MAGIC treats AI as something that must be deployed in stages, supported by service desks, observed and measured, and rolled back when it misbehaves.
 
-- **New Control**
-- **Copilot**
-- **Save CSV**
-
-If you are using **Copilotive**, the framework includes a **Copilot-specific control pillar** intended for MSPs using Copilotive to assess and operationalize Microsoft Copilot readiness.
-
----
-
-## How to review the framework
-
-There are two ways to review the framework:
-
-### 1. In the webapp
-Go to **framework.elkhmi.ai** and browse the framework visually by pillar and implementation group.
-
-This is the best way to:
-- review the control structure
-- understand the framework layout
-- inspect individual controls quickly
-- see how controls are organized across maturity levels
-
-### 2. In the CSV
-Open the CSV directly in Excel, Google Sheets, or any CSV-compatible editor if you prefer working with the raw data model.
-
----
-
-## How to propose changes
-
-Community contributions are encouraged.
-
-### Recommended workflow
-
-1. Open the framework in the webapp.
-2. Go to the **admin UI / Controls Editor**.
-3. Make your edits **locally** in the editor.
-4. When prompted, **download the updated CSV**.
-5. Use that generated CSV as the basis for your contribution.
-6. Open a **Pull Request** against this repository with your proposed changes.
-
-This keeps the contribution flow clean and makes it easy to review proposed framework updates as CSV diffs.
-
-### Important note
-Please do **not** treat the live webapp as the source of truth for direct production editing. The source of truth for proposed changes should be the exported CSV submitted through a PR.
-
----
-
-## Contribution expectations
-
-When proposing framework changes, please try to keep updates aligned with the existing structure and style of the framework.
-
-That includes maintaining consistency across columns such as:
-
-- `Control ID`
-- `Pillar`
-- `IG`
-- `Safeguard Title`
-- `Customer Objective`
-- `ELI5`
-- `Detailed Requirement`
-- `Lifecycle Trigger`
-- `Cadence`
-- `Primary Stakeholder`
-- `Microsoft Tool Recommendation`
-- `Generic Tooling Category`
-- `Evidence of Completion`
-- `Raw Weight`
-- `Gate Type`
-- `Minimum Status to Pass`
-- `Minimum Evidence to Pass`
-- `Fail Condition`
-- `Why it Matters`
-- `End Customer Business Value`
-- `Customer Conversation Track`
-- `Who Cares Most (Customer)`
-- relevance flags
-- `First Required When`
-
-Good contributions usually do one or more of the following:
-
-- improve wording clarity
-- normalize control structure
-- add missing safeguards
-- improve evidence requirements
-- refine stakeholder alignment
-- tighten GTM language
-- improve ELI5 explanations
-- expand support for new AI deployment patterns
+If you cannot operate it, you should not enable it.
 
 ---
 
 ## Framework structure
 
-The framework is organized into pillars and implementation groups:
-
 ### Implementation Groups
-- **IG1**: baseline readiness
-- **IG2**: scaling and managed practice
-- **IG3**: advanced and higher-maturity controls
+
+| IG | Meaning |
+|----|---------|
+| **IG1** | Baseline readiness |
+| **IG2** | Scaling and managed practice |
+| **IG3** | Advanced and higher-maturity controls |
 
 ### Pillars
-- **Strategy & Buy-In**
-- **Policy & Governance**
-- **Technical Readiness**
-- **Copilot Readiness**
-- **Process Mapping**
-- **Data Security & Tagging**
-- **AI Observability**
-- **AI Tooling & Deployment**
 
-### Copilot Readiness
-The framework includes a dedicated **Copilot Readiness** pillar for Microsoft Copilot environments.
-
-This is especially useful for MSPs and service providers using **Copilotive**, where Copilot-specific readiness needs to be assessed alongside the broader AI operating model.
-
-Examples of areas covered in this pillar include:
-- pilot licensing and app scoping
-- self-service purchase controls
-- web grounding decisions
-- SharePoint grounding boundaries
-- Teams meeting and transcript policy
-- agent access and publishing controls
-- managed device and browser containment
-- Copilot telemetry and audit readiness
+| Pillar | Focus |
+|--------|-------|
+| **Strategy & Buy-In** | Executive ownership, use-case prioritization, roadmap |
+| **Policy & Governance** | Policy lifecycle, approval workflows, accountability |
+| **Technical Readiness** | Identity, access, environment, and platform hygiene |
+| **Copilot Readiness** | Microsoft Copilot-specific controls and guardrails |
+| **Process Mapping** | Workflow integration, incident response, change management |
+| **Data Security & Tagging** | Classification, oversharing, data boundary enforcement |
+| **AI Observability** | Monitoring, drift detection, audit, and reporting |
+| **AI Tooling & Deployment** | Staged rollout, service management, rollback |
 
 ---
 
-## Why this exists
+## What qualifies as a MAGIC control
 
-Most organizations are adopting AI faster than they are governing it.
+MAGIC is deliberate about what belongs in the framework. A control must meet **all** of the following:
 
-This framework exists to help the community move from vague AI enthusiasm to a practical, reviewable operating model that answers questions like:
+1. **Operational, not conceptual** — it describes something that can be done, configured, reviewed, or evidenced. "Have an AI strategy" is not a control. "Named executive sponsor with approval authority" is.
+2. **Has a clear owner** — a real role (customer executive, MSP vCIO, security lead, platform owner, service delivery manager). If no one owns it, it does not exist.
+3. **Can produce evidence** — a policy doc, configuration export, dashboard, meeting cadence, decision log, or signed checklist. MAGIC assumes audits and QBRs are normal.
+4. **Scales across tenants** — repeatable across customers with different sizes and industries. Controls that only work for one-off engagements or hero engineers do not belong.
+5. **Aligns to GSO** — every control must clearly support Govern, Secure, or Operate. If it does not strengthen one of those motions, it is noise.
 
-- Who owns AI?
-- What data can it access?
-- What should be enabled first?
-- How do we prove value?
-- How do we govern Copilot safely?
-- How do we scale without chaos?
+### What explicitly does NOT belong
 
-The goal is not to create shelfware. The goal is to create a **usable, improvable control framework** that can be applied in real customer environments.
+- **Tool comparisons or vendor rankings** — MAGIC is tool-aware, not tool-biased. Tools change faster than controls.
+- **Custom application development guidance** — MAGIC is not a software engineering framework.
+- **Ethics without enforcement** — ethics only appear when enforceable through policy, access restrictions, or audit.
+- **One-time assessments** — every control assumes ongoing cadence, review, and potential rollback.
+- **End-user productivity tips** — not a prompt library or training course. Those belong in enablement programs.
 
 ---
 
-## Open source community project
+## How to contribute
 
-This project is intentionally community-driven.
+Community contributions are encouraged and the preferred path is through the webapp.
 
-If you see something that should be improved:
-- fix it
-- export the updated CSV
-- open a PR
-- help make the framework better for everyone
+### Recommended workflow
+
+1. Open the framework at **[framework.lemhi.ai](https://framework.lemhi.ai)**.
+2. Go to the **Admin — Controls Editor**.
+3. Make your edits locally in the editor.
+4. When prompted, download the updated CSV or submit via the **Suggest Change** button.
+5. A GitHub Issue will be opened automatically with your proposed changes.
+6. Maintainers will review and open a Pull Request against this repository.
+
+### Contribution expectations
+
+Good contributions usually do one or more of the following:
+- Improve wording clarity
+- Normalize control structure
+- Add missing safeguards
+- Improve evidence requirements
+- Refine stakeholder alignment
+- Tighten customer-facing language
+- Expand support for new AI deployment patterns
+
+When opening a PR manually, include:
+- A short summary of what changed
+- Why the change improves the framework
+- Which pillar(s) or IG(s) were affected
+- Whether it is net-new, normalization, or wording cleanup
+
+### Column reference
+
+| Column | Description |
+|--------|-------------|
+| `Control ID` | Unique identifier (e.g. `STR-IG2-01`) |
+| `Pillar` | Framework pillar |
+| `IG` | Implementation group (IG1 / IG2 / IG3) |
+| `Safeguard Title` | Short name for the control |
+| `Customer Objective` | What this achieves for the customer |
+| `Detailed Requirement` | Full specification |
+| `Lifecycle Trigger` | When this control is activated |
+| `Cadence` | How often it is reviewed or enforced |
+| `Primary Stakeholder` | Who owns it |
+| `Microsoft Tool Recommendation` | Microsoft-native tooling reference |
+| `Generic Tooling Category` | Vendor-agnostic tool category |
+| `Evidence of Completion` | What proof looks like |
+| `Raw Weight` | Relative priority weight |
+| `Gate Type` | Baseline / Scale Gate / etc. |
+| `Minimum Status to Pass` | Minimum implementation state required |
+| `Minimum Evidence to Pass` | Minimum evidence required |
+| `Fail Condition` | What failure looks like |
+| `Why it Matters` | Rationale |
+| `Applies To` | Scope |
+| `End Customer Business Value` | Customer outcome language |
+| `Customer Conversation Track` | GTM / QBR framing |
+| `Who Cares Most (Customer)` | Key customer stakeholder |
+| `Relevant: GenAI` | Applicability flag |
+| `Relevant: Custom GPTs` | Applicability flag |
+| `Relevant: Agentic AI` | Applicability flag |
+| `Relevant: Digital Workers` | Applicability flag |
+| `Relevant: Cowork` | Applicability flag |
+| `First Required When` | Entry point in the AI maturity journey |
+
+---
+
+## Why MSPs need this
+
+AI changes the MSP risk equation. An MSP does not enable AI once — it enables AI across many customers, tools, regulatory environments, and business models. That creates **compound risk** and **compound opportunity**.
+
+MAGIC exists to:
+- Turn AI from a consulting motion into a managed service
+- Prevent shadow AI from becoming the default operating model
+- Give MSPs a defensible, repeatable way to say "yes" to AI without losing control
+- Create a shared language between MSPs, customers, security teams, and executives
+
+---
+
+## Open source
+
+This project is intentionally community-driven. If you see something that should be improved — fix it, submit a change, and help make the framework better for everyone.
 
 The best version of this framework will come from real operators, MSPs, security leaders, enablement teams, and practitioners contributing what actually works.
 
 ---
 
-## Suggested contribution format
-
-When opening a PR, it helps to include:
-
-- a short summary of what changed
-- why the change improves the framework
-- which pillar(s) or IG(s) were affected
-- whether the change is net-new, normalization, or wording cleanup
-
-Example:
-
-> Added 3 new Copilot Readiness controls for agent publishing governance and normalized stakeholder wording across IG2.
-
----
-
-## License / usage
-
-Use this framework freely for review, improvement, and community contribution according to the license in this repository.
-
-If you adapt it for internal or customer use, please preserve attribution where appropriate and contribute meaningful improvements back when possible.
-
----
-
-## Getting started
-
-- Review the framework at **framework.elkhmi.ai**
-- Use the review-mode access path if registration is bypassed in your deployment
-- Make edits in the **Admin — Controls Editor**
-- Export a new CSV
-- Open a PR against this repository
-
-That is the preferred workflow for proposed changes.
+**The MAGIC Framework gives MSPs a practical, control-based way to Govern, Secure, and Operate AI at scale across customer environments without relying on hype, heroics, or hope.**
