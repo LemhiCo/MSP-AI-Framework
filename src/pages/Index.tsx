@@ -10,6 +10,7 @@ import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, AI_MODALITIES, type Control } f
 import * as XLSX from "xlsx";
 import WaitlistGate, { useWaitlistGate } from "@/components/WaitlistGate";
 import ContributorsTicker from "@/components/ContributorsTicker";
+import MarkdownModal from "@/components/MarkdownModal";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const IG_META: Record<string, { label: string; sub: string }> = {
