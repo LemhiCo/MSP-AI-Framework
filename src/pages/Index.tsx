@@ -513,6 +513,9 @@ const Index = () => {
         src="/data/contributor.md"
         open={showContributeModal}
         onClose={() => setShowContributeModal(false)}
+        icon="🤝"
+        title="Contributing to MAGIC"
+        cta={{ label: "Start Contributing", to: "/admin" }}
       />
 
       {/* MAGIC Framework Modal — shown after signup / preview */}
@@ -520,6 +523,9 @@ const Index = () => {
         src="/data/magic.md"
         open={showMagicModal}
         onClose={() => setShowMagicModal(false)}
+        icon="✦"
+        title="MAGIC Framework"
+        cta={{ label: "View on GitHub", href: "https://github.com/LemhiCo/MSP-AI-Framework/" }}
       />
     </div>
   );
