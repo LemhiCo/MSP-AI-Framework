@@ -4,6 +4,16 @@ _Run with the GSO Loop: Govern. Secure. Operate._
 
 ---
 
+## TL;DR
+
+MAGIC is a controls framework for MSPs delivering AI across customer environments. It tells you what to govern, what to secure, and how to operate AI as a repeatable managed service — not a one-time project.
+
+It is organized around a three-part loop: **Govern. Secure. Operate.** Every control in the framework maps to one of those motions, has a real owner, and can produce evidence. If it can't, it doesn't belong.
+
+Think of it like CIS Controls, but for AI.
+
+---
+
 ## What this is
 
 The **MAGIC Framework** is an MSP-native, controls-first framework for enabling AI across customer environments in a way that is **repeatable, governable, and monetizable**.
