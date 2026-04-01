@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from "react"; // v2
+import { useState, useMemo, useCallback } from "react"; // v3
+import { AlertTriangle } from "lucide-react";
 import { Search, Plus, Download, ArrowLeft, X, ChevronUp, ChevronDown, ExternalLink } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
 import { PILLARS, IG_LEVELS, AI_MODALITIES, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
@@ -77,6 +78,79 @@ function ChipFilter({ label, options, selected, onChange }: {
               : "bg-card text-muted-foreground border-border hover:border-primary/40"
           }`}>{o}</button>
       ))}
+    </div>
+  );
+}
+
+function ContributePrompt({ onClose, onOpenIssue, csvHash }: { onClose: () => void; onOpenIssue: () => void; csvHash: string }) {
+  const [ack, setAck] = useState(false);
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+      <div className="absolute inset-0 backdrop-blur-sm bg-background/40" onClick={onClose} />
+      <div className="relative z-10 w-full max-w-md mx-4 bg-card border border-border rounded-xl shadow-2xl p-6 animate-fade-up" style={{ animationDuration: "400ms" }}>
+        <div className="text-center mb-4">
+          <div className="text-3xl mb-2">🤝</div>
+          <h2 className="text-xl font-serif font-semibold">Share Your Improvements</h2>
+          <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+            Want to contribute your changes back? Open a GitHub Issue and <strong>attach your downloaded CSV</strong>.
+          </p>
+        </div>
+
+        {/* Critical warning */}
+        <div className="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 space-y-1.5">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-destructive shrink-0" />
+            <p className="text-xs font-bold text-destructive uppercase tracking-wide">CSV Upload Required</p>
+          </div>
+          <p className="text-xs text-foreground/80 leading-relaxed">
+            Automated patches are <strong>not supported</strong>. Your contribution <strong>will not be processed</strong> unless you attach your downloaded CSV file
+            {csvHash ? <> (<code className="text-[10px] bg-muted px-1 py-0.5 rounded font-mono">…{csvHash.slice(-6)}</code>)</> : null} to the GitHub Issue.
+          </p>
+        </div>
+
+        <div className="mb-4 rounded-lg border border-border bg-muted/40 px-4 py-3 space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">How it works</p>
+          <ol className="text-xs text-foreground/80 space-y-1 leading-relaxed list-decimal list-inside">
+            <li>Click below to open a pre-filled GitHub Issue</li>
+            <li><strong>Attach your downloaded CSV</strong> to the issue</li>
+            <li>Submit — maintainers will review and merge</li>
+          </ol>
+        </div>
+
+        {/* Acknowledgement checkbox */}
+        <label className="flex items-start gap-2.5 mb-4 cursor-pointer select-none group">
+          <input
+            type="checkbox"
+            checked={ack}
+            onChange={(e) => setAck(e.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded border-border accent-primary shrink-0"
+          />
+          <span className="text-xs text-foreground/80 leading-relaxed">
+            I understand I <strong>must upload my CSV file</strong> to the GitHub Issue or my contribution cannot be reviewed.
+          </span>
+        </label>
+
+        <div className="space-y-2">
+          <button
+            onClick={onOpenIssue}
+            disabled={!ack}
+            className={`w-full py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+              ack
+                ? "bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.97]"
+                : "bg-muted text-muted-foreground cursor-not-allowed opacity-60"
+            }`}
+          >
+            <ExternalLink className="w-4 h-4" />
+            Open GitHub Issue
+          </button>
+          <button
+            onClick={onClose}
+            className="w-full py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          >
+            Maybe later
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -629,44 +703,11 @@ export default function Admin() {
 
       {/* Contribute Prompt */}
       {showContributePrompt && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center">
-          <div className="absolute inset-0 backdrop-blur-sm bg-background/40" onClick={() => setShowContributePrompt(false)} />
-          <div className="relative z-10 w-full max-w-md mx-4 bg-card border border-border rounded-xl shadow-2xl p-6 animate-fade-up" style={{ animationDuration: "400ms" }}>
-            <div className="text-center mb-5">
-              <div className="text-3xl mb-2">🤝</div>
-              <h2 className="text-xl font-serif font-semibold">Share Your Improvements</h2>
-              <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-                Your changes have been downloaded. Want to contribute them back to the community? Open a GitHub Issue so maintainers can review and merge your updates.
-              </p>
-            </div>
-
-            <div className="mb-5 rounded-lg border border-border bg-muted/40 px-4 py-3 space-y-1.5">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Why contribute?</p>
-              <ul className="text-xs text-foreground/80 space-y-1 leading-relaxed">
-                <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Help MSPs and advisors worldwide with better controls</li>
-                <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Your changes are pre-filled — just review and submit</li>
-                <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>Attach your downloaded CSV and you're done</li>
-                <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✦</span>No Git knowledge required — it's just a form</li>
-              </ul>
-            </div>
-
-            <div className="space-y-2">
-              <button
-                onClick={() => { setShowContributePrompt(false); openIssue(); }}
-                className="w-full py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 active:scale-[0.97] transition-all flex items-center justify-center gap-2"
-              >
-                <ExternalLink className="w-4 h-4" />
-                Open GitHub Issue
-              </button>
-              <button
-                onClick={() => setShowContributePrompt(false)}
-                className="w-full py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                Maybe later
-              </button>
-            </div>
-          </div>
-        </div>
+        <ContributePrompt
+          onClose={() => setShowContributePrompt(false)}
+          onOpenIssue={() => { setShowContributePrompt(false); openIssue(); }}
+          csvHash={csvHash}
+        />
       )}
       <ContributorsTicker />
     </div>
