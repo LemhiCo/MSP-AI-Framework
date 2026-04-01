@@ -197,7 +197,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Waitlist gate */}
-      {!signedUp && <WaitlistGate onComplete={markSignedUp} />}
+      {!signedUp && <WaitlistGate onComplete={() => { markSignedUp(); setShowMagicModal(true); }} />}
 
       {/* ─── MOBILE HEADER ─── */}
       {isMobile ? (
