@@ -202,7 +202,7 @@ const Index = () => {
         <>
           <header className="sticky top-0 z-30 bg-card border-b border-border px-3 py-2 shadow-sm">
             <div className="flex items-center gap-2">
-              <h1 className="text-xs font-serif font-semibold truncate flex-1">MSP AI Enablement</h1>
+              <h1 className="text-xs font-serif font-semibold truncate flex-1">MAGIC</h1>
               <button
                 onClick={() => {
                   setShowCopilot(v => !v);
