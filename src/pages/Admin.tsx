@@ -488,6 +488,10 @@ export default function Admin() {
       `<!-- MSP_PATCH_V2:${base64Payload} -->`
     );
     const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
+    const MAX_URL_LENGTH = 8000;
+    if (url.length > MAX_URL_LENGTH) {
+      setShowContributePrompt(true);
+    }
     window.open(url, "_blank");
   }, [computeDiff, allControls]);
 
