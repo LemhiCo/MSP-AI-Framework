@@ -201,10 +201,20 @@ body::before {
   color: hsl(var(--foreground) / 0.75);
   margin: 0.25rem 0;
 }
-.md-content .md-section ul,
+.md-content .md-section ul {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+  list-style-type: disc;
+}
 .md-content .md-section ol {
   margin: 0.5rem 0;
   padding-left: 1.25rem;
+  list-style-type: decimal;
+}
+.md-content .md-intro ul {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+  list-style-type: disc;
 }
 .md-content .md-section li {
   font-size: 0.8125rem;
