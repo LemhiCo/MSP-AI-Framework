@@ -10,6 +10,7 @@ import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, AI_MODALITIES, type Control } f
 import * as XLSX from "xlsx";
 import WaitlistGate, { useWaitlistGate } from "@/components/WaitlistGate";
 import ContributorsTicker from "@/components/ContributorsTicker";
+import MarkdownModal from "@/components/MarkdownModal";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const IG_META: Record<string, { label: string; sub: string }> = {
@@ -81,6 +82,16 @@ const Index = () => {
   const [showContributeTooltip, setShowContributeTooltip] = useState(false);
   const [showContributeModal, setShowContributeModal] = useState(false);
   const [showCopilotTooltip, setShowCopilotTooltip] = useState(false);
+  const [showMagicModal, setShowMagicModal] = useState(false);
+
+  // Show MAGIC modal once per session for returning/preview users
+  useEffect(() => {
+    const magicKey = "lemhi-magic-modal-seen";
+    if (signedUp && !localStorage.getItem(magicKey)) {
+      localStorage.setItem(magicKey, "true");
+      setShowMagicModal(true);
+    }
+  }, [signedUp]);
 
   useEffect(() => {
     const contribKey = "lemhi-contribute-tooltip-seen";
@@ -195,7 +206,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Waitlist gate */}
-      {!signedUp && <WaitlistGate onComplete={markSignedUp} />}
+      {!signedUp && <WaitlistGate onComplete={() => { markSignedUp(); setShowMagicModal(true); }} />}
 
       {/* ─── MOBILE HEADER ─── */}
       {isMobile ? (
@@ -497,86 +508,19 @@ const Index = () => {
       {/* Contributors */}
       <ContributorsTicker />
 
-      {/* Contribute Process Modal */}
-      {showContributeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowContributeModal(false)}>
-          <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 animate-fade-up relative" onClick={(e) => e.stopPropagation()} style={{ animationDuration: "300ms" }}>
-            <button onClick={() => setShowContributeModal(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
-              <X className="w-4 h-4" />
-            </button>
+      {/* Contribute Process Modal — powered by contributor.md */}
+      <MarkdownModal
+        src="/data/contributor.md"
+        open={showContributeModal}
+        onClose={() => setShowContributeModal(false)}
+      />
 
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-2xl">🤝</span>
-              <h2 className="text-lg font-serif font-semibold">Join the Community</h2>
-            </div>
-            <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
-              The AI Controls Framework is built by practitioners, for practitioners. Every contribution — big or small — makes the framework better for MSPs and advisors everywhere.
-            </p>
-
-            <div className="space-y-3.5 mb-5">
-              <div className="flex gap-3">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">1</span>
-                <div>
-                  <p className="text-sm font-semibold">Edit controls</p>
-                  <p className="text-xs text-muted-foreground">Open the Controls Editor to review, modify, reorder, or add new controls.</p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">2</span>
-                <div>
-                  <p className="text-sm font-semibold">Download your changes</p>
-                  <p className="text-xs text-muted-foreground">Export the updated CSV with a unique hash for traceability.</p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">3</span>
-                <div>
-                  <p className="text-sm font-semibold">Submit a GitHub Issue</p>
-                  <p className="text-xs text-muted-foreground">You'll get a pre-filled Issue with a full diff of your changes. Attach the CSV and share your reasoning.</p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0">4</span>
-                <div>
-                  <p className="text-sm font-semibold">Community votes &amp; we triage</p>
-                  <p className="text-xs text-muted-foreground">The community votes on recommended suggestions — they decide what gets approved. We handle triage and implementation via Pull Request.</p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-accent/40 text-accent-foreground text-xs font-bold shrink-0">🎉</span>
-                <div>
-                  <p className="text-sm font-semibold">You're a contributor!</p>
-                  <p className="text-xs text-muted-foreground">Once your suggestion is accepted, your name is automatically added to the contributors list. Welcome to the crew. 🚀</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-muted/50 rounded-lg px-3 py-2.5 mb-5 border border-border">
-              <p className="text-xs text-muted-foreground italic leading-relaxed text-center">
-                "Open source isn't just code — it's people choosing to build something together."
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Link
-                to="/admin"
-                onClick={() => setShowContributeModal(false)}
-                className="flex-1 flex items-center justify-center gap-2 text-sm font-medium px-4 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-              >
-                Start Contributing <ArrowRight className="w-4 h-4" />
-              </Link>
-              <a
-                href="https://github.com/LemhiCo/MSP-AI-Framework/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
-              >
-                <ExternalLink className="w-3.5 h-3.5" /> GitHub
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* MAGIC Framework Modal — shown after signup / preview */}
+      <MarkdownModal
+        src="/data/magic.md"
+        open={showMagicModal}
+        onClose={() => setShowMagicModal(false)}
+      />
     </div>
   );
 };
