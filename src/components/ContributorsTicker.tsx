@@ -30,7 +30,7 @@ export default function ContributorsTicker() {
         {contributors.map((c) => (
           <a
             key={c.handle}
-            href={`https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${encodeURIComponent(`Contribution from ${c.handle}`)}&body=${encodeURIComponent(`Contributor: ${c.handle}\nJoined: ${c.date}\n\n---\nDescribe the contribution or discussion topic here.`)}`}
+            href={`https://github.com/LemhiCo/MSP-AI-Framework/issues?q=is%3Aissue%20author%3A${c.handle.replace('@', '')}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[10px] text-muted-foreground hover:text-primary transition-colors shrink-0"
