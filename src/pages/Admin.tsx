@@ -414,7 +414,6 @@ export default function Admin() {
     const { added, deleted, modified, reordered } = computeDiff();
     if (added.length + deleted.length + modified.length + reordered.length > 0) {
       setShowIssueButton(true);
-      setShowContributePrompt(true);
     }
   }, [allControls, generateHash, computeDiff]);
 
@@ -489,7 +488,26 @@ export default function Admin() {
       `<!-- MSP_PATCH_V2:${base64Payload} -->`
     );
     const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
-    window.open(url, "_blank");
+    const MAX_URL_LENGTH = 8000;
+    if (url.length > MAX_URL_LENGTH) {
+      // URL too long — strip the patch payload and ask user to attach CSV instead
+      const strippedBody = encodeURIComponent(
+        `## Proposed Framework Changes\n\n` +
+        `**Date:** ${today}\n` +
+        `**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n` +
+        `---\n\n` +
+        `## Detailed Changes\n\n${lines.join("\n")}\n` +
+        `---\n\n` +
+        `## Why this change should be made\n\n_Explain the reasoning, evidence, or implementation context for this recommendation._\n\n` +
+        `---\n\n` +
+        `> ⚠️ Patch payload was too large to embed. **Please attach your downloaded CSV file to this issue.**`
+      );
+      const fallbackUrl = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${strippedBody}&labels=csv-change,triage`;
+      setShowContributePrompt(true);
+      window.open(fallbackUrl, "_blank");
+    } else {
+      window.open(url, "_blank");
+    }
   }, [computeDiff, allControls]);
 
   if (isLoading) {
