@@ -84,6 +84,15 @@ const Index = () => {
   const [showCopilotTooltip, setShowCopilotTooltip] = useState(false);
   const [showMagicModal, setShowMagicModal] = useState(false);
 
+  // Show MAGIC modal once per session for returning/preview users
+  useEffect(() => {
+    const magicKey = "lemhi-magic-modal-seen";
+    if (signedUp && !localStorage.getItem(magicKey)) {
+      localStorage.setItem(magicKey, "true");
+      setShowMagicModal(true);
+    }
+  }, [signedUp]);
+
   useEffect(() => {
     const contribKey = "lemhi-contribute-tooltip-seen";
     const copilotKey = "lemhi-copilot-tooltip-seen";
