@@ -5,6 +5,9 @@ export function useControls() {
   return useQuery<Control[]>({
     queryKey: ["controls"],
     queryFn: loadControls,
-    staleTime: Infinity,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 }
