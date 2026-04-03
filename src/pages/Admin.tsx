@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { AlertTriangle } from "lucide-react";
-import { Search, Plus, Download, ArrowLeft, X, ChevronUp, ChevronDown, ExternalLink } from "lucide-react";
+import { Search, Plus, Download, ArrowLeft, X, ChevronUp, ChevronDown, ExternalLink, RotateCcw } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
 import { CONTENT_AREAS, IG_LEVELS, IG_META, LIFECYCLE_TRIGGERS, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
 import { Link } from "react-router-dom";
@@ -472,6 +472,13 @@ export default function Admin() {
         {activeFilterCount > 0 && (
           <button onClick={clearAllFilters} className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-0.5">
             <X className="w-3 h-3" /> Clear
+          </button>
+        )}
+
+        {dirty && (
+          <button onClick={() => { setControls(originalControls.map(c => ({ ...c }))); setDirty(false); toast.info("Reverted to original."); }}
+            className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors active:scale-95 flex items-center gap-1">
+            <RotateCcw className="w-3.5 h-3.5" /> Revert
           </button>
         )}
 
