@@ -371,64 +371,57 @@ export default function Admin() {
     a.href = url; a.download = `controls-${hash}.csv`; a.click();
     URL.revokeObjectURL(url);
     setDirty(false);
-    const { added, deleted, modified, reordered } = computeDiff();
-    if (added.length + deleted.length + modified.length + reordered.length > 0) setShowIssueButton(true);
+    const { added, deleted, modified } = computeDiff();
+    if (added.length + deleted.length + modified.length > 0) setShowIssueButton(true);
   }, [allControls, generateHash, computeDiff]);
 
   const openIssue = useCallback(() => {
     const today = new Date().toISOString().split("T")[0];
-    const { added, deleted, modified, reordered } = computeDiff();
-    const totalChanges = added.length + deleted.length + modified.length + reordered.length;
+    const { added, deleted, modified } = computeDiff();
+    const totalChanges = added.length + deleted.length + modified.length;
 
     const summaryParts: string[] = [];
     if (added.length) summaryParts.push(`${added.length} added`);
     if (modified.length) summaryParts.push(`${modified.length} edited`);
     if (deleted.length) summaryParts.push(`${deleted.length} removed`);
-    if (reordered.length) summaryParts.push(`${reordered.length} reordered`);
 
     const title = encodeURIComponent(`[CSV Change]: ${summaryParts.join(", ")} — ${today}`);
 
     const lines: string[] = [];
-    for (const c of deleted) lines.push(`### ❌ Deleted: \`${c.controlId}\` — ${c.safeguardTitle}\n`);
+    for (const c of deleted) lines.push(`### ❌ Deleted: UID \`${c.uid}\` — ${c.safeguardTitle}\n`);
     for (const c of added) {
       lines.push(`### ➕ Added: \`${c.controlId}\` — ${c.safeguardTitle}`);
       if (c.customerObjective) lines.push(`- **Customer Objective:** ${c.customerObjective}`);
       lines.push("");
     }
     for (const { control, changes } of modified) {
-      lines.push(`### ✏️ Modified: \`${control.controlId}\` — ${control.safeguardTitle}`);
+      lines.push(`### ✏️ Modified: UID \`${control.uid}\` — ${control.safeguardTitle}`);
       lines.push(...changes);
-      lines.push("");
-    }
-    if (reordered.length > 0) {
-      lines.push(`### 🔀 Reordered`);
-      for (const r of reordered) lines.push(`- \`${r.from}\` → \`${r.to}\` — ${r.title}`);
       lines.push("");
     }
 
     const patches: string[] = [];
-    for (const c of deleted) patches.push(`D|${c.controlId}`);
+    for (const c of deleted) patches.push(`D|${c.uid}`);
     for (const c of added) {
       const row = controlToCSVRow(c);
       const fields = Object.entries(row).filter(([, v]) => v).map(([k, v]) => `${k}=${v}`).join("\t");
-      patches.push(`A|${c.controlId}|${fields}`);
+      patches.push(`A|${fields}`);
     }
     for (const { control } of modified) {
-      const orig = originalControls.find(o => o.safeguardTitle === control.safeguardTitle);
+      const orig = originalControls.find(o => o.uid === control.uid);
       if (!orig) continue;
       const origRow = controlToCSVRow(orig);
       const currRow = controlToCSVRow(control);
-      const diffs = Object.keys(currRow).filter(k => origRow[k] !== currRow[k]).map(k => `${k}=${currRow[k]}`).join("\t");
-      if (diffs) patches.push(`M|${control.controlId}|${diffs}`);
+      const diffs = Object.keys(currRow).filter(k => k !== "UID" && origRow[k] !== currRow[k]).map(k => `${k}=${currRow[k]}`).join("\t");
+      if (diffs) patches.push(`M|${control.uid}|${diffs}`);
     }
-    for (const r of reordered) patches.push(`R|${r.from}|${r.to}`);
 
     const diffText = patches.join("\n");
     const compressed = pako.deflate(new TextEncoder().encode(diffText));
     const base64Payload = btoa(String.fromCharCode(...compressed));
 
     const body = encodeURIComponent(
-      `## Proposed Framework Changes\n\n**Date:** ${today}\n**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n---\n\n## Detailed Changes\n\n${lines.join("\n")}\n---\n\n## Why this change should be made\n\n_Explain the reasoning._\n\n---\n\n<!-- MSP_PATCH_V2:${base64Payload} -->`
+      `## Proposed Framework Changes\n\n**Date:** ${today}\n**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n---\n\n## Detailed Changes\n\n${lines.join("\n")}\n---\n\n## Why this change should be made\n\n_Explain the reasoning._\n\n---\n\n<!-- MSP_PATCH_V3:${base64Payload} -->`
     );
     const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
     if (url.length > 8000) {
