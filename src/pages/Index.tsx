@@ -279,6 +279,7 @@ const Index = () => {
           {/* Filter Panel */}
           {showFilters && (
             <div className="bg-card border-b border-border px-4 py-3 space-y-2 min-w-[1200px] shadow-sm">
+              <ChipFilter label="Content Area" options={CONTENT_AREAS.map(ca => ca.id)} selected={contentAreaFilter} onChange={setContentAreaFilter} />
               <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
               <ChipFilter label="First Required" options={firstRequiredOptions} selected={firstRequiredFilter} onChange={setFirstRequiredFilter} />
             </div>
