@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import ContributorsTicker from "@/components/ContributorsTicker";
 
 const EMPTY_CONTROL: Control = {
-  controlId: "", implementationGuard: "", contentArea: "",
+  uid: "", controlId: "", implementationGuard: "", contentArea: "",
   safeguardTitle: "", customerObjective: "",
   detailedRequirement: "", lifecycleTrigger: "", cadence: "", primaryStakeholder: "",
   evidenceOfCompletion: "", minStatusToPass: "", minEvidenceToPass: "", failCondition: "",
