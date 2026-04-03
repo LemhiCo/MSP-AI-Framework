@@ -318,14 +318,20 @@ export default function Admin() {
   const computeDiff = useCallback(() => {
     const diffFields: { key: keyof Control; label: string }[] = [
       { key: "safeguardTitle", label: "Safeguard Title" },
+      { key: "implementationGuard", label: "Implementation Guard" },
+      { key: "contentArea", label: "Content Area" },
       { key: "customerObjective", label: "Customer Objective" },
       { key: "detailedRequirement", label: "Detailed Requirement" },
       { key: "lifecycleTrigger", label: "Lifecycle Trigger" },
       { key: "cadence", label: "Cadence" },
       { key: "primaryStakeholder", label: "Primary Stakeholder" },
       { key: "evidenceOfCompletion", label: "Evidence of Completion" },
+      { key: "minStatusToPass", label: "Minimum Status to Pass" },
+      { key: "minEvidenceToPass", label: "Minimum Evidence to Pass" },
+      { key: "failCondition", label: "Fail Condition" },
       { key: "whyItMatters", label: "Why it Matters" },
-      { key: "contentArea", label: "Content Area" },
+      { key: "whoCaresMost", label: "Who Cares Most" },
+      { key: "firstRequiredWhen", label: "First Required When" },
     ];
 
     const added: Control[] = [];
