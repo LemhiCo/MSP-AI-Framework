@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Search, Plus, Download, ArrowLeft, X, ChevronUp, ChevronDown, ExternalLink } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
-import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, getPillarId, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
+import { CONTENT_AREAS, IG_LEVELS, IG_META, LIFECYCLE_TRIGGERS, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
 import { Link } from "react-router-dom";
 import Papa from "papaparse";
 import pako from "pako";
@@ -11,34 +11,38 @@ import { toast } from "sonner";
 import ContributorsTicker from "@/components/ContributorsTicker";
 
 const EMPTY_CONTROL: Control = {
-  controlId: "", implementationPillar: "", criticalityLevel: "", contentArea: "",
-  ig: "", safeguardTitle: "", customerObjective: "",
+  controlId: "", implementationGuard: "", contentArea: "",
+  safeguardTitle: "", customerObjective: "",
   detailedRequirement: "", lifecycleTrigger: "", cadence: "", primaryStakeholder: "",
   evidenceOfCompletion: "", minStatusToPass: "", minEvidenceToPass: "", failCondition: "",
   whyItMatters: "", whoCaresMost: "", firstRequiredWhen: "",
 };
 
-const IG_META: Record<string, { label: string; sub: string }> = {
-  IG1: { label: "IG1 — Essential", sub: "Minimum safe floor" },
-  IG2: { label: "IG2 — Managed", sub: "Repeatable practice" },
-  IG3: { label: "IG3 — Advanced", sub: "Mature & regulated" },
+const CA_COLORS: Record<string, string> = {
+  STR: "340 65% 47%",
+  SKL: "0 70% 50%",
+  GOV: "25 80% 50%",
+  TEC: "200 50% 42%",
+  CPL: "168 40% 35%",
+  PRC: "45 80% 45%",
+  DAT: "280 40% 45%",
+  OBS: "210 60% 50%",
+  DEP: "150 50% 40%",
 };
 
-const PILLAR_COLORS: Record<string, string> = {
-  P1: "0 70% 50%",
-  P2: "25 80% 50%",
-  P3: "200 50% 42%",
-  P4: "168 40% 35%",
-  P5: "280 40% 45%",
+const IG_COLORS: Record<string, { text: string; bg: string }> = {
+  IG1: { text: "0 70% 50%", bg: "0 70% 97%" },
+  IG2: { text: "25 80% 50%", bg: "25 80% 97%" },
+  IG3: { text: "200 50% 42%", bg: "200 50% 96%" },
+  IG4: { text: "168 40% 35%", bg: "168 40% 96%" },
+  IG5: { text: "280 40% 45%", bg: "280 40% 96%" },
 };
 
 function controlToCSVRow(c: Control): Record<string, string> {
   return {
-    "Implementation Pillar": c.implementationPillar,
-    "Criticality Level": c.criticalityLevel,
+    "Implementation Guard": c.implementationGuard,
     "Control ID": c.controlId,
     "Content Area": c.contentArea,
-    "IG": c.ig,
     "Safeguard Title": c.safeguardTitle,
     "Customer Objective": c.customerObjective,
     "Detailed Requirement": c.detailedRequirement,
@@ -177,87 +181,85 @@ export default function Admin() {
     });
   }, [allControls, search, lifecycleFilter, firstRequiredFilter]);
 
+  // Grid: columns = content areas, rows = IG levels
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
-    for (const p of PILLARS) {
-      map[p.id] = {};
+    for (const ca of CONTENT_AREAS) {
+      map[ca.id] = {};
       for (const ig of IG_LEVELS) {
-        map[p.id][ig] = filteredControls.filter(c => getPillarId(c) === p.id && c.ig === ig);
+        map[ca.id][ig] = filteredControls.filter(c => getContentAreaPrefix(c) === ca.id && c.implementationGuard === ig);
       }
     }
     return map;
   }, [filteredControls]);
 
   const [dragControlId, setDragControlId] = useState<string | null>(null);
-  const [dropTarget, setDropTarget] = useState<{ pillar: string; ig: string; index: number } | null>(null);
+  const [dropTarget, setDropTarget] = useState<{ ca: string; ig: string; index: number } | null>(null);
 
-  const renumberCell = (list: Control[], pillarId: string, ig: string): Control[] => {
-    const prefix = pillarId; // We use content area prefix for renumbering
+  const renumberCell = (list: Control[], caId: string, ig: string): Control[] => {
     const inCell = list
-      .filter(c => getPillarId(c) === pillarId && c.ig === ig)
+      .filter(c => getContentAreaPrefix(c) === caId && c.implementationGuard === ig)
       .sort((a, b) => a.controlId.localeCompare(b.controlId));
-    const rest = list.filter(c => !(getPillarId(c) === pillarId && c.ig === ig));
+    const rest = list.filter(c => !(getContentAreaPrefix(c) === caId && c.implementationGuard === ig));
     const renumbered = inCell.map((c, i) => {
-      const caPrefix = getContentAreaPrefix(c) || "CTL";
-      return { ...c, controlId: `${caPrefix}-${ig}-${String(i + 1).padStart(2, "0")}` };
+      const prefix = getContentAreaPrefix(c) || "CTL";
+      return { ...c, controlId: `${prefix}-${ig}-${String(i + 1).padStart(2, "0")}` };
     });
     return [...rest, ...renumbered];
   };
 
-  const handleDrop = useCallback((targetPillarId: string, targetIg: string, targetIndex: number) => {
+  const handleDrop = useCallback((targetCaId: string, targetIg: string, targetIndex: number) => {
     if (!dragControlId) return;
     const draggedControl = allControls.find(c => c.controlId === dragControlId);
     if (!draggedControl) return;
 
-    const sourcePillarId = getPillarId(draggedControl);
-    const sourceIg = draggedControl.ig;
+    const sourceCaId = getContentAreaPrefix(draggedControl);
+    const sourceIg = draggedControl.implementationGuard;
 
     let newList = allControls.filter(c => c.controlId !== dragControlId);
-    newList = renumberCell(newList, sourcePillarId, sourceIg);
+    newList = renumberCell(newList, sourceCaId, sourceIg);
 
     const targetItems = newList
-      .filter(c => getPillarId(c) === targetPillarId && c.ig === targetIg)
+      .filter(c => getContentAreaPrefix(c) === targetCaId && c.implementationGuard === targetIg)
       .sort((a, b) => a.controlId.localeCompare(b.controlId));
-    const others = newList.filter(c => !(getPillarId(c) === targetPillarId && c.ig === targetIg));
+    const others = newList.filter(c => !(getContentAreaPrefix(c) === targetCaId && c.implementationGuard === targetIg));
 
-    const targetPillar = PILLARS.find(p => p.id === targetPillarId);
     const updatedDragged = {
       ...draggedControl,
-      ig: targetIg,
-      implementationPillar: targetPillar ? `Pillar ${PILLARS.indexOf(targetPillar) + 1} – ${targetPillar.name}` : draggedControl.implementationPillar,
+      implementationGuard: targetIg,
       controlId: "",
     };
     targetItems.splice(Math.min(targetIndex, targetItems.length), 0, updatedDragged);
 
     const renumberedTarget = targetItems.map((c, i) => {
-      const caPrefix = getContentAreaPrefix(c) || "CTL";
-      return { ...c, controlId: `${caPrefix}-${targetIg}-${String(i + 1).padStart(2, "0")}` };
+      const prefix = getContentAreaPrefix(c) || "CTL";
+      return { ...c, controlId: `${prefix}-${targetIg}-${String(i + 1).padStart(2, "0")}` };
     });
 
     setControls([...others, ...renumberedTarget]);
     setDirty(true);
     setDragControlId(null);
     setDropTarget(null);
-    toast.success(`Moved to ${targetPillarId}-${targetIg}. IDs renumbered.`);
+    toast.success(`Moved to ${targetCaId}-${targetIg}. IDs renumbered.`);
   }, [dragControlId, allControls]);
 
   const swapOrder = useCallback((controlId: string, direction: -1 | 1) => {
     const control = allControls.find(c => c.controlId === controlId);
     if (!control) return;
-    const pillarId = getPillarId(control);
-    const ig = control.ig;
+    const caId = getContentAreaPrefix(control);
+    const ig = control.implementationGuard;
     const cellItems = allControls
-      .filter(c => getPillarId(c) === pillarId && c.ig === ig)
+      .filter(c => getContentAreaPrefix(c) === caId && c.implementationGuard === ig)
       .sort((a, b) => a.controlId.localeCompare(b.controlId));
     const idx = cellItems.findIndex(c => c.controlId === controlId);
     const swapIdx = idx + direction;
     if (swapIdx < 0 || swapIdx >= cellItems.length) return;
     [cellItems[idx], cellItems[swapIdx]] = [cellItems[swapIdx], cellItems[idx]];
     const renumbered = cellItems.map((c, i) => {
-      const caPrefix = getContentAreaPrefix(c) || "CTL";
-      return { ...c, controlId: `${caPrefix}-${ig}-${String(i + 1).padStart(2, "0")}` };
+      const prefix = getContentAreaPrefix(c) || "CTL";
+      return { ...c, controlId: `${prefix}-${ig}-${String(i + 1).padStart(2, "0")}` };
     });
-    const others = allControls.filter(c => !(getPillarId(c) === pillarId && c.ig === ig));
+    const others = allControls.filter(c => !(getContentAreaPrefix(c) === caId && c.implementationGuard === ig));
     setControls([...others, ...renumbered]);
     setDirty(true);
   }, [allControls]);
@@ -283,16 +285,14 @@ export default function Admin() {
     setActiveControl({ ...EMPTY_CONTROL });
   };
 
-  const handleNewInCell = (pillarId: string, ig: string) => {
-    const cellItems = allControls.filter(c => getPillarId(c) === pillarId && c.ig === ig);
+  const handleNewInCell = (caId: string, ig: string) => {
+    const cellItems = allControls.filter(c => getContentAreaPrefix(c) === caId && c.implementationGuard === ig);
     const nextNum = String(cellItems.length + 1).padStart(2, "0");
-    const pillarObj = PILLARS.find(p => p.id === pillarId);
     setIsNewCard(true);
     setActiveControl({
       ...EMPTY_CONTROL,
-      controlId: `CTL-${ig}-${nextNum}`,
-      implementationPillar: pillarObj ? `Pillar ${PILLARS.indexOf(pillarObj) + 1} – ${pillarObj.name}` : "",
-      ig,
+      controlId: `${caId}-${ig}-${nextNum}`,
+      implementationGuard: ig,
     });
   };
 
@@ -316,7 +316,6 @@ export default function Admin() {
       { key: "primaryStakeholder", label: "Primary Stakeholder" },
       { key: "evidenceOfCompletion", label: "Evidence of Completion" },
       { key: "whyItMatters", label: "Why it Matters" },
-      { key: "criticalityLevel", label: "Criticality Level" },
       { key: "contentArea", label: "Content Area" },
     ];
 
@@ -341,9 +340,9 @@ export default function Admin() {
         }
       }
       if (origByTitle.controlId !== curr.controlId) {
-        const origPillar = getPillarId(origByTitle);
-        const currPillar = getPillarId(curr);
-        if (origPillar !== currPillar || origByTitle.ig !== curr.ig) {
+        const origCA = getContentAreaPrefix(origByTitle);
+        const currCA = getContentAreaPrefix(curr);
+        if (origCA !== currCA || origByTitle.implementationGuard !== curr.implementationGuard) {
           changes.push(`- **Moved:** \`${origByTitle.controlId}\` → \`${curr.controlId}\``);
         } else {
           reordered.push({ from: origByTitle.controlId, to: curr.controlId, title: curr.safeguardTitle });
@@ -500,36 +499,35 @@ export default function Admin() {
       )}
 
       <div className="min-w-[1200px]">
-        <div className="sticky top-[37px] z-20 bg-background border-b border-border grid" style={{ gridTemplateColumns: `100px repeat(${PILLARS.length},1fr)` }}>
+        <div className="sticky top-[37px] z-20 bg-background border-b border-border grid" style={{ gridTemplateColumns: `100px repeat(${CONTENT_AREAS.length},1fr)` }}>
           <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-end" />
-          {PILLARS.map((p) => (
-            <div key={p.id} className="px-2 py-1.5 border-l border-border">
+          {CONTENT_AREAS.map((ca) => (
+            <div key={ca.id} className="px-2 py-1.5 border-l border-border">
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: `hsl(${PILLAR_COLORS[p.id]})` }} />
-                <span className="text-xs font-bold truncate">{p.id}</span>
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: `hsl(${CA_COLORS[ca.id] || "0 0% 50%"})` }} />
+                <span className="text-xs font-bold truncate">{ca.id}</span>
               </div>
-              <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 truncate">{p.name}</p>
+              <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 truncate">{ca.name}</p>
             </div>
           ))}
         </div>
 
         {IG_LEVELS.map((ig) => {
           const meta = IG_META[ig];
-          const igColorVar = ig === "IG1" ? "--ig1" : ig === "IG2" ? "--ig2" : "--ig3";
-          const igBgVar = ig === "IG1" ? "--ig1-bg" : ig === "IG2" ? "--ig2-bg" : "--ig3-bg";
+          const colors = IG_COLORS[ig] || { text: "0 0% 50%", bg: "0 0% 97%" };
 
           return (
-            <div key={ig} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${PILLARS.length},1fr)` }}>
-              <div className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10" style={{ background: `hsl(var(${igBgVar}))` }}>
-                <span className="text-xs font-bold" style={{ color: `hsl(var(${igColorVar}))` }}>{ig}</span>
-                <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta.sub}</span>
+            <div key={ig} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${CONTENT_AREAS.length},1fr)` }}>
+              <div className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10" style={{ background: `hsl(${colors.bg})` }}>
+                <span className="text-xs font-bold" style={{ color: `hsl(${colors.text})` }}>{ig}</span>
+                <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta?.sub}</span>
               </div>
-              {PILLARS.map((pillar) => {
-                const items = grid[pillar.id]?.[ig] || [];
+              {CONTENT_AREAS.map((ca) => {
+                const items = grid[ca.id]?.[ig] || [];
                 return (
-                  <div key={`${pillar.id}-${ig}`}
+                  <div key={`${ca.id}-${ig}`}
                     className={`border-l border-border px-1.5 py-1.5 space-y-1 transition-colors ${
-                      dropTarget?.pillar === pillar.id && dropTarget?.ig === ig ? "bg-primary/10" : "bg-card/50"
+                      dropTarget?.ca === ca.id && dropTarget?.ig === ig ? "bg-primary/10" : "bg-card/50"
                     }`}
                     onDragOver={(e) => {
                       e.preventDefault();
@@ -540,17 +538,17 @@ export default function Admin() {
                         const cr = children[i].getBoundingClientRect();
                         if (e.clientY < cr.top + cr.height / 2) { idx = i; break; }
                       }
-                      setDropTarget({ pillar: pillar.id, ig, index: idx });
+                      setDropTarget({ ca: ca.id, ig, index: idx });
                     }}
                     onDragLeave={() => setDropTarget(null)}
                     onDrop={(e) => {
                       e.preventDefault();
-                      handleDrop(pillar.id, ig, dropTarget?.index ?? items.length);
+                      handleDrop(ca.id, ig, dropTarget?.index ?? items.length);
                     }}
                   >
                     {items.map((c, idx) => (
                       <div key={c.controlId} data-card-wrapper>
-                        {dropTarget?.pillar === pillar.id && dropTarget?.ig === ig && dropTarget?.index === idx && (
+                        {dropTarget?.ca === ca.id && dropTarget?.ig === ig && dropTarget?.index === idx && (
                           <div className="h-0.5 bg-primary rounded-full my-0.5" />
                         )}
                         <div className={`flex items-stretch gap-0 rounded-md border transition-all bg-card border-border hover:border-primary/40 ${
@@ -583,15 +581,15 @@ export default function Admin() {
                         </div>
                       </div>
                     ))}
-                    {dropTarget?.pillar === pillar.id && dropTarget?.ig === ig && dropTarget?.index === items.length && (
+                    {dropTarget?.ca === ca.id && dropTarget?.ig === ig && dropTarget?.index === items.length && (
                       <div className="h-0.5 bg-primary rounded-full my-0.5" />
                     )}
-                    {items.length === 0 && !dropTarget?.pillar && (
+                    {items.length === 0 && !dropTarget?.ca && (
                       <div className="text-[10px] text-muted-foreground italic px-1 py-2">—</div>
                     )}
-                    <button onClick={() => handleNewInCell(pillar.id, ig)}
+                    <button onClick={() => handleNewInCell(ca.id, ig)}
                       className="w-full text-[10px] text-muted-foreground hover:text-primary py-1 flex items-center justify-center gap-0.5 rounded hover:bg-muted/50 transition-colors"
-                      title={`Add control to ${pillar.id} ${ig}`}>
+                      title={`Add control to ${ca.id} ${ig}`}>
                       <Plus className="w-3 h-3" /> Add
                     </button>
                   </div>

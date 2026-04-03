@@ -2,12 +2,12 @@ import { useState, useMemo } from "react";
 import { Search, ChevronDown, ChevronRight } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
 import { IGBadge, ContentAreaDot } from "@/components/FrameworkBadges";
-import { PILLARS, CONTENT_AREAS, IG_LEVELS, LIFECYCLE_TRIGGERS, getPillarId, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
+import { CONTENT_AREAS, IG_LEVELS, IG_META, LIFECYCLE_TRIGGERS, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
 
 export default function ControlsBrowser() {
   const { data: controls = [], isLoading } = useControls();
   const [search, setSearch] = useState("");
-  const [pillarFilter, setPillarFilter] = useState<string>("all");
+  const [caFilter, setCaFilter] = useState<string>("all");
   const [igFilter, setIgFilter] = useState<string>("all");
   const [lifecycleFilter, setLifecycleFilter] = useState<string>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -15,8 +15,8 @@ export default function ControlsBrowser() {
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return controls.filter((c) => {
-      if (pillarFilter !== "all" && getPillarId(c) !== pillarFilter) return false;
-      if (igFilter !== "all" && c.ig !== igFilter) return false;
+      if (caFilter !== "all" && getContentAreaPrefix(c) !== caFilter) return false;
+      if (igFilter !== "all" && c.implementationGuard !== igFilter) return false;
       if (lifecycleFilter !== "all" && !c.lifecycleTrigger.includes(lifecycleFilter)) return false;
       if (q) {
         return (
@@ -29,12 +29,12 @@ export default function ControlsBrowser() {
       }
       return true;
     });
-  }, [controls, search, pillarFilter, igFilter, lifecycleFilter]);
+  }, [controls, search, caFilter, igFilter, lifecycleFilter]);
 
-  const groupedByPillar = useMemo(() => {
+  const groupedByCA = useMemo(() => {
     const groups: Record<string, Control[]> = {};
     for (const c of filtered) {
-      const key = getPillarId(c);
+      const key = getContentAreaPrefix(c);
       if (!groups[key]) groups[key] = [];
       groups[key].push(c);
     }
@@ -58,10 +58,10 @@ export default function ControlsBrowser() {
             className="w-full pl-10 pr-4 py-2.5 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground" />
         </div>
         <div className="flex flex-wrap gap-2">
-          <FilterSelect label="Pillar" value={pillarFilter} onChange={setPillarFilter}
-            options={[{ value: "all", label: "All Pillars" }, ...PILLARS.map((p) => ({ value: p.id, label: p.name }))]} />
+          <FilterSelect label="Content Area" value={caFilter} onChange={setCaFilter}
+            options={[{ value: "all", label: "All Areas" }, ...CONTENT_AREAS.map((ca) => ({ value: ca.id, label: ca.name }))]} />
           <FilterSelect label="IG Level" value={igFilter} onChange={setIgFilter}
-            options={[{ value: "all", label: "All Levels" }, { value: "IG1", label: "IG1 — Essential" }, { value: "IG2", label: "IG2 — Managed" }, { value: "IG3", label: "IG3 — Advanced" }]} />
+            options={[{ value: "all", label: "All Guards" }, ...IG_LEVELS.map((ig) => ({ value: ig, label: `${ig} — ${IG_META[ig].name}` }))]} />
           <FilterSelect label="Lifecycle" value={lifecycleFilter} onChange={setLifecycleFilter}
             options={[{ value: "all", label: "All Triggers" }, ...LIFECYCLE_TRIGGERS.map((t) => ({ value: t, label: t }))]} />
           <span className="ml-auto text-xs text-muted-foreground self-center font-mono tabular-nums">
@@ -70,14 +70,14 @@ export default function ControlsBrowser() {
         </div>
       </div>
 
-      {PILLARS.map((pillar) => {
-        const items = groupedByPillar[pillar.id];
+      {CONTENT_AREAS.map((ca) => {
+        const items = groupedByCA[ca.id];
         if (!items || items.length === 0) return null;
         return (
-          <div key={pillar.id} className="space-y-1">
+          <div key={ca.id} className="space-y-1">
             <div className="flex items-center gap-2 px-1 mb-2">
-              <span className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: `hsl(${pillar.color})` }} />
-              <h3 className="text-sm font-semibold text-foreground">{pillar.name}</h3>
+              <ContentAreaDot prefix={ca.id} />
+              <h3 className="text-sm font-semibold text-foreground">{ca.name}</h3>
               <span className="text-xs text-muted-foreground font-mono">({items.length})</span>
             </div>
             <div className="space-y-1">
@@ -107,7 +107,7 @@ function ControlRow({ control, expanded, onToggle }: { control: Control; expande
         {expanded ? <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" /> : <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />}
         <span className="font-mono text-xs text-muted-foreground w-24 flex-shrink-0">{control.controlId}</span>
         <span className="text-sm font-medium flex-1 min-w-0 truncate">{control.safeguardTitle}</span>
-        <IGBadge ig={control.ig} />
+        <IGBadge ig={control.implementationGuard} />
       </button>
       {expanded && (
         <div className="px-4 pb-4 pt-1 border-t border-border space-y-4 animate-fade-up" style={{ animationDuration: "300ms" }}>
@@ -124,12 +124,10 @@ function ControlRow({ control, expanded, onToggle }: { control: Control; expande
             <DetailField label="Cadence" value={control.cadence} />
             <DetailField label="Primary Stakeholder" value={control.primaryStakeholder} />
             <DetailField label="Content Area" value={control.contentArea} />
-            <DetailField label="Criticality Level" value={control.criticalityLevel} />
+            <DetailField label="Implementation Guard" value={control.implementationGuard} />
             <DetailField label="First Required When" value={control.firstRequiredWhen} />
           </div>
-          <div>
-            <DetailField label="Evidence of Completion" value={control.evidenceOfCompletion} />
-          </div>
+          <DetailField label="Evidence of Completion" value={control.evidenceOfCompletion} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <DetailField label="Min Status to Pass" value={control.minStatusToPass} />
             <DetailField label="Min Evidence to Pass" value={control.minEvidenceToPass} />

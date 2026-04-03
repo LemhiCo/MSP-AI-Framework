@@ -1,5 +1,5 @@
 import { X, Shield, AlertTriangle, Users } from "lucide-react";
-import { type Control } from "@/lib/csv-loader";
+import { type Control, IG_META } from "@/lib/csv-loader";
 import { useState } from "react";
 
 const TABS = [
@@ -15,6 +15,7 @@ interface Props {
 
 export default function MobileDetailSheet({ control, onClose }: Props) {
   const [tab, setTab] = useState<string>("overview");
+  const igMeta = IG_META[control.implementationGuard];
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background animate-fade-up" style={{ animationDuration: "200ms" }}>
@@ -32,11 +33,8 @@ export default function MobileDetailSheet({ control, onClose }: Props) {
 
         {/* Badges */}
         <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-          <span className={control.ig === "IG1" ? "ig1-badge" : control.ig === "IG2" ? "ig2-badge" : "ig3-badge"}>
-            {control.ig}
-          </span>
-          <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-            {control.criticalityLevel}
+          <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-primary/10 text-primary">
+            {control.implementationGuard}{igMeta ? ` — ${igMeta.name}` : ""}
           </span>
           {control.firstRequiredWhen && (
             <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-accent/50 text-accent-foreground">
@@ -124,7 +122,7 @@ function ComplianceTab({ control }: { control: Control }) {
   return (
     <>
       <div className="rounded-lg border border-border divide-y divide-border">
-        <MetaRow label="Criticality Level" value={control.criticalityLevel} />
+        <MetaRow label="Implementation Guard" value={control.implementationGuard} />
         <MetaRow label="Min Status to Pass" value={control.minStatusToPass} />
         <MetaRow label="Min Evidence to Pass" value={control.minEvidenceToPass} />
       </div>

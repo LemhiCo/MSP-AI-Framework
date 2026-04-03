@@ -1,34 +1,34 @@
 import { useMemo } from "react";
-import { PILLARS, IG_LEVELS, getPillarId, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
+import { CONTENT_AREAS, IG_LEVELS, IG_META, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
 import { ContentAreaDot } from "@/components/FrameworkBadges";
 
-const PILLAR_COLORS: Record<string, string> = {
-  P1: "0 70% 50%",
-  P2: "25 80% 50%",
-  P3: "200 50% 42%",
-  P4: "168 40% 35%",
-  P5: "280 40% 45%",
+const CA_COLORS: Record<string, string> = {
+  STR: "340 65% 47%",
+  SKL: "0 70% 50%",
+  GOV: "25 80% 50%",
+  TEC: "200 50% 42%",
+  CPL: "168 40% 35%",
+  PRC: "45 80% 45%",
+  DAT: "280 40% 45%",
+  OBS: "210 60% 50%",
+  DEP: "150 50% 40%",
 };
 
 interface Props {
   controls: Control[];
-  visiblePillars: readonly (typeof PILLARS)[number][];
   onSelect: (control: Control) => void;
 }
 
-export default function MobileControlList({ controls, visiblePillars, onSelect }: Props) {
+export default function MobileControlList({ controls, onSelect }: Props) {
   const grouped = useMemo(() => {
-    const result: { pillar: (typeof PILLARS)[number]; igs: { ig: string; controls: Control[] }[] }[] = [];
-    for (const p of visiblePillars) {
-      const pillarControls = controls.filter(c => getPillarId(c) === p.id);
-      if (pillarControls.length === 0) continue;
-      const igs = IG_LEVELS
-        .map(ig => ({ ig, controls: pillarControls.filter(c => c.ig === ig) }))
-        .filter(g => g.controls.length > 0);
-      result.push({ pillar: p, igs });
+    const result: { ig: string; meta: typeof IG_META[string]; controls: Control[] }[] = [];
+    for (const ig of IG_LEVELS) {
+      const igControls = controls.filter(c => c.implementationGuard === ig);
+      if (igControls.length === 0) continue;
+      result.push({ ig, meta: IG_META[ig], controls: igControls });
     }
     return result;
-  }, [controls, visiblePillars]);
+  }, [controls]);
 
   if (controls.length === 0) {
     return (
@@ -41,48 +41,34 @@ export default function MobileControlList({ controls, visiblePillars, onSelect }
 
   return (
     <div className="px-3 pt-3 pb-20 space-y-4">
-      {grouped.map(({ pillar, igs }) => (
-        <div key={pillar.id}>
+      {grouped.map(({ ig, meta, controls: igControls }) => (
+        <div key={ig}>
           <div className="flex items-center gap-2 mb-2 px-1">
-            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: `hsl(${PILLAR_COLORS[pillar.id]})` }} />
-            <h2 className="text-sm font-bold">{pillar.id}</h2>
-            <span className="text-xs text-muted-foreground truncate">{pillar.name}</span>
+            <h2 className="text-sm font-bold">{ig}</h2>
+            <span className="text-xs text-muted-foreground truncate">{meta.name}</span>
+            <span className="text-[10px] text-muted-foreground font-mono ml-auto">{igControls.length}</span>
           </div>
 
-          {igs.map(({ ig, controls: igControls }) => (
-            <div key={ig} className="mb-3">
-              <div className="flex items-center gap-1.5 px-1 mb-1.5">
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${ig === "IG1" ? "ig1-badge" : ig === "IG2" ? "ig2-badge" : "ig3-badge"}`}>
-                  {ig}
-                </span>
-                <span className="text-[10px] text-muted-foreground">
-                  {ig === "IG1" ? "Essential" : ig === "IG2" ? "Managed" : "Advanced"}
-                </span>
-                <span className="text-[10px] text-muted-foreground font-mono ml-auto">{igControls.length}</span>
-              </div>
-
-              <div className="space-y-1.5">
-                {igControls.map(c => (
-                  <button
-                    key={c.controlId}
-                    onClick={() => onSelect(c)}
-                    className="w-full rounded-lg border border-border bg-card text-left px-3 py-2.5 active:scale-[0.98] transition-transform"
-                  >
-                    <p className="text-sm font-medium leading-snug">{c.safeguardTitle}</p>
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <span className="text-[10px] font-mono text-muted-foreground">{c.controlId}</span>
-                      <ContentAreaDot prefix={getContentAreaPrefix(c)} />
-                      {c.firstRequiredWhen && (
-                        <span className="text-[8px] font-medium px-1 py-0.5 rounded bg-accent/30 text-accent-foreground">
-                          {c.firstRequiredWhen}
-                        </span>
-                      )}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
+          <div className="space-y-1.5">
+            {igControls.map(c => (
+              <button
+                key={c.controlId}
+                onClick={() => onSelect(c)}
+                className="w-full rounded-lg border border-border bg-card text-left px-3 py-2.5 active:scale-[0.98] transition-transform"
+              >
+                <p className="text-sm font-medium leading-snug">{c.safeguardTitle}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="text-[10px] font-mono text-muted-foreground">{c.controlId}</span>
+                  <ContentAreaDot prefix={getContentAreaPrefix(c)} />
+                  {c.firstRequiredWhen && (
+                    <span className="text-[8px] font-medium px-1 py-0.5 rounded bg-accent/30 text-accent-foreground">
+                      {c.firstRequiredWhen}
+                    </span>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       ))}
     </div>

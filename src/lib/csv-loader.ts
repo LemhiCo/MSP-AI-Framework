@@ -2,10 +2,8 @@ import Papa from "papaparse";
 
 export interface Control {
   controlId: string;
-  implementationPillar: string;
-  criticalityLevel: string;
+  implementationGuard: string;
   contentArea: string;
-  ig: string;
   safeguardTitle: string;
   customerObjective: string;
   detailedRequirement: string;
@@ -30,10 +28,8 @@ async function fetchCSV<T>(path: string, mapFn: (row: Record<string, string>) =>
 
 const mapControlRow = (r: Record<string, string>): Control => ({
   controlId: r["Control ID"] || "",
-  implementationPillar: r["Implementation Pillar"] || "",
-  criticalityLevel: r["Criticality Level"] || "",
+  implementationGuard: r["Implementation Guard"] || "",
   contentArea: r["Content Area"] || "",
-  ig: r["IG"] || "",
   safeguardTitle: r["Safeguard Title"] || "",
   customerObjective: r["Customer Objective"] || "",
   detailedRequirement: r["Detailed Requirement"] || "",
@@ -58,27 +54,15 @@ export function parseControlsCSV(csvText: string): Control[] {
   return (parsed.data as Record<string, string>[]).map(mapControlRow);
 }
 
-/** The 5 implementation pillars (v3) */
-export const PILLARS = [
-  { id: "P1", name: "Critical Foundation", criticality: "Critical", color: "var(--pillar-p1)" },
-  { id: "P2", name: "Platform Prerequisites", criticality: "High", color: "var(--pillar-p2)" },
-  { id: "P3", name: "Operational Governance", criticality: "Medium-High", color: "var(--pillar-p3)" },
-  { id: "P4", name: "Advanced Configuration", criticality: "Medium", color: "var(--pillar-p4)" },
-  { id: "P5", name: "Agentic Enterprise Readiness", criticality: "Advanced", color: "var(--pillar-p5)" },
-] as const;
+/** The 5 implementation guards */
+export const IG_LEVELS = ["IG1", "IG2", "IG3", "IG4", "IG5"] as const;
 
-/** Pillar label mapping from CSV values to pillar IDs */
-export const PILLAR_FROM_CSV: Record<string, string> = {
-  "Pillar 1 – Critical Foundation": "P1",
-  "Pillar 1 — Critical Foundation": "P1",
-  "Pillar 2 – Platform Prerequisites": "P2",
-  "Pillar 2 — Platform Prerequisites": "P2",
-  "Pillar 3 – Operational Governance": "P3",
-  "Pillar 3 — Operational Governance": "P3",
-  "Pillar 4 – Advanced Configuration": "P4",
-  "Pillar 4 — Advanced Configuration": "P4",
-  "Pillar 5 – Agentic Enterprise Readiness": "P5",
-  "Pillar 5 — Agentic Enterprise Readiness": "P5",
+export const IG_META: Record<string, { label: string; name: string; sub: string }> = {
+  IG1: { label: "IG1 — Critical Foundation", name: "Critical Foundation", sub: "Before any AI tool is enabled" },
+  IG2: { label: "IG2 — Platform Prerequisites", name: "Platform Prerequisites", sub: "Before Copilot or first agent" },
+  IG3: { label: "IG3 — Operational Governance", name: "Operational Governance", sub: "Once AI is live & managed" },
+  IG4: { label: "IG4 — Advanced Configuration", name: "Advanced Configuration", sub: "Custom agents & hardening" },
+  IG5: { label: "IG5 — Agentic Enterprise", name: "Agentic Enterprise Readiness", sub: "Autonomous agentic AI" },
 };
 
 /** Content areas (for color dots based on control ID prefix) */
@@ -94,8 +78,6 @@ export const CONTENT_AREAS = [
   { id: "DEP", name: "AI Tooling & Deployment", color: "var(--ca-dep)" },
 ] as const;
 
-export const IG_LEVELS = ["IG1", "IG2", "IG3"] as const;
-
 export const LIFECYCLE_TRIGGERS = [
   "Onboarding",
   "QBR",
@@ -104,11 +86,6 @@ export const LIFECYCLE_TRIGGERS = [
   "Project",
   "Security Incident",
 ] as const;
-
-/** Helper: get pillar ID from a control's implementationPillar CSV value */
-export function getPillarId(control: Control): string {
-  return PILLAR_FROM_CSV[control.implementationPillar] || "P1";
-}
 
 /** Helper: get content area prefix from control ID */
 export function getContentAreaPrefix(control: Control): string {
