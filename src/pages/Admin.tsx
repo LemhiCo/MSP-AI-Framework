@@ -329,7 +329,6 @@ export default function Admin() {
       { key: "failCondition", label: "Fail Condition" },
       { key: "whyItMatters", label: "Why it Matters" },
       { key: "whoCaresMost", label: "Who Cares Most" },
-      { key: "firstRequiredWhen", label: "First Required When" },
     ];
 
     const added: Control[] = [];
