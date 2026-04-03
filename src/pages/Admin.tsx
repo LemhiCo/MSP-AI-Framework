@@ -431,11 +431,11 @@ export default function Admin() {
     const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
     if (url.length > 8000) {
       const patchCommentText = `<!-- MSP_PATCH_V3:${base64Payload} -->`;
-      const strippedBody = encodeURIComponent(
-        `## Proposed Framework Changes\n\n**Date:** ${today}\n**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n---\n\n## Detailed Changes\n\n${lines.join("\n")}\n---\n\n## Why this change should be made\n\n_Explain the reasoning._\n\n---\n\n> ⚠️ Patch payload was too large for the URL. Please paste the MSP Patch comment (provided in the app) at the bottom of this issue.`
+      const minimalBody = encodeURIComponent(
+        `## Proposed Framework Changes\n\n**Date:** ${today}\n**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n---\n\n## Why this change should be made\n\n_Explain the reasoning._\n\n---\n\n> ⚠️ Patch payload was too large for the URL. Please paste the MSP Patch comment (provided in the app) at the bottom of this issue.`
       );
       setPendingPatchComment(patchCommentText);
-      setPendingIssueUrl(`https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${strippedBody}&labels=csv-change,triage`);
+      setPendingIssueUrl(`https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${minimalBody}&labels=csv-change,triage`);
       setShowContributePrompt(true);
     } else {
       window.open(url, "_blank");
