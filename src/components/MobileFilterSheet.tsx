@@ -46,7 +46,9 @@ export default function MobileFilterSheet({
   open, onClose,
   lifecycleFilter, setLifecycleFilter,
   firstRequiredFilter, setFirstRequiredFilter,
-  firstRequiredOptions, activeCount, onClear,
+  firstRequiredOptions,
+  contentAreaFilter, setContentAreaFilter,
+  activeCount, onClear,
 }: Props) {
   if (!open) return null;
 
