@@ -158,14 +158,8 @@ export default function Admin() {
     }
   }, [loadedControls]);
 
-  const firstRequiredOptions = useMemo(() => {
-    const set = new Set<string>();
-    allControls.forEach(c => { if (c.firstRequiredWhen) set.add(c.firstRequiredWhen); });
-    return Array.from(set).sort();
-  }, [allControls]);
-
-  const activeFilterCount = [lifecycleFilter, firstRequiredFilter].reduce((n, s) => n + s.size, 0);
-  const clearAllFilters = () => { setLifecycleFilter(new Set()); setFirstRequiredFilter(new Set()); };
+  const activeFilterCount = [lifecycleFilter].reduce((n, s) => n + s.size, 0);
+  const clearAllFilters = () => { setLifecycleFilter(new Set()); };
 
   const filteredControls = useMemo(() => {
     return allControls.filter((c) => {
