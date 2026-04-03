@@ -9,7 +9,6 @@ const EXPAND_THRESHOLD = 640;
 const SELECT_FIELDS: Partial<Record<keyof Control, string[]>> = {
   implementationGuard: [...IG_LEVELS],
   lifecycleTrigger: [...LIFECYCLE_TRIGGERS],
-  firstRequiredWhen: ["GenAI", "Cowork", "Custom GPTs", "Agentic AI"],
 };
 
 const TEXTAREA_FIELDS: Set<keyof Control> = new Set([
