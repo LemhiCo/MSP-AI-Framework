@@ -149,7 +149,6 @@ const Index = () => {
       "Fail Condition": c.failCondition,
       "Why it Matters": c.whyItMatters,
       "Who Cares Most (Customer)": c.whoCaresMost,
-      "First Required When": c.firstRequiredWhen,
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
