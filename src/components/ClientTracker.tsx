@@ -22,7 +22,7 @@ export default function ClientTracker() {
 
   const progress = useMemo(() => {
     if (!selectedClient) return null;
-    return getClientProgress(selectedClient, controls);
+    return getClientProgress(selectedClient, controls.length);
   }, [selectedClient, controls]);
 
   if (isLoading) {
