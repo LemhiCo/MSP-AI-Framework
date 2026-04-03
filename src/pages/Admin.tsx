@@ -215,10 +215,17 @@ export default function Admin() {
 
     const sourceCaId = getContentAreaPrefix(draggedControl);
     const sourceIg = draggedControl.implementationGuard;
+    const sameCell = sourceCaId === targetCaId && sourceIg === targetIg;
 
+    // Remove dragged control from list
     let newList = allControls.filter(c => c.controlId !== dragControlId);
-    newList = renumberCell(newList, sourceCaId, sourceIg);
 
+    // Renumber source cell (skip if same cell — we'll renumber it as the target)
+    if (!sameCell) {
+      newList = renumberCell(newList, sourceCaId, sourceIg);
+    }
+
+    // Get target cell items and insert dragged control
     const targetItems = newList
       .filter(c => getContentAreaPrefix(c) === targetCaId && c.implementationGuard === targetIg)
       .sort((a, b) => a.controlId.localeCompare(b.controlId));
@@ -227,13 +234,16 @@ export default function Admin() {
     const updatedDragged = {
       ...draggedControl,
       implementationGuard: targetIg,
+      contentArea: CONTENT_AREAS.find(ca => ca.id === targetCaId)?.name || draggedControl.contentArea,
       controlId: `${targetCaId}-${targetIg}-00`,
     };
     targetItems.splice(Math.min(targetIndex, targetItems.length), 0, updatedDragged);
 
-    const renumberedTarget = targetItems.map((c, i) => {
-      return { ...c, controlId: `${targetCaId}-${targetIg}-${String(i + 1).padStart(2, "0")}` };
-    });
+    // Renumber target cell
+    const renumberedTarget = targetItems.map((c, i) => ({
+      ...c,
+      controlId: `${targetCaId}-${targetIg}-${String(i + 1).padStart(2, "0")}`,
+    }));
 
     setControls([...others, ...renumberedTarget]);
     setDirty(true);
