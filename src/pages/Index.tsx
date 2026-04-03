@@ -202,9 +202,6 @@ const Index = () => {
             onClose={() => setShowMobileFilters(false)}
             lifecycleFilter={lifecycleFilter}
             setLifecycleFilter={setLifecycleFilter}
-            firstRequiredFilter={firstRequiredFilter}
-            setFirstRequiredFilter={setFirstRequiredFilter}
-            firstRequiredOptions={firstRequiredOptions}
             contentAreaFilter={contentAreaFilter}
             setContentAreaFilter={setContentAreaFilter}
             activeCount={activeFilterCount}
