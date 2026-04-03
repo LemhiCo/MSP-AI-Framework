@@ -298,20 +298,26 @@ const Index = () => {
               ))}
             </div>
 
-            {IG_LEVELS.map((ig) => {
-              const meta = IG_META[ig];
-              const igColorVar = ig === "IG1" ? "--ig1" : ig === "IG2" ? "--ig2" : "--ig3";
-              const igBgVar = ig === "IG1" ? "--ig1-bg" : ig === "IG2" ? "--ig2-bg" : "--ig3-bg";
+            {PILLARS.map((pillar) => {
+              const meta = PILLAR_META[pillar.id];
+              const pillarColors: Record<string, { text: string; bg: string }> = {
+                P1: { text: "0 70% 50%", bg: "0 70% 97%" },
+                P2: { text: "25 80% 50%", bg: "25 80% 97%" },
+                P3: { text: "200 50% 42%", bg: "200 50% 96%" },
+                P4: { text: "168 40% 35%", bg: "168 40% 96%" },
+                P5: { text: "280 40% 45%", bg: "280 40% 96%" },
+              };
+              const pc = pillarColors[pillar.id] || { text: "0 0% 50%", bg: "0 0% 97%" };
               return (
-                <div key={ig} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${CONTENT_AREAS.length},1fr)` }}>
-                  <div className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10" style={{ background: `hsl(var(${igBgVar}))` }}>
-                    <span className="text-xs font-bold" style={{ color: `hsl(var(${igColorVar}))` }}>{ig}</span>
-                    <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta.sub}</span>
+                <div key={pillar.id} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${CONTENT_AREAS.length},1fr)` }}>
+                  <div className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10" style={{ background: `hsl(${pc.bg})` }}>
+                    <span className="text-xs font-bold" style={{ color: `hsl(${pc.text})` }}>{pillar.id}</span>
+                    <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta?.sub || pillar.name}</span>
                   </div>
                   {CONTENT_AREAS.map((ca) => {
-                    const items = grid[ca.id]?.[ig] || [];
+                    const items = grid[ca.id]?.[pillar.id] || [];
                     return (
-                      <div key={`${ca.id}-${ig}`} className="border-l border-border px-1.5 py-1.5 space-y-1 bg-card/50">
+                      <div key={`${ca.id}-${pillar.id}`} className="border-l border-border px-1.5 py-1.5 space-y-1 bg-card/50">
                         {items.map((c) => (
                           <button key={c.controlId} onClick={() => setActiveControl(c)}
                             className="w-full rounded-md border text-[11px] transition-all text-left px-1.5 py-1.5 hover:shadow-md active:scale-[0.97] cursor-pointer bg-card border-border hover:border-primary/40">
