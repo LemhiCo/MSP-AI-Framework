@@ -95,20 +95,23 @@ const Index = () => {
   // Filter state
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
   const [firstRequiredFilter, setFirstRequiredFilter] = useState<Set<string>>(new Set());
+  const [contentAreaFilter, setContentAreaFilter] = useState<Set<string>>(new Set());
 
   const firstRequiredOptions = useUniqueValues(controls, "firstRequiredWhen");
 
-  const activeFilterCount = [lifecycleFilter, firstRequiredFilter].reduce((n, s) => n + s.size, 0);
+  const activeFilterCount = [lifecycleFilter, firstRequiredFilter, contentAreaFilter].reduce((n, s) => n + s.size, 0);
 
   const clearAllFilters = () => {
     setLifecycleFilter(new Set());
     setFirstRequiredFilter(new Set());
+    setContentAreaFilter(new Set());
   };
 
   const filteredControls = useMemo(() => {
     return controls.filter((c) => {
       if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
       if (firstRequiredFilter.size && !firstRequiredFilter.has(c.firstRequiredWhen)) return false;
+      if (contentAreaFilter.size && !contentAreaFilter.has(getContentAreaPrefix(c))) return false;
       if (search) {
         const q = search.toLowerCase();
         return (
@@ -208,6 +211,8 @@ const Index = () => {
             firstRequiredFilter={firstRequiredFilter}
             setFirstRequiredFilter={setFirstRequiredFilter}
             firstRequiredOptions={firstRequiredOptions}
+            contentAreaFilter={contentAreaFilter}
+            setContentAreaFilter={setContentAreaFilter}
             activeCount={activeFilterCount}
             onClear={clearAllFilters}
           />
@@ -276,6 +281,7 @@ const Index = () => {
           {/* Filter Panel */}
           {showFilters && (
             <div className="bg-card border-b border-border px-4 py-3 space-y-2 min-w-[1200px] shadow-sm">
+              <ChipFilter label="Content Area" options={CONTENT_AREAS.map(ca => ca.id)} selected={contentAreaFilter} onChange={setContentAreaFilter} />
               <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
               <ChipFilter label="First Required" options={firstRequiredOptions} selected={firstRequiredFilter} onChange={setFirstRequiredFilter} />
             </div>

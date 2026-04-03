@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { LIFECYCLE_TRIGGERS } from "@/lib/csv-loader";
+import { LIFECYCLE_TRIGGERS, CONTENT_AREAS } from "@/lib/csv-loader";
 
 interface Props {
   open: boolean;
@@ -9,6 +9,8 @@ interface Props {
   firstRequiredFilter: Set<string>;
   setFirstRequiredFilter: (s: Set<string>) => void;
   firstRequiredOptions: string[];
+  contentAreaFilter: Set<string>;
+  setContentAreaFilter: (s: Set<string>) => void;
   activeCount: number;
   onClear: () => void;
 }
@@ -44,7 +46,9 @@ export default function MobileFilterSheet({
   open, onClose,
   lifecycleFilter, setLifecycleFilter,
   firstRequiredFilter, setFirstRequiredFilter,
-  firstRequiredOptions, activeCount, onClear,
+  firstRequiredOptions,
+  contentAreaFilter, setContentAreaFilter,
+  activeCount, onClear,
 }: Props) {
   if (!open) return null;
 
@@ -64,6 +68,7 @@ export default function MobileFilterSheet({
           </div>
         </div>
         <div className="overflow-y-auto px-4 py-4 space-y-5">
+          <ChipGroup label="Content Area" options={CONTENT_AREAS.map(ca => ca.id)} selected={contentAreaFilter} onChange={setContentAreaFilter} />
           <ChipGroup label="Lifecycle Trigger" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
           <ChipGroup label="First Required When" options={firstRequiredOptions} selected={firstRequiredFilter} onChange={setFirstRequiredFilter} />
         </div>
