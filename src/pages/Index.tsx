@@ -283,15 +283,15 @@ const Index = () => {
 
           {/* Kanban Board */}
           <div className="min-w-[1200px]">
-            <div className="sticky top-[37px] z-20 bg-background border-b border-border grid" style={{ gridTemplateColumns: `100px repeat(${PILLARS.length},1fr)` }}>
+            <div className="sticky top-[37px] z-20 bg-background border-b border-border grid" style={{ gridTemplateColumns: `100px repeat(${CONTENT_AREAS.length},1fr)` }}>
               <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-end" />
-              {PILLARS.map((p) => (
-                <div key={p.id} className="px-2 py-1.5 border-l border-border">
+              {CONTENT_AREAS.map((ca) => (
+                <div key={ca.id} className="px-2 py-1.5 border-l border-border">
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: `hsl(${PILLAR_COLORS[p.id]})` }} />
-                    <span className="text-xs font-bold truncate">{p.id}</span>
+                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: `hsl(${CA_COLORS[ca.id] || "0 0% 50%"})` }} />
+                    <span className="text-xs font-bold truncate">{ca.id}</span>
                   </div>
-                  <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 truncate">{p.name}</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 truncate">{ca.name}</p>
                 </div>
               ))}
             </div>
@@ -301,15 +301,15 @@ const Index = () => {
               const igColorVar = ig === "IG1" ? "--ig1" : ig === "IG2" ? "--ig2" : "--ig3";
               const igBgVar = ig === "IG1" ? "--ig1-bg" : ig === "IG2" ? "--ig2-bg" : "--ig3-bg";
               return (
-                <div key={ig} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${PILLARS.length},1fr)` }}>
+                <div key={ig} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${CONTENT_AREAS.length},1fr)` }}>
                   <div className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10" style={{ background: `hsl(var(${igBgVar}))` }}>
                     <span className="text-xs font-bold" style={{ color: `hsl(var(${igColorVar}))` }}>{ig}</span>
                     <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta.sub}</span>
                   </div>
-                  {PILLARS.map((pillar) => {
-                    const items = grid[pillar.id]?.[ig] || [];
+                  {CONTENT_AREAS.map((ca) => {
+                    const items = grid[ca.id]?.[ig] || [];
                     return (
-                      <div key={`${pillar.id}-${ig}`} className="border-l border-border px-1.5 py-1.5 space-y-1 bg-card/50">
+                      <div key={`${ca.id}-${ig}`} className="border-l border-border px-1.5 py-1.5 space-y-1 bg-card/50">
                         {items.map((c) => (
                           <button key={c.controlId} onClick={() => setActiveControl(c)}
                             className="w-full rounded-md border text-[11px] transition-all text-left px-1.5 py-1.5 hover:shadow-md active:scale-[0.97] cursor-pointer bg-card border-border hover:border-primary/40">
