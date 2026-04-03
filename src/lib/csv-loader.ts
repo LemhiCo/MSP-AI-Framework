@@ -17,7 +17,6 @@ export interface Control {
   failCondition: string;
   whyItMatters: string;
   whoCaresMost: string;
-  firstRequiredWhen: string;
 }
 
 async function fetchCSV<T>(path: string, mapFn: (row: Record<string, string>) => T): Promise<T[]> {
