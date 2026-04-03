@@ -621,7 +621,7 @@ export default function Admin() {
       )}
 
       {showContributePrompt && (
-        <ContributePrompt onClose={() => setShowContributePrompt(false)} onOpenIssue={() => { setShowContributePrompt(false); openIssue(); }} csvHash={csvHash} />
+        <ContributePrompt onClose={() => setShowContributePrompt(false)} onOpenIssue={() => { setShowContributePrompt(false); window.open(pendingIssueUrl, "_blank"); }} patchComment={pendingPatchComment} />
       )}
       <ContributorsTicker />
     </div>
