@@ -492,12 +492,15 @@ export default function Admin() {
           {dirty ? "Save CSV ⬇" : "Download CSV"}
         </button>
 
-        {showIssueButton && (
-          <button onClick={openIssue}
-            className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-green-600 bg-green-600 text-white hover:bg-green-700 transition-colors active:scale-95 flex items-center gap-1">
-            <ExternalLink className="w-3.5 h-3.5" /> Suggest Change
-          </button>
-        )}
+        <button onClick={showIssueButton ? openIssue : undefined}
+          disabled={!showIssueButton}
+          className={`text-xs font-medium px-2.5 py-1.5 rounded-md border flex items-center gap-1 transition-colors active:scale-95 ${
+            showIssueButton
+              ? "border-green-600 bg-green-600 text-white hover:bg-green-700 cursor-pointer"
+              : "border-border bg-muted text-muted-foreground cursor-not-allowed opacity-60"
+          }`}>
+          <ExternalLink className="w-3.5 h-3.5" /> Suggest Change
+        </button>
       </header>
 
       {showFilters && (
