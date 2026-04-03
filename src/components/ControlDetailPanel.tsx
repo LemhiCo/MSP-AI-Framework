@@ -96,11 +96,6 @@ export default function ControlDetailPanel({ control, onClose, editable, onSave,
                   <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-primary/10 text-primary">
                     {control.implementationGuard}{igMeta ? ` — ${igMeta.name}` : ""}
                   </span>
-                  {control.firstRequiredWhen && (
-                    <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-accent/50 text-accent-foreground">
-                      {control.firstRequiredWhen}
-                    </span>
-                  )}
                 </div>
                 <div className="flex items-center gap-1 mt-2 flex-wrap">
                   <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full border bg-primary/10 text-primary border-primary/30">
