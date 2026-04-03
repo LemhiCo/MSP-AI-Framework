@@ -170,7 +170,7 @@ export default function Admin() {
       }
       return true;
     });
-  }, [allControls, search, lifecycleFilter, firstRequiredFilter]);
+  }, [allControls, search, lifecycleFilter]);
 
   // Grid: columns = content areas, rows = IG levels
   const grid = useMemo(() => {
