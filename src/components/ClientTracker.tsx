@@ -70,7 +70,7 @@ export default function ClientTracker() {
           ) : (
             <div className="space-y-2">
               {clients.map((client) => {
-                const prog = getClientProgress(client, controls);
+                const prog = getClientProgress(client, controls.length);
                 return (
                   <button
                     key={client.id}
