@@ -2,36 +2,24 @@ import Papa from "papaparse";
 
 export interface Control {
   controlId: string;
-  pillar: string;
+  implementationPillar: string;
+  criticalityLevel: string;
+  contentArea: string;
   ig: string;
   safeguardTitle: string;
   customerObjective: string;
-  eli5: string;
   detailedRequirement: string;
   lifecycleTrigger: string;
   cadence: string;
   primaryStakeholder: string;
-  microsoftTool: string;
-  genericTooling: string;
   evidenceOfCompletion: string;
-  rawWeight: string;
-  gateType: string;
   minStatusToPass: string;
   minEvidenceToPass: string;
   failCondition: string;
   whyItMatters: string;
-  appliesTo: string;
-  endCustomerBusinessValue: string;
-  customerConversationTrack: string;
   whoCaresMost: string;
-  relevantGenAI: string;
-  relevantCustomGPTs: string;
-  relevantAgenticAI: string;
-  relevantDigitalWorkers: string;
-  relevantCowork: string;
   firstRequiredWhen: string;
 }
-
 
 async function fetchCSV<T>(path: string, mapFn: (row: Record<string, string>) => T): Promise<T[]> {
   const res = await fetch(path);
@@ -42,33 +30,22 @@ async function fetchCSV<T>(path: string, mapFn: (row: Record<string, string>) =>
 
 const mapControlRow = (r: Record<string, string>): Control => ({
   controlId: r["Control ID"] || "",
-  pillar: r["Pillar"] || "",
+  implementationPillar: r["Implementation Pillar"] || "",
+  criticalityLevel: r["Criticality Level"] || "",
+  contentArea: r["Content Area"] || "",
   ig: r["IG"] || "",
   safeguardTitle: r["Safeguard Title"] || "",
   customerObjective: r["Customer Objective"] || "",
-  eli5: r["ELI5"] || "",
   detailedRequirement: r["Detailed Requirement"] || "",
   lifecycleTrigger: r["Lifecycle Trigger"] || "",
   cadence: r["Cadence"] || "",
   primaryStakeholder: r["Primary Stakeholder"] || "",
-  microsoftTool: r["Microsoft Tool Recommendation"] || "",
-  genericTooling: r["Generic Tooling Category"] || "",
   evidenceOfCompletion: r["Evidence of Completion"] || "",
-  rawWeight: r["Raw Weight"] || "",
-  gateType: r["Gate Type"] || "",
   minStatusToPass: r["Minimum Status to Pass"] || "",
   minEvidenceToPass: r["Minimum Evidence to Pass"] || "",
   failCondition: r["Fail Condition"] || "",
   whyItMatters: r["Why it Matters"] || "",
-  appliesTo: r["Applies To"] || "",
-  endCustomerBusinessValue: r["End Customer Business Value"] || "",
-  customerConversationTrack: r["Customer Conversation Track"] || "",
   whoCaresMost: r["Who Cares Most (Customer)"] || "",
-  relevantGenAI: r["Relevant: GenAI"] || "",
-  relevantCustomGPTs: r["Relevant: Custom GPTs"] || "",
-  relevantAgenticAI: r["Relevant: Agentic AI"] || "",
-  relevantDigitalWorkers: r["Relevant: Digital Workers"] || "",
-  relevantCowork: r["Relevant: Cowork"] || "",
   firstRequiredWhen: r["First Required When"] || "",
 });
 
@@ -81,27 +58,43 @@ export function parseControlsCSV(csvText: string): Control[] {
   return (parsed.data as Record<string, string>[]).map(mapControlRow);
 }
 
-
+/** The 5 implementation pillars (v3) */
 export const PILLARS = [
-  { id: "STR", name: "Strategy & Buy-In", color: "var(--pillar-str)" },
-  { id: "GOV", name: "Policy & Governance", color: "var(--pillar-gov)" },
-  { id: "TEC", name: "Technical Readiness", color: "var(--pillar-tec)" },
-  { id: "CPL", name: "Copilot Readiness", color: "var(--pillar-cpl)", optional: true },
-  { id: "PRC", name: "Process Mapping", color: "var(--pillar-prc)" },
-  { id: "DAT", name: "Data Security & Tagging", color: "var(--pillar-dat)" },
-  { id: "OBS", name: "AI Observability", color: "var(--pillar-obs)" },
-  { id: "DEP", name: "AI Tooling & Deployment", color: "var(--pillar-dep)" },
+  { id: "P1", name: "Critical Foundation", criticality: "Critical", color: "var(--pillar-p1)" },
+  { id: "P2", name: "Platform Prerequisites", criticality: "High", color: "var(--pillar-p2)" },
+  { id: "P3", name: "Operational Governance", criticality: "Medium-High", color: "var(--pillar-p3)" },
+  { id: "P4", name: "Advanced Configuration", criticality: "Medium", color: "var(--pillar-p4)" },
+  { id: "P5", name: "Agentic Enterprise Readiness", criticality: "Advanced", color: "var(--pillar-p5)" },
+] as const;
+
+/** Pillar label mapping from CSV values to pillar IDs */
+export const PILLAR_FROM_CSV: Record<string, string> = {
+  "Pillar 1 – Critical Foundation": "P1",
+  "Pillar 1 — Critical Foundation": "P1",
+  "Pillar 2 – Platform Prerequisites": "P2",
+  "Pillar 2 — Platform Prerequisites": "P2",
+  "Pillar 3 – Operational Governance": "P3",
+  "Pillar 3 — Operational Governance": "P3",
+  "Pillar 4 – Advanced Configuration": "P4",
+  "Pillar 4 — Advanced Configuration": "P4",
+  "Pillar 5 – Agentic Enterprise Readiness": "P5",
+  "Pillar 5 — Agentic Enterprise Readiness": "P5",
+};
+
+/** Content areas (for color dots based on control ID prefix) */
+export const CONTENT_AREAS = [
+  { id: "STR", name: "Strategy & Buy-In", color: "var(--ca-str)" },
+  { id: "GOV", name: "Policy & Governance", color: "var(--ca-gov)" },
+  { id: "TEC", name: "Technical Readiness", color: "var(--ca-tec)" },
+  { id: "CPL", name: "Copilot Readiness", color: "var(--ca-cpl)" },
+  { id: "PRC", name: "Process Mapping", color: "var(--ca-prc)" },
+  { id: "DAT", name: "Data Security & Tagging", color: "var(--ca-dat)" },
+  { id: "OBS", name: "AI Observability", color: "var(--ca-obs)" },
+  { id: "DEP", name: "AI Tooling & Deployment", color: "var(--ca-dep)" },
+  { id: "SKL", name: "People & Skills", color: "var(--ca-skl)" },
 ] as const;
 
 export const IG_LEVELS = ["IG1", "IG2", "IG3"] as const;
-
-export const AI_MODALITIES = [
-  { key: "relevantGenAI" as const, label: "GenAI" },
-  { key: "relevantCustomGPTs" as const, label: "Custom GPTs" },
-  { key: "relevantAgenticAI" as const, label: "Agentic AI" },
-  { key: "relevantDigitalWorkers" as const, label: "Digital Workers" },
-  { key: "relevantCowork" as const, label: "Cowork" },
-] as const;
 
 export const LIFECYCLE_TRIGGERS = [
   "Onboarding",
@@ -111,3 +104,13 @@ export const LIFECYCLE_TRIGGERS = [
   "Project",
   "Security Incident",
 ] as const;
+
+/** Helper: get pillar ID from a control's implementationPillar CSV value */
+export function getPillarId(control: Control): string {
+  return PILLAR_FROM_CSV[control.implementationPillar] || "P1";
+}
+
+/** Helper: get content area prefix from control ID */
+export function getContentAreaPrefix(control: Control): string {
+  return control.controlId.split("-")[0];
+}
