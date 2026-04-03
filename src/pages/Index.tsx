@@ -106,7 +106,6 @@ const Index = () => {
   const filteredControls = useMemo(() => {
     return controls.filter((c) => {
       if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
-      if (firstRequiredFilter.size && !firstRequiredFilter.has(c.firstRequiredWhen)) return false;
       if (contentAreaFilter.size && !contentAreaFilter.has(getContentAreaPrefix(c))) return false;
       if (search) {
         const q = search.toLowerCase();
