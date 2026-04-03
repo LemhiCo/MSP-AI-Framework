@@ -6,7 +6,7 @@ import MobileControlList from "@/components/MobileControlList";
 import MobileDetailSheet from "@/components/MobileDetailSheet";
 import MobileFilterSheet from "@/components/MobileFilterSheet";
 import { useControls } from "@/hooks/use-framework-data";
-import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, getPillarId, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
+import { PILLARS, CONTENT_AREAS, IG_LEVELS, LIFECYCLE_TRIGGERS, getPillarId, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
 import * as XLSX from "xlsx";
 import WaitlistGate, { useWaitlistGate } from "@/components/WaitlistGate";
 import ContributorsTicker from "@/components/ContributorsTicker";
