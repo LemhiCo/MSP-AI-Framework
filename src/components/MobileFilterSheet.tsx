@@ -1,16 +1,14 @@
 import { X } from "lucide-react";
-import { LIFECYCLE_TRIGGERS, AI_MODALITIES } from "@/lib/csv-loader";
+import { LIFECYCLE_TRIGGERS } from "@/lib/csv-loader";
 
 interface Props {
   open: boolean;
   onClose: () => void;
   lifecycleFilter: Set<string>;
   setLifecycleFilter: (s: Set<string>) => void;
-  gateFilter: Set<string>;
-  setGateFilter: (s: Set<string>) => void;
-  aiModalityFilter: Set<string>;
-  setAiModalityFilter: (s: Set<string>) => void;
-  gateTypes: string[];
+  firstRequiredFilter: Set<string>;
+  setFirstRequiredFilter: (s: Set<string>) => void;
+  firstRequiredOptions: string[];
   activeCount: number;
   onClear: () => void;
 }
@@ -45,9 +43,8 @@ function ChipGroup({ label, options, selected, onChange }: {
 export default function MobileFilterSheet({
   open, onClose,
   lifecycleFilter, setLifecycleFilter,
-  gateFilter, setGateFilter,
-  aiModalityFilter, setAiModalityFilter,
-  gateTypes, activeCount, onClear,
+  firstRequiredFilter, setFirstRequiredFilter,
+  firstRequiredOptions, activeCount, onClear,
 }: Props) {
   if (!open) return null;
 
@@ -68,8 +65,7 @@ export default function MobileFilterSheet({
         </div>
         <div className="overflow-y-auto px-4 py-4 space-y-5">
           <ChipGroup label="Lifecycle Trigger" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
-          <ChipGroup label="Gate Type" options={gateTypes} selected={gateFilter} onChange={setGateFilter} />
-          <ChipGroup label="AI Modality" options={AI_MODALITIES.map(m => m.label)} selected={aiModalityFilter} onChange={setAiModalityFilter} />
+          <ChipGroup label="First Required When" options={firstRequiredOptions} selected={firstRequiredFilter} onChange={setFirstRequiredFilter} />
         </div>
         <div className="px-4 py-3 border-t border-border shrink-0">
           <button onClick={onClose}

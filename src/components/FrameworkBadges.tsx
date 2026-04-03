@@ -1,4 +1,4 @@
-import { type Control, PILLARS } from "@/lib/csv-loader";
+import { type Control, PILLARS, CONTENT_AREAS } from "@/lib/csv-loader";
 
 interface IGBadgeProps {
   ig: string;
@@ -15,27 +15,50 @@ export function IGBadge({ ig, size = "sm" }: IGBadgeProps) {
   );
 }
 
-export function PillarDot({ pillarId }: { pillarId: string }) {
-  const pillar = PILLARS.find((p) => p.id === pillarId);
-  if (!pillar) return null;
+export function ContentAreaDot({ prefix }: { prefix: string }) {
+  const ca = CONTENT_AREAS.find((c) => c.id === prefix);
+  if (!ca) return null;
   return (
     <span
       className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0"
-      style={{ background: `hsl(${pillar.color})` }}
+      style={{ background: `hsl(${ca.color})` }}
     />
   );
 }
 
-export function PriorityBadge({ priority }: { priority: string }) {
+/** @deprecated Use ContentAreaDot instead */
+export function PillarDot({ pillarId }: { pillarId: string }) {
+  return <ContentAreaDot prefix={pillarId} />;
+}
+
+export function PillarBadge({ pillarId }: { pillarId: string }) {
+  const pillar = PILLARS.find((p) => p.id === pillarId);
+  if (!pillar) return null;
   const colors: Record<string, string> = {
-    Critical: "bg-red-100 text-red-700",
+    Critical: "bg-destructive/15 text-destructive",
     High: "bg-amber-100 text-amber-700",
-    Medium: "bg-sky-100 text-sky-700",
-    Low: "bg-emerald-100 text-emerald-700",
+    "Medium-High": "bg-sky-100 text-sky-700",
+    Medium: "bg-emerald-100 text-emerald-700",
+    Advanced: "bg-purple-100 text-purple-700",
   };
   return (
-    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${colors[priority] || "bg-muted text-muted-foreground"}`}>
-      {priority}
+    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${colors[pillar.criticality] || "bg-muted text-muted-foreground"}`}>
+      {pillar.name}
+    </span>
+  );
+}
+
+export function CriticalityBadge({ level }: { level: string }) {
+  const colors: Record<string, string> = {
+    Critical: "bg-destructive/15 text-destructive",
+    High: "bg-amber-100 text-amber-700",
+    "Medium-High": "bg-sky-100 text-sky-700",
+    Medium: "bg-emerald-100 text-emerald-700",
+    "Advanced / Specialized": "bg-purple-100 text-purple-700",
+  };
+  return (
+    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${colors[level] || "bg-muted text-muted-foreground"}`}>
+      {level}
     </span>
   );
 }

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useControls } from "@/hooks/use-framework-data";
-import { IGBadge, PillarDot } from "@/components/FrameworkBadges";
-import { PILLARS, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
+import { IGBadge, ContentAreaDot } from "@/components/FrameworkBadges";
+import { PILLARS, CONTENT_AREAS, LIFECYCLE_TRIGGERS, getPillarId, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
 
 export default function RoadmapView() {
   const { data: controls = [], isLoading } = useControls();
@@ -9,7 +9,7 @@ export default function RoadmapView() {
   const byLifecycle = useMemo(() => {
     const groups: Record<string, Control[]> = {};
     for (const trigger of LIFECYCLE_TRIGGERS) {
-      groups[trigger] = controls.filter((c) => c.lifecycleTrigger === trigger);
+      groups[trigger] = controls.filter((c) => c.lifecycleTrigger.includes(trigger));
     }
     return groups;
   }, [controls]);
@@ -23,7 +23,7 @@ export default function RoadmapView() {
       <div className="bg-card rounded-lg border border-border p-4 shadow-sm">
         <h2 className="text-lg font-semibold mb-1">Implementation Roadmap</h2>
         <p className="text-sm text-muted-foreground">
-          Controls organized by lifecycle trigger. IG1 safeguards should be completed across all pillars before broad rollout.
+          Controls organized by lifecycle trigger. Pillar 1 (Critical Foundation) safeguards should be completed before broad rollout.
         </p>
       </div>
 
@@ -36,10 +36,7 @@ export default function RoadmapView() {
         const ig3 = items.filter((c) => c.ig === "IG3");
 
         return (
-          <div
-            key={trigger}
-            className={`animate-fade-up stagger-${Math.min(i, 4)}`}
-          >
+          <div key={trigger} className={`animate-fade-up stagger-${Math.min(i, 4)}`}>
             <div className="flex items-center gap-3 mb-3">
               <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
                 {items.length}
@@ -73,19 +70,16 @@ function IGColumn({ title, items }: { title: string; items: Control[] }) {
     <div className="bg-card rounded-lg p-3 border border-border">
       <h4 className="text-xs font-semibold text-muted-foreground mb-2">{title}</h4>
       <div className="space-y-1.5">
-        {items.map((c) => {
-          const pillarInfo = PILLARS.find((p) => p.name === c.pillar);
-          return (
-            <div key={c.controlId} className="flex items-start gap-2 text-sm">
-              {pillarInfo && <PillarDot pillarId={pillarInfo.id} />}
-              <div className="min-w-0">
-                <span className="font-mono text-[10px] text-muted-foreground">{c.controlId}</span>
-                <span className="mx-1 text-muted-foreground">·</span>
-                <span className="text-xs">{c.safeguardTitle}</span>
-              </div>
+        {items.map((c) => (
+          <div key={c.controlId} className="flex items-start gap-2 text-sm">
+            <ContentAreaDot prefix={getContentAreaPrefix(c)} />
+            <div className="min-w-0">
+              <span className="font-mono text-[10px] text-muted-foreground">{c.controlId}</span>
+              <span className="mx-1 text-muted-foreground">·</span>
+              <span className="text-xs">{c.safeguardTitle}</span>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

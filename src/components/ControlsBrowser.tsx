@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
-import { Search, Filter, ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
+import { Search, ChevronDown, ChevronRight } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
-import { IGBadge, PillarDot } from "@/components/FrameworkBadges";
-import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
+import { IGBadge, ContentAreaDot } from "@/components/FrameworkBadges";
+import { PILLARS, CONTENT_AREAS, IG_LEVELS, LIFECYCLE_TRIGGERS, getPillarId, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
 
 export default function ControlsBrowser() {
   const { data: controls = [], isLoading } = useControls();
@@ -15,17 +15,16 @@ export default function ControlsBrowser() {
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return controls.filter((c) => {
-      if (pillarFilter !== "all" && !c.controlId.startsWith(pillarFilter)) return false;
+      if (pillarFilter !== "all" && getPillarId(c) !== pillarFilter) return false;
       if (igFilter !== "all" && c.ig !== igFilter) return false;
-      if (lifecycleFilter !== "all" && c.lifecycleTrigger !== lifecycleFilter) return false;
+      if (lifecycleFilter !== "all" && !c.lifecycleTrigger.includes(lifecycleFilter)) return false;
       if (q) {
         return (
           c.controlId.toLowerCase().includes(q) ||
           c.safeguardTitle.toLowerCase().includes(q) ||
           c.customerObjective.toLowerCase().includes(q) ||
           c.detailedRequirement.toLowerCase().includes(q) ||
-          c.genericTooling.toLowerCase().includes(q) ||
-          c.microsoftTool.toLowerCase().includes(q)
+          c.contentArea.toLowerCase().includes(q)
         );
       }
       return true;
@@ -35,7 +34,7 @@ export default function ControlsBrowser() {
   const groupedByPillar = useMemo(() => {
     const groups: Record<string, Control[]> = {};
     for (const c of filtered) {
-      const key = c.pillar;
+      const key = getPillarId(c);
       if (!groups[key]) groups[key] = [];
       groups[key].push(c);
     }
@@ -52,69 +51,39 @@ export default function ControlsBrowser() {
 
   return (
     <div className="space-y-6 animate-fade-up">
-      {/* Search + Filters */}
       <div className="bg-card rounded-lg border border-border p-4 shadow-sm space-y-3">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search controls, tools, objectives…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
-          />
+          <input type="text" placeholder="Search controls, content areas, objectives…" value={search} onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground" />
         </div>
         <div className="flex flex-wrap gap-2">
-          <FilterSelect
-            label="Pillar"
-            value={pillarFilter}
-            onChange={setPillarFilter}
-            options={[{ value: "all", label: "All Pillars" }, ...PILLARS.map((p) => ({ value: p.id, label: p.name }))]}
-          />
-          <FilterSelect
-            label="IG Level"
-            value={igFilter}
-            onChange={setIgFilter}
-            options={[
-              { value: "all", label: "All Levels" },
-              { value: "IG1", label: "IG1 — Essential" },
-              { value: "IG2", label: "IG2 — Managed" },
-              { value: "IG3", label: "IG3 — Advanced" },
-            ]}
-          />
-          <FilterSelect
-            label="Lifecycle"
-            value={lifecycleFilter}
-            onChange={setLifecycleFilter}
-            options={[
-              { value: "all", label: "All Triggers" },
-              ...LIFECYCLE_TRIGGERS.map((t) => ({ value: t, label: t })),
-            ]}
-          />
+          <FilterSelect label="Pillar" value={pillarFilter} onChange={setPillarFilter}
+            options={[{ value: "all", label: "All Pillars" }, ...PILLARS.map((p) => ({ value: p.id, label: p.name }))]} />
+          <FilterSelect label="IG Level" value={igFilter} onChange={setIgFilter}
+            options={[{ value: "all", label: "All Levels" }, { value: "IG1", label: "IG1 — Essential" }, { value: "IG2", label: "IG2 — Managed" }, { value: "IG3", label: "IG3 — Advanced" }]} />
+          <FilterSelect label="Lifecycle" value={lifecycleFilter} onChange={setLifecycleFilter}
+            options={[{ value: "all", label: "All Triggers" }, ...LIFECYCLE_TRIGGERS.map((t) => ({ value: t, label: t }))]} />
           <span className="ml-auto text-xs text-muted-foreground self-center font-mono tabular-nums">
             {filtered.length} of {controls.length} controls
           </span>
         </div>
       </div>
 
-      {/* Controls List */}
-      {Object.entries(groupedByPillar).map(([pillar, items]) => {
-        const pillarInfo = PILLARS.find((p) => p.name === pillar);
+      {PILLARS.map((pillar) => {
+        const items = groupedByPillar[pillar.id];
+        if (!items || items.length === 0) return null;
         return (
-          <div key={pillar} className="space-y-1">
+          <div key={pillar.id} className="space-y-1">
             <div className="flex items-center gap-2 px-1 mb-2">
-              {pillarInfo && <PillarDot pillarId={pillarInfo.id} />}
-              <h3 className="text-sm font-semibold text-foreground">{pillar}</h3>
+              <span className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: `hsl(${pillar.color})` }} />
+              <h3 className="text-sm font-semibold text-foreground">{pillar.name}</h3>
               <span className="text-xs text-muted-foreground font-mono">({items.length})</span>
             </div>
             <div className="space-y-1">
               {items.map((control) => (
-                <ControlRow
-                  key={control.controlId}
-                  control={control}
-                  expanded={expandedId === control.controlId}
-                  onToggle={() => setExpandedId(expandedId === control.controlId ? null : control.controlId)}
-                />
+                <ControlRow key={control.controlId} control={control} expanded={expandedId === control.controlId}
+                  onToggle={() => setExpandedId(expandedId === control.controlId ? null : control.controlId)} />
               ))}
             </div>
           </div>
@@ -134,15 +103,8 @@ export default function ControlsBrowser() {
 function ControlRow({ control, expanded, onToggle }: { control: Control; expanded: boolean; onToggle: () => void }) {
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden transition-shadow hover:shadow-md">
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/40 transition-colors active:scale-[0.995]"
-      >
-        {expanded ? (
-          <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-        ) : (
-          <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-        )}
+      <button onClick={onToggle} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/40 transition-colors active:scale-[0.995]">
+        {expanded ? <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" /> : <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />}
         <span className="font-mono text-xs text-muted-foreground w-24 flex-shrink-0">{control.controlId}</span>
         <span className="text-sm font-medium flex-1 min-w-0 truncate">{control.safeguardTitle}</span>
         <IGBadge ig={control.ig} />
@@ -161,18 +123,14 @@ function ControlRow({ control, expanded, onToggle }: { control: Control; expande
             <DetailField label="Lifecycle Trigger" value={control.lifecycleTrigger} />
             <DetailField label="Cadence" value={control.cadence} />
             <DetailField label="Primary Stakeholder" value={control.primaryStakeholder} />
-            <DetailField label="Applies To" value={control.appliesTo} />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <DetailField label="Microsoft Tooling" value={control.microsoftTool} />
-            <DetailField label="Generic Tooling" value={control.genericTooling} />
+            <DetailField label="Content Area" value={control.contentArea} />
+            <DetailField label="Criticality Level" value={control.criticalityLevel} />
+            <DetailField label="First Required When" value={control.firstRequiredWhen} />
           </div>
           <div>
             <DetailField label="Evidence of Completion" value={control.evidenceOfCompletion} />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <DetailField label="Raw Weight" value={control.rawWeight} />
-            <DetailField label="Gate Type" value={control.gateType} />
             <DetailField label="Min Status to Pass" value={control.minStatusToPass} />
             <DetailField label="Min Evidence to Pass" value={control.minEvidenceToPass} />
           </div>
@@ -204,28 +162,12 @@ function DetailField({ label, value }: { label: string; value: string }) {
   );
 }
 
-function FilterSelect({
-  label,
-  value,
-  onChange,
-  options,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  options: { value: string; label: string }[];
-}) {
+function FilterSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }) {
   return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="text-xs font-medium border border-border rounded-md px-2.5 py-1.5 bg-card focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
-      aria-label={label}
-    >
+    <select value={value} onChange={(e) => onChange(e.target.value)}
+      className="text-xs font-medium border border-border rounded-md px-2.5 py-1.5 bg-card focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer" aria-label={label}>
       {options.map((o) => (
-        <option key={o.value} value={o.value}>
-          {o.label}
-        </option>
+        <option key={o.value} value={o.value}>{o.label}</option>
       ))}
     </select>
   );

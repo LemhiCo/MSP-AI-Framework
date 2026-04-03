@@ -54,14 +54,23 @@
     --ig2-bg: 40 60% 93%;
     --ig3-bg: 0 60% 95%;
 
-    /* Pillar accent hues */
-    --pillar-str: 90 37% 28%;
-    --pillar-gov: 280 30% 40%;
-    --pillar-tec: 168 40% 30%;
-    --pillar-prc: 25 70% 46%;
-    --pillar-dat: 340 45% 42%;
-    --pillar-obs: 200 50% 36%;
-    --pillar-dep: 46 60% 38%;
+    /* Implementation Pillar accent hues (v3) */
+    --pillar-p1: 0 70% 50%;
+    --pillar-p2: 25 80% 50%;
+    --pillar-p3: 200 50% 42%;
+    --pillar-p4: 168 40% 35%;
+    --pillar-p5: 280 40% 45%;
+
+    /* Content Area accent hues */
+    --ca-str: 90 37% 28%;
+    --ca-gov: 280 30% 40%;
+    --ca-tec: 168 40% 30%;
+    --ca-cpl: 220 55% 50%;
+    --ca-prc: 25 70% 46%;
+    --ca-dat: 340 45% 42%;
+    --ca-obs: 200 50% 36%;
+    --ca-dep: 46 60% 38%;
+    --ca-skl: 310 35% 45%;
 
     /* Charts */
     --chart-1: 90 37% 20%;

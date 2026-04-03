@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useControls } from "@/hooks/use-framework-data";
-import { PillarDot, IGBadge } from "@/components/FrameworkBadges";
-import { PILLARS } from "@/lib/csv-loader";
+import { ContentAreaDot, IGBadge } from "@/components/FrameworkBadges";
+import { PILLARS, getPillarId, getContentAreaPrefix } from "@/lib/csv-loader";
 
 export default function DashboardOverview() {
   const { data: controls = [], isLoading } = useControls();
@@ -26,7 +26,7 @@ export default function DashboardOverview() {
         </h1>
         <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
           CIS-inspired control model for deploying AI safely inside each customer environment.
-          Seven pillars, three implementation groups, {stats.total} safeguards.
+          Five implementation pillars, three implementation groups, {stats.total} safeguards.
         </p>
       </div>
 
@@ -39,51 +39,34 @@ export default function DashboardOverview() {
 
       {/* Pillar Breakdown */}
       <div className="bg-card rounded-lg border border-border p-4 shadow-sm">
-        <h2 className="text-sm font-semibold mb-3">Controls by Pillar</h2>
+        <h2 className="text-sm font-semibold mb-3">Controls by Implementation Pillar</h2>
         <div className="space-y-2">
           {PILLARS.map((pillar) => {
-            const pillarControls = controls.filter((c) => c.pillar === pillar.name);
+            const pillarControls = controls.filter((c) => getPillarId(c) === pillar.id);
             const ig1 = pillarControls.filter((c) => c.ig === "IG1").length;
             const ig2 = pillarControls.filter((c) => c.ig === "IG2").length;
             const ig3 = pillarControls.filter((c) => c.ig === "IG3").length;
             return (
               <div key={pillar.id} className="flex items-center gap-3">
-                <PillarDot pillarId={pillar.id} />
-                <span className="text-sm font-medium w-48 truncate">{pillar.name}</span>
+                <span
+                  className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0"
+                  style={{ background: `hsl(${pillar.color})` }}
+                />
+                <span className="text-sm font-medium w-56 truncate">{pillar.name}</span>
+                <span className="text-[10px] text-muted-foreground w-16">{pillar.criticality}</span>
                 <div className="flex-1 flex gap-0.5 h-5 rounded overflow-hidden bg-muted">
                   {ig1 > 0 && (
-                    <div
-                      className="flex items-center justify-center text-[10px] font-bold"
-                      style={{
-                        width: `${(ig1 / pillarControls.length) * 100}%`,
-                        background: "hsl(var(--ig1))",
-                        color: "white",
-                      }}
-                    >
+                    <div className="flex items-center justify-center text-[10px] font-bold" style={{ width: `${(ig1 / Math.max(pillarControls.length, 1)) * 100}%`, background: "hsl(var(--ig1))", color: "white" }}>
                       {ig1}
                     </div>
                   )}
                   {ig2 > 0 && (
-                    <div
-                      className="flex items-center justify-center text-[10px] font-bold"
-                      style={{
-                        width: `${(ig2 / pillarControls.length) * 100}%`,
-                        background: "hsl(var(--ig2))",
-                        color: "white",
-                      }}
-                    >
+                    <div className="flex items-center justify-center text-[10px] font-bold" style={{ width: `${(ig2 / Math.max(pillarControls.length, 1)) * 100}%`, background: "hsl(var(--ig2))", color: "white" }}>
                       {ig2}
                     </div>
                   )}
                   {ig3 > 0 && (
-                    <div
-                      className="flex items-center justify-center text-[10px] font-bold"
-                      style={{
-                        width: `${(ig3 / pillarControls.length) * 100}%`,
-                        background: "hsl(var(--ig3))",
-                        color: "white",
-                      }}
-                    >
+                    <div className="flex items-center justify-center text-[10px] font-bold" style={{ width: `${(ig3 / Math.max(pillarControls.length, 1)) * 100}%`, background: "hsl(var(--ig3))", color: "white" }}>
                       {ig3}
                     </div>
                   )}
@@ -105,9 +88,9 @@ export default function DashboardOverview() {
         <h2 className="text-sm font-semibold mb-3">Framework Principles</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Principle title="Design Focus" text="Every safeguard is written from the perspective of a single customer environment." />
-          <Principle title="Rollout Principle" text="No broad deployment until IG1 safeguards are complete across all seven pillars." />
-          <Principle title="Lifecycle Columns" text="Each safeguard maps to Onboarding, QBR, Employee events, Project, or Security Incident motions." />
-          <Principle title="Tooling Columns" text="Both Microsoft-native and generic tooling categories so the framework stays platform-aware." />
+          <Principle title="Rollout Principle" text="No broad deployment until Pillar 1 (Critical Foundation) safeguards are complete." />
+          <Principle title="5 Pillars" text="Controls sequence from Critical Foundation through Agentic Enterprise Readiness." />
+          <Principle title="9 Content Areas" text="Strategy, Governance, Technical, Copilot, Process, Data, Observability, Deployment, and People & Skills." />
         </div>
       </div>
     </div>

@@ -1,8 +1,8 @@
-import { useState, useMemo, useCallback } from "react"; // v3
+import { useState, useMemo, useCallback } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Search, Plus, Download, ArrowLeft, X, ChevronUp, ChevronDown, ExternalLink } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
-import { PILLARS, IG_LEVELS, AI_MODALITIES, LIFECYCLE_TRIGGERS, type Control } from "@/lib/csv-loader";
+import { PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, getPillarId, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
 import { Link } from "react-router-dom";
 import Papa from "papaparse";
 import pako from "pako";
@@ -11,14 +11,11 @@ import { toast } from "sonner";
 import ContributorsTicker from "@/components/ContributorsTicker";
 
 const EMPTY_CONTROL: Control = {
-  controlId: "", pillar: "", ig: "", safeguardTitle: "", customerObjective: "", eli5: "",
+  controlId: "", implementationPillar: "", criticalityLevel: "", contentArea: "",
+  ig: "", safeguardTitle: "", customerObjective: "",
   detailedRequirement: "", lifecycleTrigger: "", cadence: "", primaryStakeholder: "",
-  microsoftTool: "", genericTooling: "", evidenceOfCompletion: "", rawWeight: "",
-  gateType: "", minStatusToPass: "", minEvidenceToPass: "", failCondition: "",
-  whyItMatters: "", appliesTo: "", endCustomerBusinessValue: "",
-  customerConversationTrack: "", whoCaresMost: "", relevantGenAI: "No",
-  relevantCustomGPTs: "No", relevantAgenticAI: "No", relevantDigitalWorkers: "No",
-  relevantCowork: "No", firstRequiredWhen: "",
+  evidenceOfCompletion: "", minStatusToPass: "", minEvidenceToPass: "", failCondition: "",
+  whyItMatters: "", whoCaresMost: "", firstRequiredWhen: "",
 };
 
 const IG_META: Record<string, { label: string; sub: string }> = {
@@ -28,32 +25,32 @@ const IG_META: Record<string, { label: string; sub: string }> = {
 };
 
 const PILLAR_COLORS: Record<string, string> = {
-  STR: "90 37% 28%",
-  GOV: "280 30% 40%",
-  TEC: "168 40% 30%",
-  CPL: "220 55% 50%",
-  PRC: "25 70% 46%",
-  DAT: "340 45% 42%",
-  OBS: "200 50% 36%",
-  DEP: "46 60% 38%",
+  P1: "0 70% 50%",
+  P2: "25 80% 50%",
+  P3: "200 50% 42%",
+  P4: "168 40% 35%",
+  P5: "280 40% 45%",
 };
 
 function controlToCSVRow(c: Control): Record<string, string> {
   return {
-    "Control ID": c.controlId, "Pillar": c.pillar, "IG": c.ig,
-    "Safeguard Title": c.safeguardTitle, "Customer Objective": c.customerObjective,
-    "Detailed Requirement": c.detailedRequirement, "Lifecycle Trigger": c.lifecycleTrigger,
-    "Cadence": c.cadence, "Primary Stakeholder": c.primaryStakeholder,
-    "Microsoft Tool Recommendation": c.microsoftTool, "Generic Tooling Category": c.genericTooling,
-    "Evidence of Completion": c.evidenceOfCompletion, "Raw Weight": c.rawWeight,
-    "Gate Type": c.gateType, "Minimum Status to Pass": c.minStatusToPass,
-    "Minimum Evidence to Pass": c.minEvidenceToPass, "Fail Condition": c.failCondition,
-    "Why it Matters": c.whyItMatters, "Applies To": c.appliesTo,
-    "End Customer Business Value": c.endCustomerBusinessValue,
-    "Customer Conversation Track": c.customerConversationTrack,
-    "Who Cares Most (Customer)": c.whoCaresMost, "Relevant: GenAI": c.relevantGenAI,
-    "Relevant: Custom GPTs": c.relevantCustomGPTs, "Relevant: Agentic AI": c.relevantAgenticAI,
-    "Relevant: Digital Workers": c.relevantDigitalWorkers, "Relevant: Cowork": c.relevantCowork,
+    "Implementation Pillar": c.implementationPillar,
+    "Criticality Level": c.criticalityLevel,
+    "Control ID": c.controlId,
+    "Content Area": c.contentArea,
+    "IG": c.ig,
+    "Safeguard Title": c.safeguardTitle,
+    "Customer Objective": c.customerObjective,
+    "Detailed Requirement": c.detailedRequirement,
+    "Lifecycle Trigger": c.lifecycleTrigger,
+    "Cadence": c.cadence,
+    "Primary Stakeholder": c.primaryStakeholder,
+    "Evidence of Completion": c.evidenceOfCompletion,
+    "Minimum Status to Pass": c.minStatusToPass,
+    "Minimum Evidence to Pass": c.minEvidenceToPass,
+    "Fail Condition": c.failCondition,
+    "Why it Matters": c.whyItMatters,
+    "Who Cares Most (Customer)": c.whoCaresMost,
     "First Required When": c.firstRequiredWhen,
   };
 }
@@ -95,8 +92,6 @@ function ContributePrompt({ onClose, onOpenIssue, csvHash }: { onClose: () => vo
             Want to contribute your changes back? Open a GitHub Issue and <strong>attach your downloaded CSV</strong>.
           </p>
         </div>
-
-        {/* Critical warning */}
         <div className="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 space-y-1.5">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-destructive shrink-0" />
@@ -107,7 +102,6 @@ function ContributePrompt({ onClose, onOpenIssue, csvHash }: { onClose: () => vo
             {csvHash ? <> (<code className="text-[10px] bg-muted px-1 py-0.5 rounded font-mono">…{csvHash.slice(-6)}</code>)</> : null} to the GitHub Issue.
           </p>
         </div>
-
         <div className="mb-4 rounded-lg border border-border bg-muted/40 px-4 py-3 space-y-1.5">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">How it works</p>
           <ol className="text-xs text-foreground/80 space-y-1 leading-relaxed list-decimal list-inside">
@@ -116,37 +110,21 @@ function ContributePrompt({ onClose, onOpenIssue, csvHash }: { onClose: () => vo
             <li>Submit — maintainers will review and merge</li>
           </ol>
         </div>
-
-        {/* Acknowledgement checkbox */}
         <label className="flex items-start gap-2.5 mb-4 cursor-pointer select-none group">
-          <input
-            type="checkbox"
-            checked={ack}
-            onChange={(e) => setAck(e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-border accent-primary shrink-0"
-          />
+          <input type="checkbox" checked={ack} onChange={(e) => setAck(e.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded border-border accent-primary shrink-0" />
           <span className="text-xs text-foreground/80 leading-relaxed">
             I understand I <strong>must upload my CSV file</strong> to the GitHub Issue or my contribution cannot be reviewed.
           </span>
         </label>
-
         <div className="space-y-2">
-          <button
-            onClick={onOpenIssue}
-            disabled={!ack}
+          <button onClick={onOpenIssue} disabled={!ack}
             className={`w-full py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
-              ack
-                ? "bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.97]"
-                : "bg-muted text-muted-foreground cursor-not-allowed opacity-60"
-            }`}
-          >
-            <ExternalLink className="w-4 h-4" />
-            Open GitHub Issue
+              ack ? "bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.97]" : "bg-muted text-muted-foreground cursor-not-allowed opacity-60"
+            }`}>
+            <ExternalLink className="w-4 h-4" /> Open GitHub Issue
           </button>
-          <button
-            onClick={onClose}
-            className="w-full py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
+          <button onClick={onClose} className="w-full py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
             Maybe later
           </button>
         </div>
@@ -164,131 +142,122 @@ export default function Admin() {
   const [dirty, setDirty] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
-  const [gateFilter, setGateFilter] = useState<Set<string>>(new Set());
-  const [aiModalityFilter, setAiModalityFilter] = useState<Set<string>>(new Set());
-  const [showCopilot, setShowCopilot] = useState(true);
+  const [firstRequiredFilter, setFirstRequiredFilter] = useState<Set<string>>(new Set());
   const [showIssueButton, setShowIssueButton] = useState(false);
   const [showContributePrompt, setShowContributePrompt] = useState(false);
   const [originalControls, setOriginalControls] = useState<Control[]>([]);
   const [csvHash, setCsvHash] = useState("");
 
   const allControls = controls ?? loadedControls;
-  const visiblePillars = useMemo(() =>
-    showCopilot ? PILLARS : PILLARS.filter(p => !("optional" in p)),
-  [showCopilot]);
 
-  // Snapshot original controls for diff tracking
   useMemo(() => {
     if (loadedControls.length > 0 && originalControls.length === 0) {
       setOriginalControls(loadedControls.map(c => ({ ...c })));
     }
   }, [loadedControls]);
 
-  const gateTypes = useMemo(() => {
+  const firstRequiredOptions = useMemo(() => {
     const set = new Set<string>();
-    allControls.forEach(c => { if (c.gateType) set.add(c.gateType); });
+    allControls.forEach(c => { if (c.firstRequiredWhen) set.add(c.firstRequiredWhen); });
     return Array.from(set).sort();
   }, [allControls]);
 
-  const activeFilterCount = [lifecycleFilter, gateFilter, aiModalityFilter].reduce((n, s) => n + s.size, 0);
-  const clearAllFilters = () => { setLifecycleFilter(new Set()); setGateFilter(new Set()); setAiModalityFilter(new Set()); };
+  const activeFilterCount = [lifecycleFilter, firstRequiredFilter].reduce((n, s) => n + s.size, 0);
+  const clearAllFilters = () => { setLifecycleFilter(new Set()); setFirstRequiredFilter(new Set()); };
 
   const filteredControls = useMemo(() => {
-    const hiddenPillarIds = new Set<string>(PILLARS.filter(p => "optional" in p && !showCopilot).map(p => p.id));
     return allControls.filter((c) => {
-      const pillarId = c.controlId.split("-")[0];
-      if (hiddenPillarIds.has(pillarId)) return false;
       if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
-      if (gateFilter.size && !gateFilter.has(c.gateType)) return false;
-      if (aiModalityFilter.size) {
-        const match = AI_MODALITIES.some(m => aiModalityFilter.has(m.label) && c[m.key] === "Yes");
-        if (!match) return false;
-      }
+      if (firstRequiredFilter.size && !firstRequiredFilter.has(c.firstRequiredWhen)) return false;
       if (search) {
         const q = search.toLowerCase();
         return c.controlId.toLowerCase().includes(q) || c.safeguardTitle.toLowerCase().includes(q) || c.customerObjective.toLowerCase().includes(q);
       }
       return true;
     });
-  }, [allControls, search, lifecycleFilter, gateFilter, aiModalityFilter, showCopilot]);
+  }, [allControls, search, lifecycleFilter, firstRequiredFilter]);
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
-    for (const p of visiblePillars) {
+    for (const p of PILLARS) {
       map[p.id] = {};
       for (const ig of IG_LEVELS) {
-        map[p.id][ig] = filteredControls.filter(c => c.controlId.startsWith(p.id) && c.ig === ig);
+        map[p.id][ig] = filteredControls.filter(c => getPillarId(c) === p.id && c.ig === ig);
       }
     }
     return map;
-  }, [filteredControls, visiblePillars]);
+  }, [filteredControls]);
 
-  // --- Change tracking (computed at diff time, not manually) ---
-
-  // --- Drag & Drop ---
   const [dragControlId, setDragControlId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<{ pillar: string; ig: string; index: number } | null>(null);
 
-  const renumberCell = (list: Control[], pillar: string, ig: string): Control[] => {
+  const renumberCell = (list: Control[], pillarId: string, ig: string): Control[] => {
+    const prefix = pillarId; // We use content area prefix for renumbering
     const inCell = list
-      .filter(c => c.controlId.startsWith(pillar) && c.ig === ig)
+      .filter(c => getPillarId(c) === pillarId && c.ig === ig)
       .sort((a, b) => a.controlId.localeCompare(b.controlId));
-    const rest = list.filter(c => !(c.controlId.startsWith(pillar) && c.ig === ig));
-    const renumbered = inCell.map((c, i) => ({
-      ...c,
-      controlId: `${pillar}-${ig}-${String(i + 1).padStart(2, "0")}`,
-    }));
+    const rest = list.filter(c => !(getPillarId(c) === pillarId && c.ig === ig));
+    const renumbered = inCell.map((c, i) => {
+      const caPrefix = getContentAreaPrefix(c) || "CTL";
+      return { ...c, controlId: `${caPrefix}-${ig}-${String(i + 1).padStart(2, "0")}` };
+    });
     return [...rest, ...renumbered];
   };
 
-  const handleDrop = useCallback((targetPillar: string, targetIg: string, targetIndex: number) => {
+  const handleDrop = useCallback((targetPillarId: string, targetIg: string, targetIndex: number) => {
     if (!dragControlId) return;
     const draggedControl = allControls.find(c => c.controlId === dragControlId);
     if (!draggedControl) return;
 
-    const sourcePillar = draggedControl.controlId.split("-")[0];
+    const sourcePillarId = getPillarId(draggedControl);
     const sourceIg = draggedControl.ig;
 
     let newList = allControls.filter(c => c.controlId !== dragControlId);
-    newList = renumberCell(newList, sourcePillar, sourceIg);
+    newList = renumberCell(newList, sourcePillarId, sourceIg);
 
     const targetItems = newList
-      .filter(c => c.controlId.startsWith(targetPillar) && c.ig === targetIg)
+      .filter(c => getPillarId(c) === targetPillarId && c.ig === targetIg)
       .sort((a, b) => a.controlId.localeCompare(b.controlId));
-    const others = newList.filter(c => !(c.controlId.startsWith(targetPillar) && c.ig === targetIg));
+    const others = newList.filter(c => !(getPillarId(c) === targetPillarId && c.ig === targetIg));
 
-    const updatedDragged = { ...draggedControl, pillar: targetPillar, ig: targetIg, controlId: "" };
+    const targetPillar = PILLARS.find(p => p.id === targetPillarId);
+    const updatedDragged = {
+      ...draggedControl,
+      ig: targetIg,
+      implementationPillar: targetPillar ? `Pillar ${PILLARS.indexOf(targetPillar) + 1} – ${targetPillar.name}` : draggedControl.implementationPillar,
+      controlId: "",
+    };
     targetItems.splice(Math.min(targetIndex, targetItems.length), 0, updatedDragged);
 
-    const renumberedTarget = targetItems.map((c, i) => ({
-      ...c,
-      controlId: `${targetPillar}-${targetIg}-${String(i + 1).padStart(2, "0")}`,
-    }));
+    const renumberedTarget = targetItems.map((c, i) => {
+      const caPrefix = getContentAreaPrefix(c) || "CTL";
+      return { ...c, controlId: `${caPrefix}-${targetIg}-${String(i + 1).padStart(2, "0")}` };
+    });
 
     setControls([...others, ...renumberedTarget]);
     setDirty(true);
     setDragControlId(null);
     setDropTarget(null);
-    toast.success(`Moved to ${targetPillar}-${targetIg}. IDs renumbered.`);
+    toast.success(`Moved to ${targetPillarId}-${targetIg}. IDs renumbered.`);
   }, [dragControlId, allControls]);
 
   const swapOrder = useCallback((controlId: string, direction: -1 | 1) => {
     const control = allControls.find(c => c.controlId === controlId);
     if (!control) return;
-    const pillar = control.controlId.split("-")[0];
+    const pillarId = getPillarId(control);
     const ig = control.ig;
     const cellItems = allControls
-      .filter(c => c.controlId.startsWith(pillar + "-") && c.ig === ig)
+      .filter(c => getPillarId(c) === pillarId && c.ig === ig)
       .sort((a, b) => a.controlId.localeCompare(b.controlId));
     const idx = cellItems.findIndex(c => c.controlId === controlId);
     const swapIdx = idx + direction;
     if (swapIdx < 0 || swapIdx >= cellItems.length) return;
     [cellItems[idx], cellItems[swapIdx]] = [cellItems[swapIdx], cellItems[idx]];
-    const renumbered = cellItems.map((c, i) => ({
-      ...c,
-      controlId: `${pillar}-${ig}-${String(i + 1).padStart(2, "0")}`,
-    }));
-    const others = allControls.filter(c => !(c.controlId.startsWith(pillar + "-") && c.ig === ig));
+    const renumbered = cellItems.map((c, i) => {
+      const caPrefix = getContentAreaPrefix(c) || "CTL";
+      return { ...c, controlId: `${caPrefix}-${ig}-${String(i + 1).padStart(2, "0")}` };
+    });
+    const others = allControls.filter(c => !(getPillarId(c) === pillarId && c.ig === ig));
     setControls([...others, ...renumbered]);
     setDirty(true);
   }, [allControls]);
@@ -315,14 +284,14 @@ export default function Admin() {
   };
 
   const handleNewInCell = (pillarId: string, ig: string) => {
-    const cellItems = allControls.filter(c => c.controlId.startsWith(pillarId + "-") && c.ig === ig);
+    const cellItems = allControls.filter(c => getPillarId(c) === pillarId && c.ig === ig);
     const nextNum = String(cellItems.length + 1).padStart(2, "0");
     const pillarObj = PILLARS.find(p => p.id === pillarId);
     setIsNewCard(true);
     setActiveControl({
       ...EMPTY_CONTROL,
-      controlId: `${pillarId}-${ig}-${nextNum}`,
-      pillar: pillarObj?.name || pillarId,
+      controlId: `CTL-${ig}-${nextNum}`,
+      implementationPillar: pillarObj ? `Pillar ${PILLARS.indexOf(pillarObj) + 1} – ${pillarObj.name}` : "",
       ig,
     });
   };
@@ -338,21 +307,17 @@ export default function Admin() {
   }, []);
 
   const computeDiff = useCallback(() => {
-    const origMap = new Map(originalControls.map(c => [c.controlId, c]));
-    const currMap = new Map(allControls.map(c => [c.controlId, c]));
     const diffFields: { key: keyof Control; label: string }[] = [
       { key: "safeguardTitle", label: "Safeguard Title" },
       { key: "customerObjective", label: "Customer Objective" },
-      { key: "eli5", label: "ELI5" },
       { key: "detailedRequirement", label: "Detailed Requirement" },
       { key: "lifecycleTrigger", label: "Lifecycle Trigger" },
       { key: "cadence", label: "Cadence" },
       { key: "primaryStakeholder", label: "Primary Stakeholder" },
-      { key: "microsoftTool", label: "Microsoft Tool" },
-      { key: "genericTooling", label: "Generic Tooling" },
       { key: "evidenceOfCompletion", label: "Evidence of Completion" },
-      { key: "gateType", label: "Gate Type" },
       { key: "whyItMatters", label: "Why it Matters" },
+      { key: "criticalityLevel", label: "Criticality Level" },
+      { key: "contentArea", label: "Content Area" },
     ];
 
     const added: Control[] = [];
@@ -360,41 +325,31 @@ export default function Admin() {
     const modified: { control: Control; changes: string[] }[] = [];
     const reordered: { from: string; to: string; title: string }[] = [];
 
-    // Find deleted
     for (const orig of originalControls) {
-      // Match by safeguardTitle to avoid false positives from renumbering
       const stillExists = allControls.some(c => c.safeguardTitle === orig.safeguardTitle);
       if (!stillExists) deleted.push(orig);
     }
 
-    // Find added & modified
     for (const curr of allControls) {
       const origByTitle = originalControls.find(c => c.safeguardTitle === curr.safeguardTitle);
-      if (!origByTitle) {
-        added.push(curr);
-        continue;
-      }
-      // Check for content changes (ignore controlId since it's positional)
+      if (!origByTitle) { added.push(curr); continue; }
       const changes: string[] = [];
       for (const f of diffFields) {
-        if (f.key === "safeguardTitle") continue; // used as identity
+        if (f.key === "safeguardTitle") continue;
         if (origByTitle[f.key] !== curr[f.key]) {
           changes.push(`- **${f.label}:** \`${origByTitle[f.key] || "(empty)"}\` → \`${curr[f.key] || "(empty)"}\``);
         }
       }
-      // Check pillar/IG move
       if (origByTitle.controlId !== curr.controlId) {
-        const origPillar = origByTitle.controlId.split("-")[0];
-        const currPillar = curr.controlId.split("-")[0];
+        const origPillar = getPillarId(origByTitle);
+        const currPillar = getPillarId(curr);
         if (origPillar !== currPillar || origByTitle.ig !== curr.ig) {
           changes.push(`- **Moved:** \`${origByTitle.controlId}\` → \`${curr.controlId}\``);
         } else {
           reordered.push({ from: origByTitle.controlId, to: curr.controlId, title: curr.safeguardTitle });
         }
       }
-      if (changes.length > 0) {
-        modified.push({ control: curr, changes });
-      }
+      if (changes.length > 0) modified.push({ control: curr, changes });
     }
 
     return { added, deleted, modified, reordered };
@@ -412,9 +367,7 @@ export default function Admin() {
     URL.revokeObjectURL(url);
     setDirty(false);
     const { added, deleted, modified, reordered } = computeDiff();
-    if (added.length + deleted.length + modified.length + reordered.length > 0) {
-      setShowIssueButton(true);
-    }
+    if (added.length + deleted.length + modified.length + reordered.length > 0) setShowIssueButton(true);
   }, [allControls, generateHash, computeDiff]);
 
   const openIssue = useCallback(() => {
@@ -431,9 +384,7 @@ export default function Admin() {
     const title = encodeURIComponent(`[CSV Change]: ${summaryParts.join(", ")} — ${today}`);
 
     const lines: string[] = [];
-    for (const c of deleted) {
-      lines.push(`### ❌ Deleted: \`${c.controlId}\` — ${c.safeguardTitle}\n`);
-    }
+    for (const c of deleted) lines.push(`### ❌ Deleted: \`${c.controlId}\` — ${c.safeguardTitle}\n`);
     for (const c of added) {
       lines.push(`### ➕ Added: \`${c.controlId}\` — ${c.safeguardTitle}`);
       if (c.customerObjective) lines.push(`- **Customer Objective:** ${c.customerObjective}`);
@@ -446,13 +397,10 @@ export default function Admin() {
     }
     if (reordered.length > 0) {
       lines.push(`### 🔀 Reordered`);
-      for (const r of reordered) {
-        lines.push(`- \`${r.from}\` → \`${r.to}\` — ${r.title}`);
-      }
+      for (const r of reordered) lines.push(`- \`${r.from}\` → \`${r.to}\` — ${r.title}`);
       lines.push("");
     }
 
-    // Build compact field-level diff + deflate compression
     const patches: string[] = [];
     for (const c of deleted) patches.push(`D|${c.controlId}`);
     for (const c of added) {
@@ -468,43 +416,22 @@ export default function Admin() {
       const diffs = Object.keys(currRow).filter(k => origRow[k] !== currRow[k]).map(k => `${k}=${currRow[k]}`).join("\t");
       if (diffs) patches.push(`M|${control.controlId}|${diffs}`);
     }
-    for (const r of reordered) {
-      patches.push(`R|${r.from}|${r.to}`);
-    }
+    for (const r of reordered) patches.push(`R|${r.from}|${r.to}`);
 
     const diffText = patches.join("\n");
     const compressed = pako.deflate(new TextEncoder().encode(diffText));
     const base64Payload = btoa(String.fromCharCode(...compressed));
 
     const body = encodeURIComponent(
-      `## Proposed Framework Changes\n\n` +
-      `**Date:** ${today}\n` +
-      `**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n` +
-      `---\n\n` +
-      `## Detailed Changes\n\n${lines.join("\n")}\n` +
-      `---\n\n` +
-      `## Why this change should be made\n\n_Explain the reasoning, evidence, or implementation context for this recommendation._\n\n` +
-      `---\n\n` +
-      `<!-- MSP_PATCH_V2:${base64Payload} -->`
+      `## Proposed Framework Changes\n\n**Date:** ${today}\n**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n---\n\n## Detailed Changes\n\n${lines.join("\n")}\n---\n\n## Why this change should be made\n\n_Explain the reasoning._\n\n---\n\n<!-- MSP_PATCH_V2:${base64Payload} -->`
     );
     const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
-    const MAX_URL_LENGTH = 8000;
-    if (url.length > MAX_URL_LENGTH) {
-      // URL too long — strip the patch payload and ask user to attach CSV instead
+    if (url.length > 8000) {
       const strippedBody = encodeURIComponent(
-        `## Proposed Framework Changes\n\n` +
-        `**Date:** ${today}\n` +
-        `**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n` +
-        `---\n\n` +
-        `## Detailed Changes\n\n${lines.join("\n")}\n` +
-        `---\n\n` +
-        `## Why this change should be made\n\n_Explain the reasoning, evidence, or implementation context for this recommendation._\n\n` +
-        `---\n\n` +
-        `> ⚠️ Patch payload was too large to embed. **Please attach your downloaded CSV file to this issue.**`
+        `## Proposed Framework Changes\n\n**Date:** ${today}\n**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n---\n\n## Detailed Changes\n\n${lines.join("\n")}\n---\n\n## Why this change should be made\n\n_Explain the reasoning._\n\n---\n\n> ⚠️ Patch payload was too large. **Please attach your downloaded CSV file.**`
       );
-      const fallbackUrl = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${strippedBody}&labels=csv-change,triage`;
       setShowContributePrompt(true);
-      window.open(fallbackUrl, "_blank");
+      window.open(`https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${strippedBody}&labels=csv-change,triage`, "_blank");
     } else {
       window.open(url, "_blank");
     }
@@ -520,7 +447,6 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top Bar */}
       <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-1.5 flex items-center gap-3 shadow-sm min-w-[1200px]">
         <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
@@ -528,8 +454,7 @@ export default function Admin() {
         <h1 className="text-sm font-serif font-semibold mr-3 hidden sm:block">Admin — Controls Editor</h1>
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-          <input type="text" placeholder="Search controls…" value={search}
-            onChange={(e) => setSearch(e.target.value)}
+          <input type="text" placeholder="Search controls…" value={search} onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-8 pr-3 py-1.5 rounded-md border border-input bg-background text-xs focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground" />
         </div>
 
@@ -551,17 +476,6 @@ export default function Admin() {
           <Plus className="w-3.5 h-3.5" /> New Control
         </button>
 
-        <button
-          onClick={() => setShowCopilot(v => !v)}
-          className={`text-xs font-medium px-2.5 py-1.5 rounded-md border transition-colors active:scale-95 ${
-            showCopilot ? "bg-[hsl(220_55%_50%)] text-white border-[hsl(220_55%_50%)]" : "bg-card border-border hover:bg-muted"
-          }`}
-          title="Toggle Copilot Readiness pillar"
-        >
-          {showCopilot ? "Copilot ✓" : "Copilot"}
-        </button>
-
-
         <button onClick={downloadCSV}
           className={`text-xs font-medium px-2.5 py-1.5 rounded-md border transition-colors active:scale-95 flex items-center gap-1 ${
             dirty ? "border-accent bg-accent text-accent-foreground animate-pulse" : "border-border bg-card hover:bg-muted"
@@ -573,27 +487,22 @@ export default function Admin() {
         {showIssueButton && (
           <button onClick={openIssue}
             className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-green-600 bg-green-600 text-white hover:bg-green-700 transition-colors active:scale-95 flex items-center gap-1">
-            <ExternalLink className="w-3.5 h-3.5" />
-            Suggest Change
+            <ExternalLink className="w-3.5 h-3.5" /> Suggest Change
           </button>
         )}
       </header>
 
-      {/* Filter Panel */}
       {showFilters && (
         <div className="bg-card border-b border-border px-4 py-3 space-y-2 min-w-[1200px] shadow-sm">
           <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
-          <ChipFilter label="Gate Type" options={gateTypes} selected={gateFilter} onChange={setGateFilter} />
-          <ChipFilter label="AI Type" options={AI_MODALITIES.map(m => m.label)} selected={aiModalityFilter} onChange={setAiModalityFilter} />
+          <ChipFilter label="First Required" options={firstRequiredOptions} selected={firstRequiredFilter} onChange={setFirstRequiredFilter} />
         </div>
       )}
 
-      {/* Kanban Board */}
       <div className="min-w-[1200px]">
-        {/* Pillar Headers */}
-        <div className="sticky top-[37px] z-20 bg-background border-b border-border grid" style={{ gridTemplateColumns: `100px repeat(${visiblePillars.length},1fr)` }}>
+        <div className="sticky top-[37px] z-20 bg-background border-b border-border grid" style={{ gridTemplateColumns: `100px repeat(${PILLARS.length},1fr)` }}>
           <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-end" />
-          {visiblePillars.map((p) => (
+          {PILLARS.map((p) => (
             <div key={p.id} className="px-2 py-1.5 border-l border-border">
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: `hsl(${PILLAR_COLORS[p.id]})` }} />
@@ -604,19 +513,18 @@ export default function Admin() {
           ))}
         </div>
 
-        {/* IG Rows */}
         {IG_LEVELS.map((ig) => {
           const meta = IG_META[ig];
           const igColorVar = ig === "IG1" ? "--ig1" : ig === "IG2" ? "--ig2" : "--ig3";
           const igBgVar = ig === "IG1" ? "--ig1-bg" : ig === "IG2" ? "--ig2-bg" : "--ig3-bg";
 
           return (
-            <div key={ig} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${visiblePillars.length},1fr)` }}>
+            <div key={ig} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${PILLARS.length},1fr)` }}>
               <div className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10" style={{ background: `hsl(var(${igBgVar}))` }}>
                 <span className="text-xs font-bold" style={{ color: `hsl(var(${igColorVar}))` }}>{ig}</span>
                 <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta.sub}</span>
               </div>
-              {visiblePillars.map((pillar) => {
+              {PILLARS.map((pillar) => {
                 const items = grid[pillar.id]?.[ig] || [];
                 return (
                   <div key={`${pillar.id}-${ig}`}
@@ -648,37 +556,27 @@ export default function Admin() {
                         <div className={`flex items-stretch gap-0 rounded-md border transition-all bg-card border-border hover:border-primary/40 ${
                           dragControlId === c.controlId ? "opacity-40 scale-95" : ""
                         }`}>
-                          <button
-                            draggable
-                            onDragStart={() => setDragControlId(c.controlId)}
+                          <button draggable onDragStart={() => setDragControlId(c.controlId)}
                             onDragEnd={() => { setDragControlId(null); setDropTarget(null); }}
                             onClick={() => { setIsNewCard(false); setActiveControl(c); }}
                             className="flex-1 text-[11px] text-left px-1.5 py-1.5 cursor-grab min-w-0">
                             <span className="leading-tight block">{c.safeguardTitle}</span>
                             <div className="flex items-center gap-1 mt-0.5">
                               <span className="text-[9px] font-mono text-muted-foreground">{c.controlId}</span>
-                              <span className={`text-[8px] font-semibold px-1 py-0.5 rounded ${
-                                c.gateType === "Baseline Gate" ? "bg-destructive/15 text-destructive"
-                                  : c.gateType === "Scale Gate" ? "bg-status-yellow/20 text-foreground"
-                                  : "bg-muted text-muted-foreground"
-                              }`}>
-                                {c.gateType === "Baseline Gate" ? "BASE" : c.gateType === "Scale Gate" ? "SCALE" : c.gateType === "Advanced Score" ? "ADV" : ""}
-                              </span>
+                              {c.firstRequiredWhen && (
+                                <span className="text-[8px] font-medium px-1 py-0.5 rounded bg-accent/30 text-accent-foreground">
+                                  {c.firstRequiredWhen}
+                                </span>
+                              )}
                             </div>
                           </button>
                           <div className="flex flex-col border-l border-border">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); swapOrder(c.controlId, -1); }}
-                              disabled={idx === 0}
-                              className="flex-1 px-0.5 hover:bg-muted disabled:opacity-20 transition-colors"
-                              title="Move up">
+                            <button onClick={(e) => { e.stopPropagation(); swapOrder(c.controlId, -1); }} disabled={idx === 0}
+                              className="flex-1 px-0.5 hover:bg-muted disabled:opacity-20 transition-colors" title="Move up">
                               <ChevronUp className="w-3 h-3 text-muted-foreground" />
                             </button>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); swapOrder(c.controlId, 1); }}
-                              disabled={idx === items.length - 1}
-                              className="flex-1 px-0.5 hover:bg-muted disabled:opacity-20 transition-colors"
-                              title="Move down">
+                            <button onClick={(e) => { e.stopPropagation(); swapOrder(c.controlId, 1); }} disabled={idx === items.length - 1}
+                              className="flex-1 px-0.5 hover:bg-muted disabled:opacity-20 transition-colors" title="Move down">
                               <ChevronDown className="w-3 h-3 text-muted-foreground" />
                             </button>
                           </div>
@@ -691,11 +589,9 @@ export default function Admin() {
                     {items.length === 0 && !dropTarget?.pillar && (
                       <div className="text-[10px] text-muted-foreground italic px-1 py-2">—</div>
                     )}
-                    <button
-                      onClick={() => handleNewInCell(pillar.id, ig)}
+                    <button onClick={() => handleNewInCell(pillar.id, ig)}
                       className="w-full text-[10px] text-muted-foreground hover:text-primary py-1 flex items-center justify-center gap-0.5 rounded hover:bg-muted/50 transition-colors"
-                      title={`Add control to ${pillar.id} ${ig}`}
-                    >
+                      title={`Add control to ${pillar.id} ${ig}`}>
                       <Plus className="w-3 h-3" /> Add
                     </button>
                   </div>
@@ -706,26 +602,13 @@ export default function Admin() {
         })}
       </div>
 
-      {/* Detail Panel with edit mode */}
       {activeControl && (
-        <ControlDetailPanel
-          control={activeControl}
-          onClose={() => { setActiveControl(null); setIsNewCard(false); }}
-          editable
-          onSave={handleSave}
-          onDelete={handleDelete}
-          defaultEditing={isNewCard}
-          defaultExpanded={isNewCard}
-        />
+        <ControlDetailPanel control={activeControl} onClose={() => { setActiveControl(null); setIsNewCard(false); }} editable onSave={handleSave} onDelete={handleDelete}
+          defaultEditing={isNewCard} defaultExpanded={isNewCard} />
       )}
 
-      {/* Contribute Prompt */}
       {showContributePrompt && (
-        <ContributePrompt
-          onClose={() => setShowContributePrompt(false)}
-          onOpenIssue={() => { setShowContributePrompt(false); openIssue(); }}
-          csvHash={csvHash}
-        />
+        <ContributePrompt onClose={() => setShowContributePrompt(false)} onOpenIssue={() => { setShowContributePrompt(false); openIssue(); }} csvHash={csvHash} />
       )}
       <ContributorsTicker />
     </div>
