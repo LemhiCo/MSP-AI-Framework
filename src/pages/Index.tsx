@@ -125,9 +125,9 @@ const Index = () => {
     const map: Record<string, Record<string, Control[]>> = {};
     for (const ca of CONTENT_AREAS) {
       map[ca.id] = {};
-      for (const ig of IG_LEVELS) {
-        map[ca.id][ig] = filteredControls.filter(
-          (c) => getContentAreaPrefix(c) === ca.id && c.ig === ig
+      for (const p of PILLARS) {
+        map[ca.id][p.id] = filteredControls.filter(
+          (c) => getContentAreaPrefix(c) === ca.id && getPillarId(c) === p.id
         );
       }
     }
