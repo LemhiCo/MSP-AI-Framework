@@ -183,7 +183,7 @@ export default function ClientTracker() {
                     <IGBadge ig={c.ig} />
                     <StatusSelect
                       value={status}
-                      onChange={(v) => updateStatus(selectedClient.id, c.controlId, v)}
+                      onChange={(v) => updateStatus(selectedClient.id, c.controlId, v as ControlStatus)}
                     />
                   </div>
                 );
