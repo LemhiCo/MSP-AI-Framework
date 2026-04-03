@@ -164,7 +164,6 @@ export default function Admin() {
   const filteredControls = useMemo(() => {
     return allControls.filter((c) => {
       if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
-      if (firstRequiredFilter.size && !firstRequiredFilter.has(c.firstRequiredWhen)) return false;
       if (search) {
         const q = search.toLowerCase();
         return c.controlId.toLowerCase().includes(q) || c.safeguardTitle.toLowerCase().includes(q) || c.customerObjective.toLowerCase().includes(q);
