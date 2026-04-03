@@ -84,6 +84,7 @@ export const PILLAR_FROM_CSV: Record<string, string> = {
 /** Content areas (for color dots based on control ID prefix) */
 export const CONTENT_AREAS = [
   { id: "STR", name: "Strategy & Buy-In", color: "var(--ca-str)" },
+  { id: "SKL", name: "People & Skills", color: "var(--ca-skl)" },
   { id: "GOV", name: "Policy & Governance", color: "var(--ca-gov)" },
   { id: "TEC", name: "Technical Readiness", color: "var(--ca-tec)" },
   { id: "CPL", name: "Copilot Readiness", color: "var(--ca-cpl)" },
@@ -91,7 +92,6 @@ export const CONTENT_AREAS = [
   { id: "DAT", name: "Data Security & Tagging", color: "var(--ca-dat)" },
   { id: "OBS", name: "AI Observability", color: "var(--ca-obs)" },
   { id: "DEP", name: "AI Tooling & Deployment", color: "var(--ca-dep)" },
-  { id: "SKL", name: "People & Skills", color: "var(--ca-skl)" },
 ] as const;
 
 export const IG_LEVELS = ["IG1", "IG2", "IG3"] as const;
