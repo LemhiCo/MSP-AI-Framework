@@ -125,7 +125,7 @@ function ControlRow({ control, expanded, onToggle }: { control: Control; expande
             <DetailField label="Primary Stakeholder" value={control.primaryStakeholder} />
             <DetailField label="Content Area" value={control.contentArea} />
             <DetailField label="Implementation Guard" value={control.implementationGuard} />
-            <DetailField label="First Required When" value={control.firstRequiredWhen} />
+            
           </div>
           <DetailField label="Evidence of Completion" value={control.evidenceOfCompletion} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
