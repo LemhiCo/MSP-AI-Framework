@@ -1,6 +1,7 @@
 import Papa from "papaparse";
 
 export interface Control {
+  uid: string;
   controlId: string;
   implementationGuard: string;
   contentArea: string;
