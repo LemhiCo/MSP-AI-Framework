@@ -554,7 +554,7 @@ export default function Admin() {
                         <div className={`flex items-stretch gap-0 rounded-md border transition-all bg-card border-border hover:border-primary/40 ${
                           dragControlId === c.controlId ? "opacity-40 scale-95" : ""
                         }`}>
-                          <button draggable onDragStart={() => setDragControlId(c.controlId)}
+                          <button draggable onDragStart={(e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", c.controlId); setDragControlId(c.controlId); }}
                             onDragEnd={() => { setDragControlId(null); setDropTarget(null); }}
                             onClick={() => { setIsNewCard(false); setActiveControl(c); }}
                             className="flex-1 text-[11px] text-left px-1.5 py-1.5 cursor-grab min-w-0">
