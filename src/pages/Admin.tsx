@@ -56,7 +56,6 @@ function controlToCSVRow(c: Control): Record<string, string> {
     "Fail Condition": c.failCondition,
     "Why it Matters": c.whyItMatters,
     "Who Cares Most (Customer)": c.whoCaresMost,
-    "First Required When": c.firstRequiredWhen,
   };
 }
 
