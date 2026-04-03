@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { AlertTriangle } from "lucide-react";
-import { Search, Plus, Download, ArrowLeft, X, ChevronUp, ChevronDown, ExternalLink } from "lucide-react";
+import { Search, Plus, Download, ArrowLeft, X, ChevronUp, ChevronDown, ExternalLink, RotateCcw } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
 import { CONTENT_AREAS, IG_LEVELS, IG_META, LIFECYCLE_TRIGGERS, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
 import { Link } from "react-router-dom";
