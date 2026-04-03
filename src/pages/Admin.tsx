@@ -143,7 +143,6 @@ export default function Admin() {
   const [dirty, setDirty] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
-  const [firstRequiredFilter, setFirstRequiredFilter] = useState<Set<string>>(new Set());
   const [showIssueButton, setShowIssueButton] = useState(false);
   const [showContributePrompt, setShowContributePrompt] = useState(false);
   const [originalControls, setOriginalControls] = useState<Control[]>([]);
