@@ -119,7 +119,7 @@ export default function ClientTracker() {
             <h2 className="text-lg font-bold">{selectedClient.name}</h2>
             {progress && (
               <p className="text-sm text-muted-foreground">
-                {progress.complete} of {progress.total} complete ({progress.percentage}%)
+                {progress.complete} complete ({progress.percentage}%)
               </p>
             )}
           </div>
