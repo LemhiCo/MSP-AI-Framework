@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useControls } from "@/hooks/use-framework-data";
 import { IGBadge, ContentAreaDot } from "@/components/FrameworkBadges";
-import { PILLARS, CONTENT_AREAS, LIFECYCLE_TRIGGERS, getPillarId, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
+import { CONTENT_AREAS, IG_LEVELS, IG_META, LIFECYCLE_TRIGGERS, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
 
 export default function RoadmapView() {
   const { data: controls = [], isLoading } = useControls();
@@ -23,7 +23,7 @@ export default function RoadmapView() {
       <div className="bg-card rounded-lg border border-border p-4 shadow-sm">
         <h2 className="text-lg font-semibold mb-1">Implementation Roadmap</h2>
         <p className="text-sm text-muted-foreground">
-          Controls organized by lifecycle trigger. Pillar 1 (Critical Foundation) safeguards should be completed before broad rollout.
+          Controls organized by lifecycle trigger. IG1 (Critical Foundation) safeguards should be completed before broad rollout.
         </p>
       </div>
 
@@ -31,9 +31,11 @@ export default function RoadmapView() {
         const items = byLifecycle[trigger] || [];
         if (items.length === 0) return null;
 
-        const ig1 = items.filter((c) => c.ig === "IG1");
-        const ig2 = items.filter((c) => c.ig === "IG2");
-        const ig3 = items.filter((c) => c.ig === "IG3");
+        const igGroups = IG_LEVELS.map((ig) => ({
+          ig,
+          meta: IG_META[ig],
+          items: items.filter((c) => c.implementationGuard === ig),
+        }));
 
         return (
           <div key={trigger} className={`animate-fade-up stagger-${Math.min(i, 4)}`}>
@@ -44,10 +46,10 @@ export default function RoadmapView() {
               <h3 className="text-base font-semibold">{trigger}</h3>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-              <IGColumn title="IG1 — Essential" items={ig1} />
-              <IGColumn title="IG2 — Managed" items={ig2} />
-              <IGColumn title="IG3 — Advanced" items={ig3} />
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
+              {igGroups.map(({ ig, meta, items: igItems }) => (
+                <IGColumn key={ig} title={`${ig} — ${meta.name}`} items={igItems} />
+              ))}
             </div>
           </div>
         );
