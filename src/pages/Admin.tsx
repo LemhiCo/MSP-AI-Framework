@@ -227,13 +227,12 @@ export default function Admin() {
     const updatedDragged = {
       ...draggedControl,
       implementationGuard: targetIg,
-      controlId: "",
+      controlId: `${targetCaId}-${targetIg}-00`,
     };
     targetItems.splice(Math.min(targetIndex, targetItems.length), 0, updatedDragged);
 
     const renumberedTarget = targetItems.map((c, i) => {
-      const prefix = getContentAreaPrefix(c) || "CTL";
-      return { ...c, controlId: `${prefix}-${targetIg}-${String(i + 1).padStart(2, "0")}` };
+      return { ...c, controlId: `${targetCaId}-${targetIg}-${String(i + 1).padStart(2, "0")}` };
     });
 
     setControls([...others, ...renumberedTarget]);
@@ -499,7 +498,7 @@ export default function Admin() {
       )}
 
       <div className="min-w-[1200px]">
-        <div className="sticky top-[37px] z-20 bg-background border-b border-border grid" style={{ gridTemplateColumns: `100px repeat(${CONTENT_AREAS.length},1fr)` }}>
+        <div className="sticky top-[37px] z-20 bg-background border-b border-border grid" style={{ gridTemplateColumns: `140px repeat(${CONTENT_AREAS.length},1fr)` }}>
           <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-end" />
           {CONTENT_AREAS.map((ca) => (
             <div key={ca.id} className="px-2 py-1.5 border-l border-border">
@@ -517,9 +516,9 @@ export default function Admin() {
           const colors = IG_COLORS[ig] || { text: "0 0% 50%", bg: "0 0% 97%" };
 
           return (
-            <div key={ig} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${CONTENT_AREAS.length},1fr)` }}>
+            <div key={ig} className="grid border-b border-border" style={{ gridTemplateColumns: `140px repeat(${CONTENT_AREAS.length},1fr)` }}>
               <div className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10" style={{ background: `hsl(${colors.bg})` }}>
-                <span className="text-xs font-bold" style={{ color: `hsl(${colors.text})` }}>{ig}</span>
+                <span className="text-xs font-bold" style={{ color: `hsl(${colors.text})` }}>{meta?.label || ig}</span>
                 <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta?.sub}</span>
               </div>
               {CONTENT_AREAS.map((ca) => {
