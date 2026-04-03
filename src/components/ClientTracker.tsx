@@ -81,7 +81,7 @@ export default function ClientTracker() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{client.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {prog.complete} of {prog.total} complete ({prog.percentage}%)
+                        {prog.complete} complete ({prog.percentage}%)
                       </p>
                     </div>
                     <div className="w-20 h-2 rounded-full bg-muted overflow-hidden">
