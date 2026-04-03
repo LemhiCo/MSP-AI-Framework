@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import ContributorsTicker from "@/components/ContributorsTicker";
 
 const EMPTY_CONTROL: Control = {
-  controlId: "", implementationGuard: "", contentArea: "",
+  uid: "", controlId: "", implementationGuard: "", contentArea: "",
   safeguardTitle: "", customerObjective: "",
   detailedRequirement: "", lifecycleTrigger: "", cadence: "", primaryStakeholder: "",
   evidenceOfCompletion: "", minStatusToPass: "", minEvidenceToPass: "", failCondition: "",
@@ -40,6 +40,7 @@ const IG_COLORS: Record<string, { text: string; bg: string }> = {
 
 function controlToCSVRow(c: Control): Record<string, string> {
   return {
+    "UID": c.uid,
     "Implementation Guard": c.implementationGuard,
     "Control ID": c.controlId,
     "Content Area": c.contentArea,
@@ -289,9 +290,14 @@ export default function Admin() {
     setDirty(true);
   }, [allControls]);
 
+  const nextUid = useCallback(() => {
+    const maxUid = allControls.reduce((max, c) => Math.max(max, parseInt(c.uid) || 0), 0);
+    return String(maxUid + 1);
+  }, [allControls]);
+
   const handleNew = () => {
     setIsNewCard(true);
-    setActiveControl({ ...EMPTY_CONTROL });
+    setActiveControl({ ...EMPTY_CONTROL, uid: nextUid() });
   };
 
   const handleNewInCell = (caId: string, ig: string) => {
@@ -300,6 +306,7 @@ export default function Admin() {
     setIsNewCard(true);
     setActiveControl({
       ...EMPTY_CONTROL,
+      uid: nextUid(),
       controlId: `${caId}-${ig}-${nextNum}`,
       implementationGuard: ig,
     });
@@ -318,6 +325,7 @@ export default function Admin() {
   const computeDiff = useCallback(() => {
     const diffFields: { key: keyof Control; label: string }[] = [
       { key: "safeguardTitle", label: "Safeguard Title" },
+      { key: "controlId", label: "Control ID" },
       { key: "implementationGuard", label: "Implementation Guard" },
       { key: "contentArea", label: "Content Area" },
       { key: "customerObjective", label: "Customer Objective" },
@@ -337,36 +345,25 @@ export default function Admin() {
     const added: Control[] = [];
     const deleted: Control[] = [];
     const modified: { control: Control; changes: string[] }[] = [];
-    const reordered: { from: string; to: string; title: string }[] = [];
 
     for (const orig of originalControls) {
-      const stillExists = allControls.some(c => c.safeguardTitle === orig.safeguardTitle);
+      const stillExists = allControls.some(c => c.uid === orig.uid);
       if (!stillExists) deleted.push(orig);
     }
 
     for (const curr of allControls) {
-      const origByTitle = originalControls.find(c => c.safeguardTitle === curr.safeguardTitle);
-      if (!origByTitle) { added.push(curr); continue; }
+      const origByUid = originalControls.find(c => c.uid === curr.uid);
+      if (!origByUid) { added.push(curr); continue; }
       const changes: string[] = [];
       for (const f of diffFields) {
-        if (f.key === "safeguardTitle") continue;
-        if (origByTitle[f.key] !== curr[f.key]) {
-          changes.push(`- **${f.label}:** \`${origByTitle[f.key] || "(empty)"}\` → \`${curr[f.key] || "(empty)"}\``);
-        }
-      }
-      if (origByTitle.controlId !== curr.controlId) {
-        const origCA = getContentAreaPrefix(origByTitle);
-        const currCA = getContentAreaPrefix(curr);
-        if (origCA !== currCA || origByTitle.implementationGuard !== curr.implementationGuard) {
-          changes.push(`- **Moved:** \`${origByTitle.controlId}\` → \`${curr.controlId}\``);
-        } else {
-          reordered.push({ from: origByTitle.controlId, to: curr.controlId, title: curr.safeguardTitle });
+        if (origByUid[f.key] !== curr[f.key]) {
+          changes.push(`- **${f.label}:** \`${origByUid[f.key] || "(empty)"}\` → \`${curr[f.key] || "(empty)"}\``);
         }
       }
       if (changes.length > 0) modified.push({ control: curr, changes });
     }
 
-    return { added, deleted, modified, reordered };
+    return { added, deleted, modified };
   }, [allControls, originalControls]);
 
   const downloadCSV = useCallback(() => {
@@ -380,64 +377,57 @@ export default function Admin() {
     a.href = url; a.download = `controls-${hash}.csv`; a.click();
     URL.revokeObjectURL(url);
     setDirty(false);
-    const { added, deleted, modified, reordered } = computeDiff();
-    if (added.length + deleted.length + modified.length + reordered.length > 0) setShowIssueButton(true);
+    const { added, deleted, modified } = computeDiff();
+    if (added.length + deleted.length + modified.length > 0) setShowIssueButton(true);
   }, [allControls, generateHash, computeDiff]);
 
   const openIssue = useCallback(() => {
     const today = new Date().toISOString().split("T")[0];
-    const { added, deleted, modified, reordered } = computeDiff();
-    const totalChanges = added.length + deleted.length + modified.length + reordered.length;
+    const { added, deleted, modified } = computeDiff();
+    const totalChanges = added.length + deleted.length + modified.length;
 
     const summaryParts: string[] = [];
     if (added.length) summaryParts.push(`${added.length} added`);
     if (modified.length) summaryParts.push(`${modified.length} edited`);
     if (deleted.length) summaryParts.push(`${deleted.length} removed`);
-    if (reordered.length) summaryParts.push(`${reordered.length} reordered`);
 
     const title = encodeURIComponent(`[CSV Change]: ${summaryParts.join(", ")} — ${today}`);
 
     const lines: string[] = [];
-    for (const c of deleted) lines.push(`### ❌ Deleted: \`${c.controlId}\` — ${c.safeguardTitle}\n`);
+    for (const c of deleted) lines.push(`### ❌ Deleted: UID \`${c.uid}\` — ${c.safeguardTitle}\n`);
     for (const c of added) {
       lines.push(`### ➕ Added: \`${c.controlId}\` — ${c.safeguardTitle}`);
       if (c.customerObjective) lines.push(`- **Customer Objective:** ${c.customerObjective}`);
       lines.push("");
     }
     for (const { control, changes } of modified) {
-      lines.push(`### ✏️ Modified: \`${control.controlId}\` — ${control.safeguardTitle}`);
+      lines.push(`### ✏️ Modified: UID \`${control.uid}\` — ${control.safeguardTitle}`);
       lines.push(...changes);
-      lines.push("");
-    }
-    if (reordered.length > 0) {
-      lines.push(`### 🔀 Reordered`);
-      for (const r of reordered) lines.push(`- \`${r.from}\` → \`${r.to}\` — ${r.title}`);
       lines.push("");
     }
 
     const patches: string[] = [];
-    for (const c of deleted) patches.push(`D|${c.controlId}`);
+    for (const c of deleted) patches.push(`D|${c.uid}`);
     for (const c of added) {
       const row = controlToCSVRow(c);
       const fields = Object.entries(row).filter(([, v]) => v).map(([k, v]) => `${k}=${v}`).join("\t");
-      patches.push(`A|${c.controlId}|${fields}`);
+      patches.push(`A|${fields}`);
     }
     for (const { control } of modified) {
-      const orig = originalControls.find(o => o.safeguardTitle === control.safeguardTitle);
+      const orig = originalControls.find(o => o.uid === control.uid);
       if (!orig) continue;
       const origRow = controlToCSVRow(orig);
       const currRow = controlToCSVRow(control);
-      const diffs = Object.keys(currRow).filter(k => origRow[k] !== currRow[k]).map(k => `${k}=${currRow[k]}`).join("\t");
-      if (diffs) patches.push(`M|${control.controlId}|${diffs}`);
+      const diffs = Object.keys(currRow).filter(k => k !== "UID" && origRow[k] !== currRow[k]).map(k => `${k}=${currRow[k]}`).join("\t");
+      if (diffs) patches.push(`M|${control.uid}|${diffs}`);
     }
-    for (const r of reordered) patches.push(`R|${r.from}|${r.to}`);
 
     const diffText = patches.join("\n");
     const compressed = pako.deflate(new TextEncoder().encode(diffText));
     const base64Payload = btoa(String.fromCharCode(...compressed));
 
     const body = encodeURIComponent(
-      `## Proposed Framework Changes\n\n**Date:** ${today}\n**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n---\n\n## Detailed Changes\n\n${lines.join("\n")}\n---\n\n## Why this change should be made\n\n_Explain the reasoning._\n\n---\n\n<!-- MSP_PATCH_V2:${base64Payload} -->`
+      `## Proposed Framework Changes\n\n**Date:** ${today}\n**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n---\n\n## Detailed Changes\n\n${lines.join("\n")}\n---\n\n## Why this change should be made\n\n_Explain the reasoning._\n\n---\n\n<!-- MSP_PATCH_V3:${base64Payload} -->`
     );
     const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
     if (url.length > 8000) {
