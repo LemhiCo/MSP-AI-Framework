@@ -95,14 +95,16 @@ const Index = () => {
   // Filter state
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
   const [firstRequiredFilter, setFirstRequiredFilter] = useState<Set<string>>(new Set());
+  const [contentAreaFilter, setContentAreaFilter] = useState<Set<string>>(new Set());
 
   const firstRequiredOptions = useUniqueValues(controls, "firstRequiredWhen");
 
-  const activeFilterCount = [lifecycleFilter, firstRequiredFilter].reduce((n, s) => n + s.size, 0);
+  const activeFilterCount = [lifecycleFilter, firstRequiredFilter, contentAreaFilter].reduce((n, s) => n + s.size, 0);
 
   const clearAllFilters = () => {
     setLifecycleFilter(new Set());
     setFirstRequiredFilter(new Set());
+    setContentAreaFilter(new Set());
   };
 
   const filteredControls = useMemo(() => {
