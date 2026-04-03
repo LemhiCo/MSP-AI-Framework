@@ -319,6 +319,7 @@ export default function Admin() {
   const computeDiff = useCallback(() => {
     const diffFields: { key: keyof Control; label: string }[] = [
       { key: "safeguardTitle", label: "Safeguard Title" },
+      { key: "controlId", label: "Control ID" },
       { key: "implementationGuard", label: "Implementation Guard" },
       { key: "contentArea", label: "Content Area" },
       { key: "customerObjective", label: "Customer Objective" },
@@ -338,36 +339,25 @@ export default function Admin() {
     const added: Control[] = [];
     const deleted: Control[] = [];
     const modified: { control: Control; changes: string[] }[] = [];
-    const reordered: { from: string; to: string; title: string }[] = [];
 
     for (const orig of originalControls) {
-      const stillExists = allControls.some(c => c.safeguardTitle === orig.safeguardTitle);
+      const stillExists = allControls.some(c => c.uid === orig.uid);
       if (!stillExists) deleted.push(orig);
     }
 
     for (const curr of allControls) {
-      const origByTitle = originalControls.find(c => c.safeguardTitle === curr.safeguardTitle);
-      if (!origByTitle) { added.push(curr); continue; }
+      const origByUid = originalControls.find(c => c.uid === curr.uid);
+      if (!origByUid) { added.push(curr); continue; }
       const changes: string[] = [];
       for (const f of diffFields) {
-        if (f.key === "safeguardTitle") continue;
-        if (origByTitle[f.key] !== curr[f.key]) {
-          changes.push(`- **${f.label}:** \`${origByTitle[f.key] || "(empty)"}\` → \`${curr[f.key] || "(empty)"}\``);
-        }
-      }
-      if (origByTitle.controlId !== curr.controlId) {
-        const origCA = getContentAreaPrefix(origByTitle);
-        const currCA = getContentAreaPrefix(curr);
-        if (origCA !== currCA || origByTitle.implementationGuard !== curr.implementationGuard) {
-          changes.push(`- **Moved:** \`${origByTitle.controlId}\` → \`${curr.controlId}\``);
-        } else {
-          reordered.push({ from: origByTitle.controlId, to: curr.controlId, title: curr.safeguardTitle });
+        if (origByUid[f.key] !== curr[f.key]) {
+          changes.push(`- **${f.label}:** \`${origByUid[f.key] || "(empty)"}\` → \`${curr[f.key] || "(empty)"}\``);
         }
       }
       if (changes.length > 0) modified.push({ control: curr, changes });
     }
 
-    return { added, deleted, modified, reordered };
+    return { added, deleted, modified };
   }, [allControls, originalControls]);
 
   const downloadCSV = useCallback(() => {
