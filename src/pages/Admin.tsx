@@ -149,6 +149,7 @@ export default function Admin() {
   const [showContributePrompt, setShowContributePrompt] = useState(false);
   const [originalControls, setOriginalControls] = useState<Control[]>([]);
   const [csvHash, setCsvHash] = useState("");
+  const [pendingPatchComment, setPendingPatchComment] = useState("");
 
   const allControls = controls ?? loadedControls;
 
