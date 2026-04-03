@@ -13,10 +13,12 @@ import ContributorsTicker from "@/components/ContributorsTicker";
 import MarkdownModal from "@/components/MarkdownModal";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const IG_META: Record<string, { label: string; sub: string }> = {
-  IG1: { label: "IG1 — Essential", sub: "Minimum safe floor" },
-  IG2: { label: "IG2 — Managed", sub: "Repeatable practice" },
-  IG3: { label: "IG3 — Advanced", sub: "Mature & regulated" },
+const PILLAR_META: Record<string, { label: string; sub: string }> = {
+  P1: { label: "P1 — Critical Foundation", sub: "Before any AI tool is enabled" },
+  P2: { label: "P2 — Platform Prerequisites", sub: "Before Copilot or first agent" },
+  P3: { label: "P3 — Operational Governance", sub: "Once AI is live & managed" },
+  P4: { label: "P4 — Advanced Configuration", sub: "Custom agents & hardening" },
+  P5: { label: "P5 — Agentic Enterprise", sub: "Autonomous agentic AI" },
 };
 
 const CA_COLORS: Record<string, string> = {
