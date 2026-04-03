@@ -9,7 +9,6 @@ const EXPAND_THRESHOLD = 640;
 const SELECT_FIELDS: Partial<Record<keyof Control, string[]>> = {
   implementationGuard: [...IG_LEVELS],
   lifecycleTrigger: [...LIFECYCLE_TRIGGERS],
-  firstRequiredWhen: ["GenAI", "Cowork", "Custom GPTs", "Agentic AI"],
 };
 
 const TEXTAREA_FIELDS: Set<keyof Control> = new Set([
@@ -97,11 +96,6 @@ export default function ControlDetailPanel({ control, onClose, editable, onSave,
                   <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-primary/10 text-primary">
                     {control.implementationGuard}{igMeta ? ` — ${igMeta.name}` : ""}
                   </span>
-                  {control.firstRequiredWhen && (
-                    <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-accent/50 text-accent-foreground">
-                      {control.firstRequiredWhen}
-                    </span>
-                  )}
                 </div>
                 <div className="flex items-center gap-1 mt-2 flex-wrap">
                   <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full border bg-primary/10 text-primary border-primary/30">
@@ -164,7 +158,6 @@ function EditView({ draft, onChange }: { draft: Control; onChange: (key: keyof C
       fields: [
         { key: "implementationGuard", label: "Implementation Guard" },
         { key: "contentArea", label: "Content Area" },
-        { key: "firstRequiredWhen", label: "First Required When" },
       ],
     },
     {

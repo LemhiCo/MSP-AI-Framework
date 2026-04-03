@@ -15,7 +15,7 @@ const EMPTY_CONTROL: Control = {
   safeguardTitle: "", customerObjective: "",
   detailedRequirement: "", lifecycleTrigger: "", cadence: "", primaryStakeholder: "",
   evidenceOfCompletion: "", minStatusToPass: "", minEvidenceToPass: "", failCondition: "",
-  whyItMatters: "", whoCaresMost: "", firstRequiredWhen: "",
+  whyItMatters: "", whoCaresMost: "",
 };
 
 const CA_COLORS: Record<string, string> = {
@@ -56,7 +56,6 @@ function controlToCSVRow(c: Control): Record<string, string> {
     "Fail Condition": c.failCondition,
     "Why it Matters": c.whyItMatters,
     "Who Cares Most (Customer)": c.whoCaresMost,
-    "First Required When": c.firstRequiredWhen,
   };
 }
 
@@ -144,7 +143,6 @@ export default function Admin() {
   const [dirty, setDirty] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
-  const [firstRequiredFilter, setFirstRequiredFilter] = useState<Set<string>>(new Set());
   const [showIssueButton, setShowIssueButton] = useState(false);
   const [showContributePrompt, setShowContributePrompt] = useState(false);
   const [originalControls, setOriginalControls] = useState<Control[]>([]);
@@ -160,26 +158,19 @@ export default function Admin() {
     }
   }, [loadedControls]);
 
-  const firstRequiredOptions = useMemo(() => {
-    const set = new Set<string>();
-    allControls.forEach(c => { if (c.firstRequiredWhen) set.add(c.firstRequiredWhen); });
-    return Array.from(set).sort();
-  }, [allControls]);
-
-  const activeFilterCount = [lifecycleFilter, firstRequiredFilter].reduce((n, s) => n + s.size, 0);
-  const clearAllFilters = () => { setLifecycleFilter(new Set()); setFirstRequiredFilter(new Set()); };
+  const activeFilterCount = [lifecycleFilter].reduce((n, s) => n + s.size, 0);
+  const clearAllFilters = () => { setLifecycleFilter(new Set()); };
 
   const filteredControls = useMemo(() => {
     return allControls.filter((c) => {
       if (lifecycleFilter.size && !lifecycleFilter.has(c.lifecycleTrigger)) return false;
-      if (firstRequiredFilter.size && !firstRequiredFilter.has(c.firstRequiredWhen)) return false;
       if (search) {
         const q = search.toLowerCase();
         return c.controlId.toLowerCase().includes(q) || c.safeguardTitle.toLowerCase().includes(q) || c.customerObjective.toLowerCase().includes(q);
       }
       return true;
     });
-  }, [allControls, search, lifecycleFilter, firstRequiredFilter]);
+  }, [allControls, search, lifecycleFilter]);
 
   // Grid: columns = content areas, rows = IG levels
   const grid = useMemo(() => {
@@ -338,7 +329,6 @@ export default function Admin() {
       { key: "failCondition", label: "Fail Condition" },
       { key: "whyItMatters", label: "Why it Matters" },
       { key: "whoCaresMost", label: "Who Cares Most" },
-      { key: "firstRequiredWhen", label: "First Required When" },
     ];
 
     const added: Control[] = [];
@@ -510,7 +500,6 @@ export default function Admin() {
       {showFilters && (
         <div className="bg-card border-b border-border px-4 py-3 space-y-2 min-w-[1200px] shadow-sm">
           <ChipFilter label="Lifecycle" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
-          <ChipFilter label="First Required" options={firstRequiredOptions} selected={firstRequiredFilter} onChange={setFirstRequiredFilter} />
         </div>
       )}
 
@@ -577,11 +566,6 @@ export default function Admin() {
                             <span className="leading-tight block">{c.safeguardTitle}</span>
                             <div className="flex items-center gap-1 mt-0.5">
                               <span className="text-[9px] font-mono text-muted-foreground">{c.controlId}</span>
-                              {c.firstRequiredWhen && (
-                                <span className="text-[8px] font-medium px-1 py-0.5 rounded bg-accent/30 text-accent-foreground">
-                                  {c.firstRequiredWhen}
-                                </span>
-                              )}
                             </div>
                           </button>
                           <div className="flex flex-col border-l border-border">

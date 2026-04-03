@@ -17,7 +17,6 @@ export interface Control {
   failCondition: string;
   whyItMatters: string;
   whoCaresMost: string;
-  firstRequiredWhen: string;
 }
 
 async function fetchCSV<T>(path: string, mapFn: (row: Record<string, string>) => T): Promise<T[]> {
@@ -44,7 +43,6 @@ const mapControlRow = (r: Record<string, string>): Control => ({
   failCondition: r["Fail Condition"] || "",
   whyItMatters: r["Why it Matters"] || "",
   whoCaresMost: r["Who Cares Most (Customer)"] || "",
-  firstRequiredWhen: r["First Required When"] || "",
 });
 
 export async function loadControls(): Promise<Control[]> {
