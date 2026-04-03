@@ -6,23 +6,16 @@ import MobileControlList from "@/components/MobileControlList";
 import MobileDetailSheet from "@/components/MobileDetailSheet";
 import MobileFilterSheet from "@/components/MobileFilterSheet";
 import { useControls } from "@/hooks/use-framework-data";
-import { PILLARS, CONTENT_AREAS, IG_LEVELS, LIFECYCLE_TRIGGERS, getPillarId, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
+import { CONTENT_AREAS, IG_LEVELS, IG_META, LIFECYCLE_TRIGGERS, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
 import * as XLSX from "xlsx";
 import WaitlistGate, { useWaitlistGate } from "@/components/WaitlistGate";
 import ContributorsTicker from "@/components/ContributorsTicker";
 import MarkdownModal from "@/components/MarkdownModal";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const PILLAR_META: Record<string, { label: string; sub: string }> = {
-  P1: { label: "P1 — Critical Foundation", sub: "Before any AI tool is enabled" },
-  P2: { label: "P2 — Platform Prerequisites", sub: "Before Copilot or first agent" },
-  P3: { label: "P3 — Operational Governance", sub: "Once AI is live & managed" },
-  P4: { label: "P4 — Advanced Configuration", sub: "Custom agents & hardening" },
-  P5: { label: "P5 — Agentic Enterprise", sub: "Autonomous agentic AI" },
-};
-
 const CA_COLORS: Record<string, string> = {
   STR: "340 65% 47%",
+  SKL: "0 70% 50%",
   GOV: "25 80% 50%",
   TEC: "200 50% 42%",
   CPL: "168 40% 35%",
@@ -30,7 +23,14 @@ const CA_COLORS: Record<string, string> = {
   DAT: "280 40% 45%",
   OBS: "210 60% 50%",
   DEP: "150 50% 40%",
-  SKL: "0 70% 50%",
+};
+
+const IG_COLORS: Record<string, { text: string; bg: string }> = {
+  IG1: { text: "0 70% 50%", bg: "0 70% 97%" },
+  IG2: { text: "25 80% 50%", bg: "25 80% 97%" },
+  IG3: { text: "200 50% 42%", bg: "200 50% 96%" },
+  IG4: { text: "168 40% 35%", bg: "168 40% 96%" },
+  IG5: { text: "280 40% 45%", bg: "280 40% 96%" },
 };
 
 function useUniqueValues(controls: Control[], key: keyof Control) {
@@ -125,9 +125,9 @@ const Index = () => {
     const map: Record<string, Record<string, Control[]>> = {};
     for (const ca of CONTENT_AREAS) {
       map[ca.id] = {};
-      for (const p of PILLARS) {
-        map[ca.id][p.id] = filteredControls.filter(
-          (c) => getContentAreaPrefix(c) === ca.id && getPillarId(c) === p.id
+      for (const ig of IG_LEVELS) {
+        map[ca.id][ig] = filteredControls.filter(
+          (c) => getContentAreaPrefix(c) === ca.id && c.implementationGuard === ig
         );
       }
     }
@@ -136,11 +136,9 @@ const Index = () => {
 
   const handleDownloadXlsx = useCallback(() => {
     const rows = controls.map((c) => ({
-      "Implementation Pillar": c.implementationPillar,
-      "Criticality Level": c.criticalityLevel,
+      "Implementation Guard": c.implementationGuard,
       "Control ID": c.controlId,
       "Content Area": c.contentArea,
-      "IG": c.ig,
       "Safeguard Title": c.safeguardTitle,
       "Customer Objective": c.customerObjective,
       "Detailed Requirement": c.detailedRequirement,
@@ -200,7 +198,7 @@ const Index = () => {
             )}
           </header>
 
-          <MobileControlList controls={filteredControls} visiblePillars={PILLARS} onSelect={setActiveControl} />
+          <MobileControlList controls={filteredControls} onSelect={setActiveControl} />
 
           <MobileFilterSheet
             open={showMobileFilters}
@@ -298,26 +296,19 @@ const Index = () => {
               ))}
             </div>
 
-            {PILLARS.map((pillar) => {
-              const meta = PILLAR_META[pillar.id];
-              const pillarColors: Record<string, { text: string; bg: string }> = {
-                P1: { text: "0 70% 50%", bg: "0 70% 97%" },
-                P2: { text: "25 80% 50%", bg: "25 80% 97%" },
-                P3: { text: "200 50% 42%", bg: "200 50% 96%" },
-                P4: { text: "168 40% 35%", bg: "168 40% 96%" },
-                P5: { text: "280 40% 45%", bg: "280 40% 96%" },
-              };
-              const pc = pillarColors[pillar.id] || { text: "0 0% 50%", bg: "0 0% 97%" };
+            {IG_LEVELS.map((ig) => {
+              const meta = IG_META[ig];
+              const colors = IG_COLORS[ig] || { text: "0 0% 50%", bg: "0 0% 97%" };
               return (
-                <div key={pillar.id} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${CONTENT_AREAS.length},1fr)` }}>
-                  <div className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10" style={{ background: `hsl(${pc.bg})` }}>
-                    <span className="text-xs font-bold" style={{ color: `hsl(${pc.text})` }}>{pillar.id}</span>
-                    <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta?.sub || pillar.name}</span>
+                <div key={ig} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${CONTENT_AREAS.length},1fr)` }}>
+                  <div className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10" style={{ background: `hsl(${colors.bg})` }}>
+                    <span className="text-xs font-bold" style={{ color: `hsl(${colors.text})` }}>{ig}</span>
+                    <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta?.sub}</span>
                   </div>
                   {CONTENT_AREAS.map((ca) => {
-                    const items = grid[ca.id]?.[pillar.id] || [];
+                    const items = grid[ca.id]?.[ig] || [];
                     return (
-                      <div key={`${ca.id}-${pillar.id}`} className="border-l border-border px-1.5 py-1.5 space-y-1 bg-card/50">
+                      <div key={`${ca.id}-${ig}`} className="border-l border-border px-1.5 py-1.5 space-y-1 bg-card/50">
                         {items.map((c) => (
                           <button key={c.controlId} onClick={() => setActiveControl(c)}
                             className="w-full rounded-md border text-[11px] transition-all text-left px-1.5 py-1.5 hover:shadow-md active:scale-[0.97] cursor-pointer bg-card border-border hover:border-primary/40">

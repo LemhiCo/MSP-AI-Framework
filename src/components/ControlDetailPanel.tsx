@@ -1,15 +1,13 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { X, Shield, Wrench, Users, AlertTriangle, GripVertical, Pencil, Save, Trash2, ExternalLink } from "lucide-react";
-import { type Control, PILLARS, IG_LEVELS, LIFECYCLE_TRIGGERS, CONTENT_AREAS } from "@/lib/csv-loader";
+import { type Control, IG_LEVELS, IG_META, LIFECYCLE_TRIGGERS, CONTENT_AREAS } from "@/lib/csv-loader";
 
 const MIN_WIDTH = 420;
 const DEFAULT_WIDTH = 480;
 const EXPAND_THRESHOLD = 640;
 
 const SELECT_FIELDS: Partial<Record<keyof Control, string[]>> = {
-  implementationPillar: PILLARS.map(p => `Pillar ${PILLARS.indexOf(p) + 1} – ${p.name}`),
-  ig: [...IG_LEVELS],
-  criticalityLevel: ["Critical", "High", "Medium-High", "Medium", "Advanced / Specialized"],
+  implementationGuard: [...IG_LEVELS],
   lifecycleTrigger: [...LIFECYCLE_TRIGGERS],
   firstRequiredWhen: ["GenAI", "Cowork", "Custom GPTs", "Agentic AI"],
 };
@@ -68,6 +66,7 @@ export default function ControlDetailPanel({ control, onClose, editable, onSave,
   const updateField = (key: keyof Control, value: string) => setDraft(prev => ({ ...prev, [key]: value }));
 
   const showEdit = editing || isNew;
+  const igMeta = IG_META[control.implementationGuard];
 
   return (
     <>
@@ -95,11 +94,8 @@ export default function ControlDetailPanel({ control, onClose, editable, onSave,
             {!showEdit && (
               <>
                 <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                  <span className={control.ig === "IG1" ? "ig1-badge" : control.ig === "IG2" ? "ig2-badge" : "ig3-badge"}>
-                    {control.ig} — {control.ig === "IG1" ? "Essential" : control.ig === "IG2" ? "Managed" : "Advanced"}
-                  </span>
-                  <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                    {control.criticalityLevel}
+                  <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-primary/10 text-primary">
+                    {control.implementationGuard}{igMeta ? ` — ${igMeta.name}` : ""}
                   </span>
                   {control.firstRequiredWhen && (
                     <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-accent/50 text-accent-foreground">
@@ -166,9 +162,7 @@ function EditView({ draft, onChange }: { draft: Control; onChange: (key: keyof C
     {
       title: "Classification", icon: Shield,
       fields: [
-        { key: "implementationPillar", label: "Implementation Pillar" },
-        { key: "ig", label: "Implementation Group" },
-        { key: "criticalityLevel", label: "Criticality Level" },
+        { key: "implementationGuard", label: "Implementation Guard" },
         { key: "contentArea", label: "Content Area" },
         { key: "firstRequiredWhen", label: "First Required When" },
       ],
@@ -293,7 +287,7 @@ function ExpandedView({ control }: { control: Control }) {
         )}
         <SectionHeader icon={AlertTriangle} label="Compliance" />
         <div className="grid grid-cols-2 gap-2">
-          <MetaCard label="Criticality" value={control.criticalityLevel} />
+          <MetaCard label="Implementation Guard" value={control.implementationGuard} />
           <MetaCard label="Min Status to Pass" value={control.minStatusToPass} />
           <MetaCard label="Min Evidence to Pass" value={control.minEvidenceToPass} />
         </div>
@@ -372,7 +366,7 @@ function ComplianceContent({ control }: { control: Control }) {
   return (
     <>
       <div className="grid grid-cols-2 gap-3">
-        <MetaCard label="Criticality Level" value={control.criticalityLevel} />
+        <MetaCard label="Implementation Guard" value={control.implementationGuard} />
         <MetaCard label="Min Status to Pass" value={control.minStatusToPass} />
         <MetaCard label="Min Evidence to Pass" value={control.minEvidenceToPass} />
       </div>
@@ -389,34 +383,24 @@ function ComplianceContent({ control }: { control: Control }) {
 function StakeholderContent({ control }: { control: Control }) {
   return (
     <>
-      {control.whoCaresMost && (
-        <div className="rounded-lg border border-border p-3 space-y-2">
-          <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Who Cares Most</h3>
+      {control.whoCaresMost ? (
+        <div>
+          <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Who Cares Most</h3>
           <div className="flex flex-wrap gap-1.5">
             {control.whoCaresMost.split(/[,|]/).map((role) => (
               <span key={role.trim()} className="text-xs font-medium bg-primary/10 text-primary px-2.5 py-1 rounded-full">{role.trim()}</span>
             ))}
           </div>
         </div>
-      )}
-      {!control.whoCaresMost && (
-        <p className="text-sm text-muted-foreground italic py-8 text-center">No stakeholder data for this control.</p>
+      ) : (
+        <p className="text-sm text-muted-foreground italic py-8 text-center">No stakeholder data.</p>
       )}
     </>
   );
 }
 
-/* ── Shared primitives ── */
-function SectionHeader({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
-  return (
-    <div className="flex items-center gap-1.5 border-b border-border pb-1 pt-2">
-      <Icon className="w-3.5 h-3.5 text-primary" />
-      <span className="text-xs font-bold uppercase tracking-wider text-primary">{label}</span>
-    </div>
-  );
-}
-
-function Section({ title, value }: { title: string; value: string }) {
+/* ── Shared ── */
+function Section({ title, value }: { title: string; value?: string }) {
   if (!value) return null;
   return (
     <div>
@@ -426,20 +410,28 @@ function Section({ title, value }: { title: string; value: string }) {
   );
 }
 
-function MetaCard({ label, value }: { label: string; value: string }) {
-  if (!value) return null;
+function SectionHeader({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
   return (
-    <div className="rounded-lg border border-border bg-muted/20 px-3 py-2.5">
-      <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{label}</p>
-      <p className="text-xs font-medium leading-snug">{value}</p>
+    <div className="flex items-center gap-1.5 border-b border-border pb-1">
+      <Icon className="w-3.5 h-3.5 text-primary" />
+      <span className="text-xs font-bold uppercase tracking-wider text-primary">{label}</span>
     </div>
   );
 }
 
-function InfoBlock({ label, value, variant }: { label: string; value: string; variant?: "muted" }) {
+function MetaCard({ label, value }: { label: string; value?: string }) {
   return (
-    <div className={`rounded-lg border border-border p-3 space-y-1 ${variant === "muted" ? "bg-muted/30" : ""}`}>
-      <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</h3>
+    <div className="rounded-md border border-border bg-muted/30 p-2">
+      <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground block">{label}</span>
+      <span className="text-xs font-medium mt-0.5 block">{value || "—"}</span>
+    </div>
+  );
+}
+
+function InfoBlock({ label, value, variant }: { label: string; value: string; variant: "muted" | "primary" }) {
+  return (
+    <div className={`rounded-lg border p-3 ${variant === "primary" ? "border-primary/20 bg-primary/5" : "border-border bg-muted/20"}`}>
+      <h3 className={`text-[10px] font-semibold uppercase tracking-wider mb-1 ${variant === "primary" ? "text-primary" : "text-muted-foreground"}`}>{label}</h3>
       <p className="text-sm leading-relaxed">{value}</p>
     </div>
   );

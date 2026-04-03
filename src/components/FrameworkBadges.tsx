@@ -1,4 +1,4 @@
-import { type Control, PILLARS, CONTENT_AREAS } from "@/lib/csv-loader";
+import { type Control, CONTENT_AREAS, IG_LEVELS, IG_META } from "@/lib/csv-loader";
 
 interface IGBadgeProps {
   ig: string;
@@ -6,8 +6,13 @@ interface IGBadgeProps {
 }
 
 export function IGBadge({ ig, size = "sm" }: IGBadgeProps) {
-  const cls = ig === "IG1" ? "ig1-badge" : ig === "IG2" ? "ig2-badge" : "ig3-badge";
-  const label = ig === "IG1" ? "Essential" : ig === "IG2" ? "Managed" : "Advanced";
+  const meta = IG_META[ig];
+  const colorMap: Record<string, string> = {
+    IG1: "ig1-badge", IG2: "ig2-badge", IG3: "ig3-badge",
+    IG4: "ig4-badge", IG5: "ig5-badge",
+  };
+  const cls = colorMap[ig] || "ig1-badge";
+  const label = meta?.name || ig;
   return (
     <span className={`${cls} ${size === "md" ? "text-sm px-3 py-1" : ""}`}>
       {ig} — {label}
@@ -31,19 +36,19 @@ export function PillarDot({ pillarId }: { pillarId: string }) {
   return <ContentAreaDot prefix={pillarId} />;
 }
 
-export function PillarBadge({ pillarId }: { pillarId: string }) {
-  const pillar = PILLARS.find((p) => p.id === pillarId);
-  if (!pillar) return null;
+export function PillarBadge({ ig }: { ig: string }) {
+  const meta = IG_META[ig];
+  if (!meta) return null;
   const colors: Record<string, string> = {
-    Critical: "bg-destructive/15 text-destructive",
-    High: "bg-amber-100 text-amber-700",
-    "Medium-High": "bg-sky-100 text-sky-700",
-    Medium: "bg-emerald-100 text-emerald-700",
-    Advanced: "bg-purple-100 text-purple-700",
+    IG1: "bg-destructive/15 text-destructive",
+    IG2: "bg-amber-100 text-amber-700",
+    IG3: "bg-sky-100 text-sky-700",
+    IG4: "bg-emerald-100 text-emerald-700",
+    IG5: "bg-purple-100 text-purple-700",
   };
   return (
-    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${colors[pillar.criticality] || "bg-muted text-muted-foreground"}`}>
-      {pillar.name}
+    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${colors[ig] || "bg-muted text-muted-foreground"}`}>
+      {meta.name}
     </span>
   );
 }
