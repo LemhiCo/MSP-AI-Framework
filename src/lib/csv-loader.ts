@@ -43,7 +43,6 @@ const mapControlRow = (r: Record<string, string>): Control => ({
   failCondition: r["Fail Condition"] || "",
   whyItMatters: r["Why it Matters"] || "",
   whoCaresMost: r["Who Cares Most (Customer)"] || "",
-  firstRequiredWhen: r["First Required When"] || "",
 });
 
 export async function loadControls(): Promise<Control[]> {

@@ -36,11 +36,6 @@ export default function MobileDetailSheet({ control, onClose }: Props) {
           <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-primary/10 text-primary">
             {control.implementationGuard}{igMeta ? ` — ${igMeta.name}` : ""}
           </span>
-          {control.firstRequiredWhen && (
-            <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-accent/50 text-accent-foreground">
-              {control.firstRequiredWhen}
-            </span>
-          )}
         </div>
 
         {/* Content area */}

@@ -566,11 +566,6 @@ export default function Admin() {
                             <span className="leading-tight block">{c.safeguardTitle}</span>
                             <div className="flex items-center gap-1 mt-0.5">
                               <span className="text-[9px] font-mono text-muted-foreground">{c.controlId}</span>
-                              {c.firstRequiredWhen && (
-                                <span className="text-[8px] font-medium px-1 py-0.5 rounded bg-accent/30 text-accent-foreground">
-                                  {c.firstRequiredWhen}
-                                </span>
-                              )}
                             </div>
                           </button>
                           <div className="flex flex-col border-l border-border">

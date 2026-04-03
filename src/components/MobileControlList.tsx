@@ -60,11 +60,6 @@ export default function MobileControlList({ controls, onSelect }: Props) {
                 <div className="flex items-center gap-1.5 mt-1">
                   <span className="text-[10px] font-mono text-muted-foreground">{c.controlId}</span>
                   <ContentAreaDot prefix={getContentAreaPrefix(c)} />
-                  {c.firstRequiredWhen && (
-                    <span className="text-[8px] font-medium px-1 py-0.5 rounded bg-accent/30 text-accent-foreground">
-                      {c.firstRequiredWhen}
-                    </span>
-                  )}
                 </div>
               </button>
             ))}

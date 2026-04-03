@@ -158,7 +158,6 @@ function EditView({ draft, onChange }: { draft: Control; onChange: (key: keyof C
       fields: [
         { key: "implementationGuard", label: "Implementation Guard" },
         { key: "contentArea", label: "Content Area" },
-        { key: "firstRequiredWhen", label: "First Required When" },
       ],
     },
     {
