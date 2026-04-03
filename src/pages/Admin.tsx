@@ -480,10 +480,10 @@ export default function Admin() {
           <Plus className="w-3.5 h-3.5" /> New Control
         </button>
 
-        <button onClick={showIssueButton ? openIssue : undefined}
-          disabled={!showIssueButton}
+        <button onClick={dirty ? openIssue : undefined}
+          disabled={!dirty}
           className={`text-xs font-medium px-2.5 py-1.5 rounded-md border flex items-center gap-1 transition-colors active:scale-95 ${
-            showIssueButton
+            dirty
               ? "border-green-600 bg-green-600 text-white hover:bg-green-700 cursor-pointer"
               : "border-border bg-muted text-muted-foreground cursor-not-allowed opacity-60"
           }`}>
