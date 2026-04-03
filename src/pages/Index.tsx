@@ -121,11 +121,11 @@ const Index = () => {
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
-    for (const p of PILLARS) {
-      map[p.id] = {};
+    for (const ca of CONTENT_AREAS) {
+      map[ca.id] = {};
       for (const ig of IG_LEVELS) {
-        map[p.id][ig] = filteredControls.filter(
-          (c) => getPillarId(c) === p.id && c.ig === ig
+        map[ca.id][ig] = filteredControls.filter(
+          (c) => getContentAreaPrefix(c) === ca.id && c.ig === ig
         );
       }
     }
