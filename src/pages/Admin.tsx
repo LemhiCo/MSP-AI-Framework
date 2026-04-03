@@ -290,9 +290,14 @@ export default function Admin() {
     setDirty(true);
   }, [allControls]);
 
+  const nextUid = useCallback(() => {
+    const maxUid = allControls.reduce((max, c) => Math.max(max, parseInt(c.uid) || 0), 0);
+    return String(maxUid + 1);
+  }, [allControls]);
+
   const handleNew = () => {
     setIsNewCard(true);
-    setActiveControl({ ...EMPTY_CONTROL });
+    setActiveControl({ ...EMPTY_CONTROL, uid: nextUid() });
   };
 
   const handleNewInCell = (caId: string, ig: string) => {
@@ -301,6 +306,7 @@ export default function Admin() {
     setIsNewCard(true);
     setActiveControl({
       ...EMPTY_CONTROL,
+      uid: nextUid(),
       controlId: `${caId}-${ig}-${nextNum}`,
       implementationGuard: ig,
     });
