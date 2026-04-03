@@ -15,7 +15,7 @@ const EMPTY_CONTROL: Control = {
   safeguardTitle: "", customerObjective: "",
   detailedRequirement: "", lifecycleTrigger: "", cadence: "", primaryStakeholder: "",
   evidenceOfCompletion: "", minStatusToPass: "", minEvidenceToPass: "", failCondition: "",
-  whyItMatters: "", whoCaresMost: "", firstRequiredWhen: "",
+  whyItMatters: "", whoCaresMost: "",
 };
 
 const CA_COLORS: Record<string, string> = {
