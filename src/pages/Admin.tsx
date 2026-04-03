@@ -40,6 +40,7 @@ const IG_COLORS: Record<string, { text: string; bg: string }> = {
 
 function controlToCSVRow(c: Control): Record<string, string> {
   return {
+    "UID": c.uid,
     "Implementation Guard": c.implementationGuard,
     "Control ID": c.controlId,
     "Content Area": c.contentArea,

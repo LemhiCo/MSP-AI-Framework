@@ -28,6 +28,7 @@ async function fetchCSV<T>(path: string, mapFn: (row: Record<string, string>) =>
 }
 
 const mapControlRow = (r: Record<string, string>): Control => ({
+  uid: r["UID"] || "",
   controlId: r["Control ID"] || "",
   implementationGuard: r["Implementation Guard"] || "",
   contentArea: r["Content Area"] || "",
