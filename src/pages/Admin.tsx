@@ -484,14 +484,6 @@ export default function Admin() {
           <Plus className="w-3.5 h-3.5" /> New Control
         </button>
 
-        <button onClick={downloadCSV}
-          className={`text-xs font-medium px-2.5 py-1.5 rounded-md border transition-colors active:scale-95 flex items-center gap-1 ${
-            dirty ? "border-accent bg-accent text-accent-foreground animate-pulse" : "border-border bg-card hover:bg-muted"
-          }`}>
-          <Download className="w-3.5 h-3.5" />
-          {dirty ? "Save CSV ⬇" : "Download CSV"}
-        </button>
-
         <button onClick={showIssueButton ? openIssue : undefined}
           disabled={!showIssueButton}
           className={`text-xs font-medium px-2.5 py-1.5 rounded-md border flex items-center gap-1 transition-colors active:scale-95 ${
@@ -500,6 +492,14 @@ export default function Admin() {
               : "border-border bg-muted text-muted-foreground cursor-not-allowed opacity-60"
           }`}>
           <ExternalLink className="w-3.5 h-3.5" /> Suggest Change
+        </button>
+
+        <button onClick={downloadCSV}
+          className={`text-xs font-medium px-2.5 py-1.5 rounded-md border transition-colors active:scale-95 flex items-center gap-1 ${
+            dirty ? "border-accent bg-accent text-accent-foreground animate-pulse" : "border-border bg-card hover:bg-muted"
+          }`}>
+          <Download className="w-3.5 h-3.5" />
+          {dirty ? "Save CSV ⬇" : "Download CSV"}
         </button>
       </header>
 
