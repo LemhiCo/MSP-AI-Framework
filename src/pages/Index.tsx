@@ -308,7 +308,7 @@ const Index = () => {
               return (
                 <div key={ig} className="grid border-b border-border" style={{ gridTemplateColumns: `100px repeat(${CONTENT_AREAS.length},1fr)` }}>
                   <div className="px-3 py-3 flex flex-col justify-start sticky left-0 z-10" style={{ background: `hsl(${colors.bg})` }}>
-                    <span className="text-xs font-bold" style={{ color: `hsl(${colors.text})` }}>{ig}</span>
+                    <span className="text-xs font-bold" style={{ color: `hsl(${colors.text})` }}>{meta?.label || ig}</span>
                     <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{meta?.sub}</span>
                   </div>
                   {CONTENT_AREAS.map((ca) => {
