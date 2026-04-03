@@ -211,6 +211,8 @@ const Index = () => {
             firstRequiredFilter={firstRequiredFilter}
             setFirstRequiredFilter={setFirstRequiredFilter}
             firstRequiredOptions={firstRequiredOptions}
+            contentAreaFilter={contentAreaFilter}
+            setContentAreaFilter={setContentAreaFilter}
             activeCount={activeFilterCount}
             onClear={clearAllFilters}
           />
