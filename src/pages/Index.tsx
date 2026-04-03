@@ -19,12 +19,16 @@ const IG_META: Record<string, { label: string; sub: string }> = {
   IG3: { label: "IG3 — Advanced", sub: "Mature & regulated" },
 };
 
-const PILLAR_COLORS: Record<string, string> = {
-  P1: "0 70% 50%",
-  P2: "25 80% 50%",
-  P3: "200 50% 42%",
-  P4: "168 40% 35%",
-  P5: "280 40% 45%",
+const CA_COLORS: Record<string, string> = {
+  STR: "340 65% 47%",
+  GOV: "25 80% 50%",
+  TEC: "200 50% 42%",
+  CPL: "168 40% 35%",
+  PRC: "45 80% 45%",
+  DAT: "280 40% 45%",
+  OBS: "210 60% 50%",
+  DEP: "150 50% 40%",
+  SKL: "0 70% 50%",
 };
 
 function useUniqueValues(controls: Control[], key: keyof Control) {
