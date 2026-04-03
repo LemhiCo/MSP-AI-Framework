@@ -117,7 +117,7 @@ const Index = () => {
       }
       return true;
     });
-  }, [controls, search, lifecycleFilter, firstRequiredFilter]);
+  }, [controls, search, lifecycleFilter, contentAreaFilter]);
 
   const grid = useMemo(() => {
     const map: Record<string, Record<string, Control[]>> = {};
