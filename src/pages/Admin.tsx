@@ -150,6 +150,7 @@ export default function Admin() {
   const [originalControls, setOriginalControls] = useState<Control[]>([]);
   const [csvHash, setCsvHash] = useState("");
   const [pendingPatchComment, setPendingPatchComment] = useState("");
+  const [pendingIssueUrl, setPendingIssueUrl] = useState("");
 
   const allControls = controls ?? loadedControls;
 
