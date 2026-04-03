@@ -68,6 +68,7 @@ export default function MobileFilterSheet({
           </div>
         </div>
         <div className="overflow-y-auto px-4 py-4 space-y-5">
+          <ChipGroup label="Content Area" options={CONTENT_AREAS.map(ca => ca.id)} selected={contentAreaFilter} onChange={setContentAreaFilter} />
           <ChipGroup label="Lifecycle Trigger" options={[...LIFECYCLE_TRIGGERS]} selected={lifecycleFilter} onChange={setLifecycleFilter} />
           <ChipGroup label="First Required When" options={firstRequiredOptions} selected={firstRequiredFilter} onChange={setFirstRequiredFilter} />
         </div>
