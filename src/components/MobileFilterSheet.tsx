@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { LIFECYCLE_TRIGGERS } from "@/lib/csv-loader";
+import { LIFECYCLE_TRIGGERS, CONTENT_AREAS } from "@/lib/csv-loader";
 
 interface Props {
   open: boolean;
@@ -9,6 +9,8 @@ interface Props {
   firstRequiredFilter: Set<string>;
   setFirstRequiredFilter: (s: Set<string>) => void;
   firstRequiredOptions: string[];
+  contentAreaFilter: Set<string>;
+  setContentAreaFilter: (s: Set<string>) => void;
   activeCount: number;
   onClear: () => void;
 }
