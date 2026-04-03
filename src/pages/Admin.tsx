@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { AlertTriangle } from "lucide-react";
-import { Search, Plus, Download, ArrowLeft, X, ChevronUp, ChevronDown, ExternalLink, RotateCcw } from "lucide-react";
+import { Search, Plus, Download, ArrowLeft, X, ChevronUp, ChevronDown, ExternalLink, RotateCcw, Check, Copy } from "lucide-react";
 import { useControls } from "@/hooks/use-framework-data";
 import { CONTENT_AREAS, IG_LEVELS, IG_META, LIFECYCLE_TRIGGERS, getContentAreaPrefix, type Control } from "@/lib/csv-loader";
 import { Link } from "react-router-dom";
@@ -84,49 +84,46 @@ function ChipFilter({ label, options, selected, onChange }: {
   );
 }
 
-function ContributePrompt({ onClose, onOpenIssue, csvHash }: { onClose: () => void; onOpenIssue: () => void; csvHash: string }) {
-  const [ack, setAck] = useState(false);
+function ContributePrompt({ onClose, onOpenIssue, patchComment }: { onClose: () => void; onOpenIssue: () => void; patchComment: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(patchComment).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
       <div className="absolute inset-0 backdrop-blur-sm bg-background/40" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-md mx-4 bg-card border border-border rounded-xl shadow-2xl p-6 animate-fade-up" style={{ animationDuration: "400ms" }}>
+      <div className="relative z-10 w-full max-w-lg mx-4 bg-card border border-border rounded-xl shadow-2xl p-6 animate-fade-up" style={{ animationDuration: "400ms" }}>
         <div className="text-center mb-4">
           <div className="text-3xl mb-2">🤝</div>
-          <h2 className="text-xl font-serif font-semibold">Share Your Improvements</h2>
+          <h2 className="text-xl font-serif font-semibold">Patch Too Large for URL</h2>
           <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-            Want to contribute your changes back? Open a GitHub Issue and <strong>attach your downloaded CSV</strong>.
-          </p>
-        </div>
-        <div className="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 space-y-1.5">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-destructive shrink-0" />
-            <p className="text-xs font-bold text-destructive uppercase tracking-wide">CSV Upload Required</p>
-          </div>
-          <p className="text-xs text-foreground/80 leading-relaxed">
-            Automated patches are <strong>not supported</strong>. Your contribution <strong>will not be processed</strong> unless you attach your downloaded CSV file
-            {csvHash ? <> (<code className="text-[10px] bg-muted px-1 py-0.5 rounded font-mono">…{csvHash.slice(-6)}</code>)</> : null} to the GitHub Issue.
+            Your changes are too large to embed in the link. Copy the patch comment below and <strong>paste it at the bottom</strong> of the GitHub Issue.
           </p>
         </div>
         <div className="mb-4 rounded-lg border border-border bg-muted/40 px-4 py-3 space-y-1.5">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">How it works</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Steps</p>
           <ol className="text-xs text-foreground/80 space-y-1 leading-relaxed list-decimal list-inside">
-            <li>Click below to open a pre-filled GitHub Issue</li>
-            <li><strong>Attach your downloaded CSV</strong> to the issue</li>
+            <li><strong>Copy</strong> the patch comment below</li>
+            <li>Click "Open GitHub Issue" to open the pre-filled issue</li>
+            <li><strong>Paste</strong> the comment at the very bottom of the issue body</li>
             <li>Submit — maintainers will review and merge</li>
           </ol>
         </div>
-        <label className="flex items-start gap-2.5 mb-4 cursor-pointer select-none group">
-          <input type="checkbox" checked={ack} onChange={(e) => setAck(e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-border accent-primary shrink-0" />
-          <span className="text-xs text-foreground/80 leading-relaxed">
-            I understand I <strong>must upload my CSV file</strong> to the GitHub Issue or my contribution cannot be reviewed.
-          </span>
-        </label>
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">MSP Patch Comment</p>
+            <button onClick={handleCopy} className="text-[10px] font-medium px-2 py-0.5 rounded border border-border hover:bg-muted transition-colors flex items-center gap-1">
+              {copied ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
+            </button>
+          </div>
+          <pre className="text-[10px] bg-muted rounded-lg p-3 overflow-x-auto max-h-24 overflow-y-auto border border-border font-mono text-foreground/70 select-all whitespace-pre-wrap break-all">{patchComment}</pre>
+        </div>
         <div className="space-y-2">
-          <button onClick={onOpenIssue} disabled={!ack}
-            className={`w-full py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
-              ack ? "bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.97]" : "bg-muted text-muted-foreground cursor-not-allowed opacity-60"
-            }`}>
+          <button onClick={onOpenIssue}
+            className="w-full py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.97]">
             <ExternalLink className="w-4 h-4" /> Open GitHub Issue
           </button>
           <button onClick={onClose} className="w-full py-2 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
@@ -152,6 +149,8 @@ export default function Admin() {
   const [showContributePrompt, setShowContributePrompt] = useState(false);
   const [originalControls, setOriginalControls] = useState<Control[]>([]);
   const [csvHash, setCsvHash] = useState("");
+  const [pendingPatchComment, setPendingPatchComment] = useState("");
+  const [pendingIssueUrl, setPendingIssueUrl] = useState("");
 
   const allControls = controls ?? loadedControls;
 
@@ -431,11 +430,13 @@ export default function Admin() {
     );
     const url = `https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${body}&labels=csv-change,triage`;
     if (url.length > 8000) {
+      const patchCommentText = `<!-- MSP_PATCH_V3:${base64Payload} -->`;
       const strippedBody = encodeURIComponent(
-        `## Proposed Framework Changes\n\n**Date:** ${today}\n**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n---\n\n## Detailed Changes\n\n${lines.join("\n")}\n---\n\n## Why this change should be made\n\n_Explain the reasoning._\n\n---\n\n> ⚠️ Patch payload was too large. **Please attach your downloaded CSV file.**`
+        `## Proposed Framework Changes\n\n**Date:** ${today}\n**Total changes:** ${totalChanges} (${summaryParts.join(", ")})\n\n---\n\n## Detailed Changes\n\n${lines.join("\n")}\n---\n\n## Why this change should be made\n\n_Explain the reasoning._\n\n---\n\n> ⚠️ Patch payload was too large for the URL. Please paste the MSP Patch comment (provided in the app) at the bottom of this issue.`
       );
+      setPendingPatchComment(patchCommentText);
+      setPendingIssueUrl(`https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${strippedBody}&labels=csv-change,triage`);
       setShowContributePrompt(true);
-      window.open(`https://github.com/LemhiCo/MSP-AI-Framework/issues/new?title=${title}&body=${strippedBody}&labels=csv-change,triage`, "_blank");
     } else {
       window.open(url, "_blank");
     }
@@ -621,7 +622,7 @@ export default function Admin() {
       )}
 
       {showContributePrompt && (
-        <ContributePrompt onClose={() => setShowContributePrompt(false)} onOpenIssue={() => { setShowContributePrompt(false); openIssue(); }} csvHash={csvHash} />
+        <ContributePrompt onClose={() => setShowContributePrompt(false)} onOpenIssue={() => { setShowContributePrompt(false); window.open(pendingIssueUrl, "_blank"); }} patchComment={pendingPatchComment} />
       )}
       <ContributorsTicker />
     </div>
