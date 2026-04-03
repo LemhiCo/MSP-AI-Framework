@@ -475,6 +475,13 @@ export default function Admin() {
           </button>
         )}
 
+        {dirty && (
+          <button onClick={() => { setControls(originalControls.map(c => ({ ...c }))); setDirty(false); toast.info("Reverted to original."); }}
+            className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors active:scale-95 flex items-center gap-1">
+            <RotateCcw className="w-3.5 h-3.5" /> Revert
+          </button>
+        )}
+
         <button onClick={handleNew}
           className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-primary bg-primary text-primary-foreground hover:bg-primary/90 transition-colors active:scale-95 flex items-center gap-1">
           <Plus className="w-3.5 h-3.5" /> New Control
