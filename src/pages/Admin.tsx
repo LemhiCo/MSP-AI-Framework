@@ -227,13 +227,12 @@ export default function Admin() {
     const updatedDragged = {
       ...draggedControl,
       implementationGuard: targetIg,
-      controlId: "",
+      controlId: `${targetCaId}-${targetIg}-00`,
     };
     targetItems.splice(Math.min(targetIndex, targetItems.length), 0, updatedDragged);
 
     const renumberedTarget = targetItems.map((c, i) => {
-      const prefix = getContentAreaPrefix(c) || "CTL";
-      return { ...c, controlId: `${prefix}-${targetIg}-${String(i + 1).padStart(2, "0")}` };
+      return { ...c, controlId: `${targetCaId}-${targetIg}-${String(i + 1).padStart(2, "0")}` };
     });
 
     setControls([...others, ...renumberedTarget]);
