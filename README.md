@@ -49,26 +49,32 @@ If you cannot operate it, you should not enable it.
 
 ## Framework structure
 
-### Implementation Groups
+### Implementation Guards
 
-| IG | Meaning |
-|----|---------|
-| **IG1** | Baseline readiness |
-| **IG2** | Scaling and managed practice |
-| **IG3** | Advanced and higher-maturity controls |
+The framework uses five Implementation Guards (IGs) to sequence controls from baseline readiness through enterprise-grade and frontier operations. Each IG builds on the previous.
 
-### Pillars
+| IG | Level | What it covers |
+|----|-------|----------------|
+| **IG1** | Baseline | Foundational controls every AI deployment needs before go-live — sponsorship, pilot scoping, identity hygiene, basic observability |
+| **IG2** | Managed | Scaled, repeatable practice — governance workflows, licensing guardrails, role-based enablement, structured rollout |
+| **IG3** | Advanced | Higher-maturity controls for organizations running AI in production — policy depth, data classification, audit trails, advanced observability |
+| **IG4** | Expert | Enterprise-grade controls — agent governance, regulatory compliance, environment separation, automated monitoring, decommission paths |
+| **IG5** | Frontier | Highest-maturity controls for complex, high-risk, or heavily regulated environments — credential control, environment isolation, metered billing governance, frontier model oversight |
 
-| Pillar | Focus |
-|--------|-------|
-| **Strategy & Buy-In** | Executive ownership, use-case prioritization, roadmap |
-| **Policy & Governance** | Policy lifecycle, approval workflows, accountability |
-| **Technical Readiness** | Identity, access, environment, and platform hygiene |
-| **Copilot Readiness** | Microsoft Copilot-specific controls and guardrails |
-| **Process Mapping** | Workflow integration, incident response, change management |
-| **Data Security & Tagging** | Classification, oversharing, data boundary enforcement |
-| **AI Observability** | Monitoring, drift detection, audit, and reporting |
-| **AI Tooling & Deployment** | Staged rollout, service management, rollback |
+### Content Areas
+
+| Content Area | Prefix | Focus |
+|---|---|---|
+| **Strategy & Buy-In** | STR | Executive ownership, use-case prioritization, roadmap |
+| **Policy & Governance** | GOV | Policy lifecycle, approval workflows, accountability |
+| **Technical Readiness** | TEC | Identity, access, environment, and platform hygiene |
+| **Copilot Readiness** | CPL | Microsoft Copilot-specific controls, agents, and guardrails |
+| **Process Mapping** | PRC | Workflow integration, incident response, change management |
+| **Data Security & Tagging** | DAT | Classification, oversharing, data boundary enforcement |
+| **AI Observability** | OBS | Monitoring, drift detection, audit, and reporting |
+| **AI Tooling & Deployment** | DEP | Staged rollout, service management, rollback |
+| **People & Skills** | SKL | AI literacy, role-based training, champions, capability gates |
+| **Security** | REG | Regulatory mapping, compliance calendars, audit trails for regulated workflows |
 
 ---
 
@@ -99,11 +105,11 @@ Community contributions are encouraged and the preferred path is through the web
 ### Recommended workflow
 
 1. Open the framework at **[framework.lemhi.ai](https://framework.lemhi.ai)**.
-2. Go to the **Admin — Controls Editor**.
-3. Make your edits locally in the editor.
-4. When prompted, download the updated CSV or submit via the **Suggest Change** button.
-5. A GitHub Issue will be opened automatically with your proposed changes.
-6. Maintainers will review and open a Pull Request against this repository.
+2. Navigate to the **Contributors** tab.
+3. Make your edits in the controls editor.
+4. Click **Suggest Change** — a GitHub Issue is created automatically with your proposed changes encoded as a patch.
+5. Maintainers review and open a Pull Request against this repository.
+6. Once merged, the updated controls go live for everyone and your handle is added to the contributors list.
 
 ### Contribution expectations
 
@@ -114,46 +120,36 @@ Good contributions usually do one or more of the following:
 - Improve evidence requirements
 - Refine stakeholder alignment
 - Tighten customer-facing language
-- Expand support for new AI deployment patterns
+- Expand support for new AI deployment patterns (agents, digital workers, regulated environments)
 
 When opening a PR manually, include:
 - A short summary of what changed
 - Why the change improves the framework
-- Which pillar(s) or IG(s) were affected
+- Which content area(s) or IG(s) were affected
 - Whether it is net-new, normalization, or wording cleanup
 
 ### Column reference
 
+Each control row contains the following fields:
+
 | Column | Description |
 |--------|-------------|
-| `Control ID` | Unique identifier (e.g. `STR-IG2-01`) |
-| `Pillar` | Framework pillar |
-| `IG` | Implementation group (IG1 / IG2 / IG3) |
+| `UID` | Stable numeric identifier — does not change when Control ID is renamed |
+| `Implementation Guard` | Maturity level (IG1–IG5) |
+| `Control ID` | Human-readable identifier (e.g. `STR-IG2-01`) — may change as controls are reorganized |
+| `Content Area` | Framework pillar |
 | `Safeguard Title` | Short name for the control |
 | `Customer Objective` | What this achieves for the customer |
 | `Detailed Requirement` | Full specification |
 | `Lifecycle Trigger` | When this control is activated |
 | `Cadence` | How often it is reviewed or enforced |
 | `Primary Stakeholder` | Who owns it |
-| `Microsoft Tool Recommendation` | Microsoft-native tooling reference |
-| `Generic Tooling Category` | Vendor-agnostic tool category |
 | `Evidence of Completion` | What proof looks like |
-| `Raw Weight` | Relative priority weight |
-| `Gate Type` | Baseline / Scale Gate / etc. |
 | `Minimum Status to Pass` | Minimum implementation state required |
 | `Minimum Evidence to Pass` | Minimum evidence required |
 | `Fail Condition` | What failure looks like |
 | `Why it Matters` | Rationale |
-| `Applies To` | Scope |
-| `End Customer Business Value` | Customer outcome language |
-| `Customer Conversation Track` | GTM / QBR framing |
 | `Who Cares Most (Customer)` | Key customer stakeholder |
-| `Relevant: GenAI` | Applicability flag |
-| `Relevant: Custom GPTs` | Applicability flag |
-| `Relevant: Agentic AI` | Applicability flag |
-| `Relevant: Digital Workers` | Applicability flag |
-| `Relevant: Cowork` | Applicability flag |
-| `First Required When` | Entry point in the AI maturity journey |
 
 ---
 
