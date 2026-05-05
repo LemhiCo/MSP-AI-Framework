@@ -3,8 +3,9 @@ import ContributorsTicker from "./ContributorsTicker";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const WAITLIST_KEY = "lemhi-waitlist-signed-up";
-const ENDPOINT = "https://vpewefckhacxgbypzbmh.supabase.co/functions/v1/notify-waitlist";
-const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwZXdlZmNraGFjeGdieXB6Ym1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0NDY5MzksImV4cCI6MjA4NzAyMjkzOX0.61WY66Bko6_N6R8BzZz0C0r6gIC2QNCeHl1PawmXveo";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+const ENDPOINT = `${SUPABASE_URL}/functions/v1/notify-waitlist`;
 
 const ROLES = ["MSP Owner", "VCIO", "Sales Leader", "Technical Leader", "Other"];
 
