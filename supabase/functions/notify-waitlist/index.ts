@@ -73,7 +73,11 @@ Deno.serve(async (req) => {
     try {
       const fwd = await fetch(EXTERNAL_ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type": "application/json", apikey: EXTERNAL_ANON_KEY },
+        headers: {
+          "Content-Type": "application/json",
+          apikey: EXTERNAL_ANON_KEY,
+          Authorization: `Bearer ${EXTERNAL_ANON_KEY}`,
+        },
         body: JSON.stringify({ name, email, company, role, source }),
       });
       if (!fwd.ok) {
