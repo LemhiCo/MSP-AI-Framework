@@ -66,20 +66,24 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Could not save signup" }, 500);
   }
 
-  // Also forward to the original external waitlist (best-effort, non-blocking failure)
-  try {
-    const EXTERNAL_ENDPOINT = "https://vpewefckhacxgbypzbmh.supabase.co/functions/v1/notify-waitlist";
-    const EXTERNAL_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwZXdlZmNraGFjeGdieXB6Ym1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0NDY5MzksImV4cCI6MjA4NzAyMjkzOX0.61WY66Bko6_N6R8BzZz0C0r6gIC2QNCeHl1PawmXveo";
-    const fwd = await fetch(EXTERNAL_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", apikey: EXTERNAL_ANON_KEY },
-      body: JSON.stringify({ name, email, company, role, source }),
-    });
-    if (!fwd.ok) {
-      console.error("External waitlist forward failed:", fwd.status, await fwd.text());
+  // Also forward to the original external waitlist (best-effort)
+  const EXTERNAL_ENDPOINT = Deno.env.get("EXTERNAL_WAITLIST_URL");
+  const EXTERNAL_ANON_KEY = Deno.env.get("EXTERNAL_WAITLIST_ANON_KEY");
+  if (EXTERNAL_ENDPOINT && EXTERNAL_ANON_KEY) {
+    try {
+      const fwd = await fetch(EXTERNAL_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: EXTERNAL_ANON_KEY },
+        body: JSON.stringify({ name, email, company, role, source }),
+      });
+      if (!fwd.ok) {
+        console.error("External waitlist forward failed:", fwd.status, await fwd.text());
+      }
+    } catch (e) {
+      console.error("External waitlist forward exception:", e);
     }
-  } catch (e) {
-    console.error("External waitlist forward exception:", e);
+  } else {
+    console.error("EXTERNAL_WAITLIST_URL or EXTERNAL_WAITLIST_ANON_KEY not set");
   }
 
   return jsonResponse({ ok: true });
