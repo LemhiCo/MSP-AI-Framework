@@ -2,7 +2,7 @@ import { useState } from "react";
 import ContributorsTicker from "./ContributorsTicker";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const WAITLIST_KEY = "lemhi-waitlist-signed-up-v2";
+const WAITLIST_KEY = "lemhi-waitlist-signed-up-v3";
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
 const ENDPOINT = `${SUPABASE_URL}/functions/v1/notify-waitlist`;
