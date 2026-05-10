@@ -75,8 +75,7 @@ Deno.serve(async (req) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          apikey: EXTERNAL_ANON_KEY,
-          Authorization: `Bearer ${EXTERNAL_ANON_KEY}`,
+          "x-api-key": EXTERNAL_ANON_KEY,
         },
         body: JSON.stringify({ name, email, company, role, source }),
       });
