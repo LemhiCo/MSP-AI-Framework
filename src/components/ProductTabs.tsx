@@ -1,3 +1,5 @@
+import { ExternalLink } from "lucide-react";
+
 const TABS = [
   { id: "digest", label: "Copilot Digest", href: "https://digest.lemhi.ai" },
   { id: "atlas", label: "Atlas Apps", href: "https://atlas.lemhi.ai" },
@@ -6,8 +8,8 @@ const TABS = [
 
 export default function ProductTabs({ active = "magic" }: { active?: "digest" | "atlas" | "magic" }) {
   return (
-    <nav className="w-full bg-background border-b border-border">
-      <div className="flex items-center gap-1 px-3 sm:px-4 overflow-x-auto">
+    <nav className="w-full bg-primary text-primary-foreground border-b border-primary/40">
+      <div className="flex items-center gap-4 sm:gap-8 px-4 sm:px-8 overflow-x-auto">
         {TABS.map((t) => {
           const isActive = t.id === active;
           return (
@@ -16,13 +18,14 @@ export default function ProductTabs({ active = "magic" }: { active?: "digest" | 
               href={t.href}
               target={isActive ? undefined : "_blank"}
               rel={isActive ? undefined : "noopener noreferrer"}
-              className={`text-[11px] sm:text-xs font-medium px-3 py-1.5 border-b-2 -mb-px whitespace-nowrap transition-colors ${
+              className={`inline-flex items-center gap-1.5 text-sm font-semibold py-3 border-b-2 -mb-px whitespace-nowrap transition-colors ${
                 isActive
-                  ? "border-primary text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                  ? "border-primary-foreground text-primary-foreground"
+                  : "border-transparent text-primary-foreground/60 hover:text-primary-foreground"
               }`}
             >
-              {t.label}
+              <span>{t.label}</span>
+              {!isActive && <ExternalLink className="w-3 h-3 opacity-70" />}
             </a>
           );
         })}
