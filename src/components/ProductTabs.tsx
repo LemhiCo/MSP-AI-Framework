@@ -26,26 +26,29 @@ const TABS = [
 
 export default function ProductTabs({ active = "magic" }: { active?: "digest" | "atlas" | "magic" }) {
   return (
-    <nav className="w-full bg-white border-b border-border">
-      <div className="flex items-center gap-4 sm:gap-8 px-4 sm:px-8 overflow-x-auto">
+    <nav className="w-full bg-white border-b border-border relative z-50">
+      <div className="flex items-center gap-4 sm:gap-8 px-4 sm:px-8 flex-wrap">
         {TABS.map((t) => {
           const isActive = t.id === active;
           return (
-            <a
-              key={t.id}
-              href={t.href}
-              title={t.tooltip}
-              target={isActive ? undefined : "_blank"}
-              rel={isActive ? undefined : "noopener noreferrer"}
-              className={`inline-flex items-center gap-1.5 text-sm font-semibold py-3 border-b-2 -mb-px whitespace-nowrap transition-colors text-primary ${
-                isActive
-                  ? "border-primary"
-                  : "border-transparent opacity-70 hover:opacity-100"
-              }`}
-            >
-              <span>{t.label}</span>
-              {!isActive && <ExternalLink className="w-3 h-3 opacity-70" />}
-            </a>
+            <div key={t.id} className="relative group">
+              <a
+                href={t.href}
+                target={isActive ? undefined : "_blank"}
+                rel={isActive ? undefined : "noopener noreferrer"}
+                className={`inline-flex items-center gap-1.5 text-sm font-semibold py-3 border-b-2 -mb-px whitespace-nowrap transition-colors text-primary ${
+                  isActive
+                    ? "border-primary"
+                    : "border-transparent opacity-70 hover:opacity-100"
+                }`}
+              >
+                <span>{t.label}</span>
+                {!isActive && <ExternalLink className="w-3 h-3 opacity-70" />}
+              </a>
+              <div className="pointer-events-none absolute left-0 top-full mt-1 w-72 rounded-md border border-border bg-card text-foreground text-xs leading-relaxed shadow-xl px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
+                {t.tooltip}
+              </div>
+            </div>
           );
         })}
       </div>
