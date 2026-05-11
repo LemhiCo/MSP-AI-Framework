@@ -8,7 +8,7 @@ const TABS = [
 
 export default function ProductTabs({ active = "magic" }: { active?: "digest" | "atlas" | "magic" }) {
   return (
-    <nav className="w-full bg-primary text-primary-foreground border-b border-primary/40">
+    <nav className="w-full bg-white border-b border-border">
       <div className="flex items-center gap-4 sm:gap-8 px-4 sm:px-8 overflow-x-auto">
         {TABS.map((t) => {
           const isActive = t.id === active;
@@ -18,10 +18,10 @@ export default function ProductTabs({ active = "magic" }: { active?: "digest" | 
               href={t.href}
               target={isActive ? undefined : "_blank"}
               rel={isActive ? undefined : "noopener noreferrer"}
-              className={`inline-flex items-center gap-1.5 text-sm font-semibold py-3 border-b-2 -mb-px whitespace-nowrap transition-colors ${
+              className={`inline-flex items-center gap-1.5 text-sm font-semibold py-3 border-b-2 -mb-px whitespace-nowrap transition-colors text-primary ${
                 isActive
-                  ? "border-primary-foreground text-primary-foreground"
-                  : "border-transparent text-primary-foreground/60 hover:text-primary-foreground"
+                  ? "border-primary"
+                  : "border-transparent opacity-70 hover:opacity-100"
               }`}
             >
               <span>{t.label}</span>
