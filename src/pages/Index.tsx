@@ -11,6 +11,7 @@ import * as XLSX from "xlsx";
 import WaitlistGate, { useWaitlistGate } from "@/components/WaitlistGate";
 import ContributorsTicker from "@/components/ContributorsTicker";
 import MarkdownModal from "@/components/MarkdownModal";
+import ProductTabs from "@/components/ProductTabs";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const CA_COLORS: Record<string, string> = {
@@ -167,6 +168,9 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {!signedUp && <WaitlistGate onComplete={() => { markSignedUp(); setShowMagicModal(true); }} />}
+      <div className={isMobile ? "" : "min-w-[1200px]"}>
+        <ProductTabs active="magic" />
+      </div>
 
       {isMobile ? (
         <>
