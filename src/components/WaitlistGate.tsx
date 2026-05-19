@@ -40,7 +40,7 @@ export function useWaitlistGate() {
   return { signedUp, markSignedUp };
 }
 
-export default function WaitlistGate({ onComplete }: { onComplete: () => void }) {
+export default function WaitlistGate({ onComplete, onSkip }: { onComplete: () => void; onSkip?: () => void }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
@@ -158,7 +158,7 @@ export default function WaitlistGate({ onComplete }: { onComplete: () => void })
 
         <button
           type="button"
-          onClick={onComplete}
+          onClick={onSkip ?? onComplete}
           className="w-full py-2.5 rounded-lg bg-accent text-accent-foreground text-sm font-semibold hover:opacity-90 active:scale-[0.97] transition-all mt-3"
         >
           Just View the Framework
