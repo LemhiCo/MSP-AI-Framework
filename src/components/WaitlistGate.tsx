@@ -86,7 +86,17 @@ export default function WaitlistGate({ onComplete, onSkip }: { onComplete: () =>
       <div className="absolute inset-0 backdrop-blur-sm bg-background/40" />
 
       {/* Modal */}
-      <div className={`relative z-10 w-full max-w-md mx-4 bg-card border border-border rounded-xl shadow-2xl animate-fade-up ${isMobile ? "p-4 max-h-[85vh] overflow-y-auto" : "p-6"}`} style={{ animationDuration: "400ms" }}>
+      <div
+        className={`relative z-10 bg-card border border-border rounded-xl shadow-2xl animate-fade-up ${
+          isMobile
+            ? "p-4 overflow-y-auto"
+            : "w-full max-w-md mx-4 p-6"
+        }`}
+        style={{
+          animationDuration: "400ms",
+          ...(isMobile ? { width: "98vw", maxHeight: "98vh", margin: "1vh 1vw" } : {}),
+        }}
+      >
         <div className={`text-center ${isMobile ? "mb-3" : "mb-5"}`}>
           <h2 className={`font-serif font-semibold ${isMobile ? "text-lg" : "text-xl"}`}>Stay up to date with all the things Lemhi is building</h2>
           <p className={`text-muted-foreground mt-1 leading-relaxed ${isMobile ? "text-xs" : "text-sm mt-1.5"}`}>
