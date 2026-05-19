@@ -167,7 +167,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {!signedUp && <WaitlistGate onComplete={() => { markSignedUp(); setShowMagicModal(true); }} />}
+      {!signedUp && <WaitlistGate onComplete={() => { markSignedUp(); setShowMagicModal(true); }} onSkip={markSignedUp} />}
       <div className={isMobile ? "" : "min-w-[1200px]"}>
         <ProductTabs active="magic" />
       </div>
