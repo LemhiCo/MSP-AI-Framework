@@ -67,6 +67,16 @@ export default function MobileDetailSheet({ control, onClose }: Props) {
         {tab === "compliance" && <ComplianceTab control={control} />}
         {tab === "stakeholders" && <StakeholderTab control={control} />}
       </div>
+
+      {/* Bottom close */}
+      <div className="shrink-0 border-t border-border px-4 py-3 bg-card">
+        <button
+          onClick={onClose}
+          className="w-full py-2.5 rounded-md bg-primary text-primary-foreground text-sm font-medium active:scale-[0.98] transition-transform"
+        >
+          Close
+        </button>
+      </div>
     </div>
   );
 }
