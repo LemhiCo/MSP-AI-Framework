@@ -88,11 +88,11 @@ export default function WaitlistGate({ onComplete }: { onComplete: () => void })
       {/* Modal */}
       <div className={`relative z-10 w-full max-w-md mx-4 bg-card border border-border rounded-xl shadow-2xl animate-fade-up ${isMobile ? "p-4 max-h-[85vh] overflow-y-auto" : "p-6"}`} style={{ animationDuration: "400ms" }}>
         <div className={`text-center ${isMobile ? "mb-3" : "mb-5"}`}>
-          <h2 className={`font-serif font-semibold ${isMobile ? "text-lg" : "text-xl"}`}>Join the Expedition</h2>
+          <h2 className={`font-serif font-semibold ${isMobile ? "text-lg" : "text-xl"}`}>Stay up to date with all the things Lemhi is building</h2>
           <p className={`text-muted-foreground mt-1 leading-relaxed ${isMobile ? "text-xs" : "text-sm mt-1.5"}`}>
             {isMobile
-              ? "Open source AI governance — built by MSPs, for MSPs. Sign up to explore and contribute."
-              : "The AI Controls Framework is an open source, community-driven project built by MSPs and advisors who believe AI governance shouldn't be gatekept. Sign up to explore, contribute, and help shape the standard."
+              ? "Get updates on the MAGIC Framework, Atlas, Copilot Digest, and everything else we ship for MSPs."
+              : "Get updates on the MAGIC Framework, Atlas, Copilot Digest, and everything else we're building for MSPs and advisors navigating AI."
             }
           </p>
         </div>
@@ -156,14 +156,13 @@ export default function WaitlistGate({ onComplete }: { onComplete: () => void })
           </button>
         </form>
 
-        <a
-          href="https://github.com/LemhiCo/MSP-AI-Framework/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block text-center text-[11px] text-muted-foreground/60 hover:text-muted-foreground mt-4 transition-colors"
+        <button
+          type="button"
+          onClick={onComplete}
+          className="w-full py-2.5 rounded-lg bg-accent text-accent-foreground text-sm font-semibold hover:opacity-90 active:scale-[0.97] transition-all mt-3"
         >
-          I'd rather not — just take me to the framework on GitHub →
-        </a>
+          Just View the Framework
+        </button>
       </div>
 
       <ContributorsTicker />
