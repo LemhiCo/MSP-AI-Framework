@@ -338,7 +338,7 @@ export default function OverviewJourney({ controls }: { controls: Control[] }) {
             >
               <active.icon className="w-7 h-7" strokeWidth={1.6} />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
                 <span>Stage {active.number}</span>
                 <span>·</span>
@@ -354,6 +354,7 @@ export default function OverviewJourney({ controls }: { controls: Control[] }) {
                 {active.description}
               </p>
             </div>
+            <LevelsOfAIPyramid stageId={active.id} hue={active.hue} />
           </div>
         </div>
 
