@@ -82,7 +82,7 @@ const Index = () => {
   const [viewMode, setViewMode] = useState<"overview" | "detailed">("overview");
 
   useEffect(() => {
-    const introKey = "lemhi-howitworks-seen";
+    const introKey = "lemhi-howitworks-seen-v2";
     if (signedUp && !localStorage.getItem(introKey)) {
       localStorage.setItem(introKey, "true");
       setShowHowItWorks(true);
@@ -90,7 +90,7 @@ const Index = () => {
   }, [signedUp]);
 
   useEffect(() => {
-    const contribKey = "lemhi-contribute-tooltip-seen";
+    const contribKey = "lemhi-contribute-tooltip-seen-v2";
     if (!localStorage.getItem(contribKey)) {
       const t = setTimeout(() => setShowContributeTooltip(true), 2000);
       return () => clearTimeout(t);
@@ -218,7 +218,7 @@ const Index = () => {
                 className={`p-1.5 rounded-md border transition-colors ${activeFilterCount > 0 ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border"}`}>
                 <SlidersHorizontal className="w-3.5 h-3.5" />
               </button>
-              <button onClick={() => { setShowContributeTooltip(false); localStorage.setItem("lemhi-contribute-tooltip-seen", "true"); setShowContributeModal(true); }}
+              <button onClick={() => { setShowContributeTooltip(false); localStorage.setItem("lemhi-contribute-tooltip-seen-v2", "true"); setShowContributeModal(true); }}
                 className="p-1.5 rounded-md border border-border bg-card">
                 <Heart className="w-3.5 h-3.5 text-destructive" />
               </button>
@@ -280,7 +280,7 @@ const Index = () => {
             </button>
 
             <div className="relative">
-              <button onClick={() => { setShowContributeTooltip(false); localStorage.setItem("lemhi-contribute-tooltip-seen", "true"); setShowContributeModal(true); }}
+              <button onClick={() => { setShowContributeTooltip(false); localStorage.setItem("lemhi-contribute-tooltip-seen-v2", "true"); setShowContributeModal(true); }}
                 className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors active:scale-95 flex items-center gap-1">
                 <Heart className="w-3.5 h-3.5 text-destructive" /> Contribute
               </button>
@@ -301,7 +301,7 @@ const Index = () => {
                     className="flex items-center gap-1.5 text-xs text-primary hover:underline mt-2">
                     <ExternalLink className="w-3 h-3" /> View on GitHub
                   </a>
-                  <button onClick={(e) => { e.stopPropagation(); setShowContributeTooltip(false); localStorage.setItem("lemhi-contribute-tooltip-seen", "true"); }}
+                  <button onClick={(e) => { e.stopPropagation(); setShowContributeTooltip(false); localStorage.setItem("lemhi-contribute-tooltip-seen-v2", "true"); }}
                     className="absolute top-2 right-2 text-muted-foreground hover:text-foreground">
                     <X className="w-3.5 h-3.5" />
                   </button>
