@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ChevronRight, Compass, Rocket, Sparkles, Workflow, Infinity as InfinityIcon, ArrowRight, type LucideIcon } from "lucide-react";
+import { ChevronRight, Compass, Rocket, Sparkles, Workflow, Infinity as InfinityIcon, type LucideIcon } from "lucide-react";
 import type { Control } from "@/lib/csv-loader";
 
 type Stage = {
