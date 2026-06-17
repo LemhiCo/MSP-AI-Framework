@@ -13,6 +13,7 @@ import ContributorsTicker from "@/components/ContributorsTicker";
 import MarkdownModal from "@/components/MarkdownModal";
 import ProductTabs from "@/components/ProductTabs";
 import OverviewJourney from "@/components/OverviewJourney";
+import HowItWorksModal from "@/components/HowItWorksModal";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const CA_COLORS: Record<string, string> = {
@@ -77,13 +78,14 @@ const Index = () => {
   const [showContributeTooltip, setShowContributeTooltip] = useState(false);
   const [showContributeModal, setShowContributeModal] = useState(false);
   const [showMagicModal, setShowMagicModal] = useState(false);
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [viewMode, setViewMode] = useState<"overview" | "detailed">("overview");
 
   useEffect(() => {
-    const magicKey = "lemhi-magic-modal-seen";
-    if (signedUp && !localStorage.getItem(magicKey)) {
-      localStorage.setItem(magicKey, "true");
-      setShowMagicModal(true);
+    const introKey = "lemhi-howitworks-seen";
+    if (signedUp && !localStorage.getItem(introKey)) {
+      localStorage.setItem(introKey, "true");
+      setShowHowItWorks(true);
     }
   }, [signedUp]);
 
@@ -169,7 +171,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {!signedUp && <WaitlistGate onComplete={() => { markSignedUp(); setShowMagicModal(true); }} onSkip={markSignedUp} />}
+      {!signedUp && <WaitlistGate onComplete={() => { markSignedUp(); setShowHowItWorks(true); }} onSkip={markSignedUp} />}
       <div className={isMobile ? "" : "min-w-[1200px]"}>
         <ProductTabs active="magic" />
       </div>
@@ -380,6 +382,13 @@ const Index = () => {
 
       <MarkdownModal src="/data/magic.md" open={showMagicModal} onClose={() => setShowMagicModal(false)} icon="✦" title="MAGIC Framework"
         cta={{ label: "View on GitHub", href: "https://github.com/LemhiCo/MSP-AI-Framework/" }} />
+
+      <HowItWorksModal
+        open={showHowItWorks}
+        onClose={() => setShowHowItWorks(false)}
+        onWalkPath={() => { setViewMode("overview"); setShowHowItWorks(false); }}
+        onViewMatrix={() => { setViewMode("detailed"); setShowHowItWorks(false); }}
+      />
     </div>
   );
 };
