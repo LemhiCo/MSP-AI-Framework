@@ -11,7 +11,7 @@ type Stage = {
   outcomes: string[];
   /** Hue (degrees) on the parchment palette */
   hue: number;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   /** Which IG levels from the framework roughly map here (for the sample-controls peek) */
   igMatch: string[];
   roles: {
