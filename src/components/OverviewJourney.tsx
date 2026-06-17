@@ -424,29 +424,6 @@ export default function OverviewJourney({ controls }: { controls: Control[] }) {
         <div className="grid lg:grid-cols-[1fr_320px]">
           {/* Roles + outcomes */}
           <div className="p-5 md:p-8 space-y-6">
-            {/* Lemhi motion */}
-            {active.lemhi && (
-              <div
-                className="rounded-xl p-4 border"
-                style={{
-                  background: `hsl(${active.hue} 40% 97%)`,
-                  borderColor: `hsl(${active.hue} 40% 85%)`,
-                }}
-              >
-                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
-                  <span>Lemhi motion</span>
-                  <span>·</span>
-                  <span style={{ color: `hsl(${active.hue} 55% 35%)` }}>{active.lemhi.step}</span>
-                </div>
-                <p className="font-serif text-base mt-1">
-                  <span className="font-semibold" style={{ color: `hsl(${active.hue} 55% 25%)` }}>
-                    {active.lemhi.artifact}
-                  </span>
-                  <span className="text-foreground/75"> — {active.lemhi.line}</span>
-                </p>
-              </div>
-            )}
-
             {/* Outcomes */}
             <div>
               <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground mb-3">
