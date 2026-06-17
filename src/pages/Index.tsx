@@ -12,6 +12,7 @@ import WaitlistGate, { useWaitlistGate } from "@/components/WaitlistGate";
 import ContributorsTicker from "@/components/ContributorsTicker";
 import MarkdownModal from "@/components/MarkdownModal";
 import ProductTabs from "@/components/ProductTabs";
+import OverviewJourney from "@/components/OverviewJourney";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const CA_COLORS: Record<string, string> = {
@@ -76,6 +77,7 @@ const Index = () => {
   const [showContributeTooltip, setShowContributeTooltip] = useState(false);
   const [showContributeModal, setShowContributeModal] = useState(false);
   const [showMagicModal, setShowMagicModal] = useState(false);
+  const [viewMode, setViewMode] = useState<"overview" | "detailed">("overview");
 
   useEffect(() => {
     const magicKey = "lemhi-magic-modal-seen";
@@ -172,7 +174,40 @@ const Index = () => {
         <ProductTabs active="magic" />
       </div>
 
-      {isMobile ? (
+      {/* View mode toggle */}
+      <div className={`${isMobile ? "" : "min-w-[1200px]"} border-b border-border bg-card/60`}>
+        <div className="flex items-center justify-center gap-1 px-3 py-2">
+          <div className="inline-flex rounded-full border border-border bg-background p-0.5 shadow-sm">
+            <button
+              onClick={() => setViewMode("overview")}
+              className={`text-xs font-medium px-4 py-1.5 rounded-full transition-all ${
+                viewMode === "overview"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Overview
+            </button>
+            <button
+              onClick={() => setViewMode("detailed")}
+              className={`text-xs font-medium px-4 py-1.5 rounded-full transition-all ${
+                viewMode === "detailed"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Detailed Framework
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {viewMode === "overview" ? (
+        <div className={isMobile ? "" : "min-w-[1200px]"}>
+          <OverviewJourney controls={controls} />
+          <ContributorsTicker />
+        </div>
+      ) : isMobile ? (
         <>
           <header className="sticky top-0 z-30 bg-card border-b border-border px-3 py-2 shadow-sm">
             <div className="flex items-center gap-2">
@@ -338,7 +373,7 @@ const Index = () => {
         </>
       )}
 
-      <ContributorsTicker />
+      {viewMode === "detailed" && <ContributorsTicker />}
 
       <MarkdownModal src="/data/contributor.md" open={showContributeModal} onClose={() => setShowContributeModal(false)} icon="🤝" title="Contributing to MAGIC"
         cta={{ label: "Start Contributing", to: "/admin" }} />
