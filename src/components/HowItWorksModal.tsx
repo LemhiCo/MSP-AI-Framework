@@ -57,8 +57,9 @@ export default function HowItWorksModal({ open, onClose, onWalkPath, onViewMatri
             How MSPs <span className="italic">Govern, Secure & Operate</span> AI at scale.
           </h2>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed max-w-2xl">
-            MAGIC is a controls-first framework — not a tool list, not a theory. If CIS Controls made cybersecurity
-            operational for MSPs, MAGIC does the same for AI.
+            MAGIC is the controls-first framework behind Lemhi. If CIS Controls made cybersecurity
+            operational for MSPs, MAGIC does the same for AI — paired with Lemhi's Assess → Present →
+            Deploy → Measure motion so every client gets the same defensible playbook.
           </p>
         </div>
 
@@ -109,10 +110,33 @@ export default function HowItWorksModal({ open, onClose, onWalkPath, onViewMatri
               <div className="rounded-xl border border-border bg-background/60 p-4">
                 <h4 className="font-serif font-semibold text-sm">10 Content Areas</h4>
                 <p className="text-[12px] text-foreground/80 mt-1.5 leading-relaxed">
-                  Strategy, Governance, Technical Readiness, Copilot, Process, Data, Observability,
+                  Strategy, Governance, Technical Readiness, GenAI, Process, Data, Observability,
                   Deployment, People & Skills, and Security.
                 </p>
               </div>
+            </div>
+          </section>
+
+          {/* Lemhi delivery motion */}
+          <section>
+            <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground mb-3">
+              How Lemhi delivers it
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {[
+                { step: "Assess", art: "Survey", line: "5-min per-employee AI readiness" },
+                { step: "Present", art: "Workshop", line: "Branded leadership story" },
+                { step: "Deploy", art: "Planner", line: "Costed 90-day plan" },
+                { step: "Measure", art: "Reports", line: "Prove it and expand" },
+              ].map((s) => (
+                <div key={s.step} className="rounded-xl border border-border bg-background/60 p-3">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                    {s.step}
+                  </div>
+                  <div className="font-serif text-sm font-semibold mt-0.5">{s.art}</div>
+                  <div className="text-[11px] text-foreground/70 leading-snug mt-1">{s.line}</div>
+                </div>
+              ))}
             </div>
           </section>
 
