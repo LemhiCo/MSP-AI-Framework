@@ -14,6 +14,10 @@ type Stage = {
   icon: LucideIcon;
   /** Which IG levels from the framework roughly map here (for the sample-controls peek) */
   igMatch: string[];
+  /** Example tools customers will recognize at this level */
+  tools?: string[];
+  /** The Lemhi artifact / motion that powers this stage */
+  lemhi?: { step: string; artifact: string; line: string };
   roles: {
     title: string;
     focus: string;
@@ -28,30 +32,40 @@ const STAGES: Stage[] = [
     title: "Discovery & Sales",
     tagline: "Earn the right to recommend AI.",
     description:
-      "Before pitching anything AI, you map the customer's risk, readiness, and appetite. The conversation is about their business — not your tooling.",
+      "Before pitching anything AI, you find out where the customer's team actually stands. A five-minute, per-employee AI Readiness Survey turns guesswork into Comfort, Usage and Quality scores, surfaces shadow AI already in the building, and ranks the use cases employees most want help with.",
     outcomes: [
-      "Shared view of where AI fits the customer's strategy",
-      "Honest baseline of governance, data, and skills readiness",
-      "Right-sized starting point everyone signed off on",
+      "Org-level Comfort, Usage & Quality readiness scores",
+      "Shadow-AI footprint named, not guessed at",
+      "Top-ranked use cases with hours-saved estimates",
     ],
     hue: 200,
     icon: Compass,
     igMatch: ["IG1"],
+    tools: ["Lemhi AI Readiness Survey", "Lemhi Workshop deck", "M365 connector"],
+    lemhi: {
+      step: "Assess + Present",
+      artifact: "Survey → Workshop",
+      line: "The survey gathers the truth. The workshop sells the value.",
+    },
     roles: [
       {
         title: "MSP / Advisor",
-        focus: "Diagnose, not demo",
-        moves: ["Run readiness assessment", "Translate risk into business language", "Co-build the roadmap"],
+        focus: "Hold the facts, not the demo",
+        moves: [
+          "Send the Lemhi survey to every desk worker",
+          "Present the branded workshop to leadership",
+          "Frame shadow AI as a risk + revenue conversation",
+        ],
       },
       {
         title: "Internal Champion",
         focus: "Make the case internally",
-        moves: ["Align leadership on outcomes", "Surface real workflows worth changing", "Own the budget conversation"],
+        moves: ["Rally the team to complete the survey", "Align leadership on the readiness story", "Own the budget conversation"],
       },
       {
         title: "End Customer / User",
         focus: "Voice the daily pain",
-        moves: ["Share where time is lost", "Flag tools that already failed", "Sanity-check the promise"],
+        moves: ["Complete the 5-min survey honestly", "Rank the use cases that matter most", "Name the tools already in use"],
       },
     ],
   },
@@ -59,27 +73,33 @@ const STAGES: Stage[] = [
     id: "onboard",
     number: "02",
     title: "Onboard",
-    tagline: "Set the foundation right the first time.",
+    tagline: "Turn the plan into a funded program.",
     description:
-      "Identity, data, policy, and skills get cleaned up before any model touches production data. This is the unglamorous work that decides whether AI succeeds.",
+      "The Lemhi Planner converts survey signal into a costed, phased, governed 90-day plan: Quick Wins, Expanding Impact, Scaling. In parallel, identity, data, policy and AI literacy get hardened so nothing ships into a leaky tenant.",
     outcomes: [
-      "Tenancy, identity, and access hardened",
-      "Data classified and sensitive content protected",
-      "Acceptable-use policy signed and trained on",
+      "Signed 90-day plan with break-even month",
+      "Tenancy, identity & data classification hardened",
+      "Acceptable-use policy live and trained on",
     ],
     hue: 90,
     icon: Rocket,
     igMatch: ["IG1", "IG2"],
+    tools: ["Lemhi Planner", "Executive Summary report", "Tenant baseline + DLP", "AI literacy curriculum"],
+    lemhi: {
+      step: "Deploy",
+      artifact: "Planner → Executive Summary",
+      line: "An assessment becomes a funded, recurring AI practice.",
+    },
     roles: [
       {
         title: "MSP / Advisor",
         focus: "Stand up the guardrails",
-        moves: ["Configure tenant baseline", "Roll out DLP & sensitivity labels", "Document the runbook"],
+        moves: ["Build the Planner with the client", "Configure tenant + DLP + labels", "Name owners and the training model"],
       },
       {
         title: "Internal Champion",
         focus: "Drive adoption of the basics",
-        moves: ["Champion the AUP rollout", "Coordinate training cohorts", "Hold leaders accountable"],
+        moves: ["Sign off as exec sponsor", "Coordinate training cohorts", "Hold leaders accountable to the 90-day plan"],
       },
       {
         title: "End Customer / User",
@@ -92,17 +112,23 @@ const STAGES: Stage[] = [
     id: "generative",
     number: "03",
     title: "Generative AI",
-    tagline: "Make Copilot earn its seat.",
+    tagline: "Make GenAI earn its seat.",
     description:
-      "Copilot, ChatGPT Enterprise, and friends go live with measured prompts, monitored outputs, and a clear list of jobs they're allowed to do.",
+      "Reactive, human-directed tools — ChatGPT, Microsoft 365 GenAI, Google Gemini, Claude, DALL·E — go live with measured prompts, monitored outputs, and a clear list of jobs they're allowed to do. Quick Wins from the Planner ship first, so the team feels payoff in the first 30 days.",
     outcomes: [
-      "Approved generative tools deployed to the right roles",
-      "Prompt library, guardrails, and reviews in place",
-      "First wave of measurable time savings captured",
+      "Approved GenAI tools deployed to the right roles",
+      "Prompt library, guardrails and output reviews live",
+      "First wave of measurable hours-back captured",
     ],
     hue: 25,
     icon: Sparkles,
     igMatch: ["IG3"],
+    tools: ["ChatGPT", "Microsoft 365 GenAI", "Google Gemini", "Claude", "DALL·E", "Line-of-business AI (Hubspot, Salesforce Einstein, Intuit AI)"],
+    lemhi: {
+      step: "Quick Wins",
+      artifact: "Phase 1 of the 90-day plan",
+      line: "Highest-confidence, highest-adoption use cases first.",
+    },
     roles: [
       {
         title: "MSP / Advisor",
@@ -117,7 +143,7 @@ const STAGES: Stage[] = [
       {
         title: "End Customer / User",
         focus: "Build the habit",
-        moves: ["Use Copilot in real workflows", "Flag bad outputs", "Share what saves time"],
+        moves: ["Use GenAI in real workflows", "Flag bad outputs", "Share what saves time"],
       },
     ],
   },
@@ -127,7 +153,7 @@ const STAGES: Stage[] = [
     title: "Agentic AI",
     tagline: "Trust agents to do bounded work.",
     description:
-      "Custom agents take over discrete, well-defined jobs — with logging, evals, and a human still in the loop on anything that touches the customer.",
+      "Multi-step agents plan and execute toward a goal using tools — Microsoft Copilot Studio agents, Claude Cowork, ChatGPT Custom Agents. They take over discrete jobs with logging, evals and a human in the loop on anything customer-facing. This is the Expanding Impact phase of the plan.",
     outcomes: [
       "Custom agents shipped for specific workflows",
       "Evals, audit logs, and human-in-the-loop checks live",
@@ -136,6 +162,12 @@ const STAGES: Stage[] = [
     hue: 280,
     icon: Workflow,
     igMatch: ["IG4"],
+    tools: ["Microsoft Copilot Studio agents", "Claude Cowork", "ChatGPT Custom Agents", "Agent eval harness"],
+    lemhi: {
+      step: "Expanding Impact",
+      artifact: "Phase 2 of the 90-day plan",
+      line: "Broader rollout, governed agents owning real workflows.",
+    },
     roles: [
       {
         title: "MSP / Advisor",
@@ -160,7 +192,7 @@ const STAGES: Stage[] = [
     title: "Autopilot AI",
     tagline: "Operate the business with AI on shift.",
     description:
-      "Multi-agent systems run continuously across functions. Humans set strategy and exception rules; agents handle the steady-state work.",
+      "Fully autonomous systems — Hermes, Microsoft Scout, OpenClaw — run entire processes end-to-end and self-correct. People set the guardrails; the system runs the function. Measure & Expand reports prove it's working and grow the engagement at QBR.",
     outcomes: [
       "Multi-agent orchestration across functions",
       "Continuous evals, governance, and incident response",
@@ -169,6 +201,12 @@ const STAGES: Stage[] = [
     hue: 340,
     icon: InfinityIcon,
     igMatch: ["IG5"],
+    tools: ["Hermes", "Microsoft Scout", "OpenClaw", "Lemhi Measure & Expand dashboards"],
+    lemhi: {
+      step: "Measure & Expand",
+      artifact: "Reports + QBR",
+      line: "Prove it's working and grow the engagement.",
+    },
     roles: [
       {
         title: "MSP / Advisor",
@@ -323,6 +361,29 @@ export default function OverviewJourney({ controls }: { controls: Control[] }) {
         <div className="grid lg:grid-cols-[1fr_320px]">
           {/* Roles + outcomes */}
           <div className="p-5 md:p-8 space-y-6">
+            {/* Lemhi motion */}
+            {active.lemhi && (
+              <div
+                className="rounded-xl p-4 border"
+                style={{
+                  background: `hsl(${active.hue} 40% 97%)`,
+                  borderColor: `hsl(${active.hue} 40% 85%)`,
+                }}
+              >
+                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
+                  <span>Lemhi motion</span>
+                  <span>·</span>
+                  <span style={{ color: `hsl(${active.hue} 55% 35%)` }}>{active.lemhi.step}</span>
+                </div>
+                <p className="font-serif text-base mt-1">
+                  <span className="font-semibold" style={{ color: `hsl(${active.hue} 55% 25%)` }}>
+                    {active.lemhi.artifact}
+                  </span>
+                  <span className="text-foreground/75"> — {active.lemhi.line}</span>
+                </p>
+              </div>
+            )}
+
             {/* Outcomes */}
             <div>
               <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground mb-3">
@@ -340,6 +401,29 @@ export default function OverviewJourney({ controls }: { controls: Control[] }) {
                 ))}
               </ul>
             </div>
+
+            {/* Example tools */}
+            {active.tools && active.tools.length > 0 && (
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground mb-3">
+                  Example tools at this level
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {active.tools.map((t) => (
+                    <span
+                      key={t}
+                      className="text-[11px] px-2.5 py-1 rounded-full border bg-background/60"
+                      style={{
+                        borderColor: `hsl(${active.hue} 40% 80%)`,
+                        color: `hsl(${active.hue} 50% 28%)`,
+                      }}
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Role lanes */}
             <div>
