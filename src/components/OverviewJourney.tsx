@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ChevronRight, Compass, Rocket, Sparkles, Workflow, Infinity as InfinityIcon, ArrowRight } from "lucide-react";
+import { ChevronRight, Compass, Rocket, Sparkles, Workflow, Infinity as InfinityIcon, ArrowRight, type LucideIcon } from "lucide-react";
 import type { Control } from "@/lib/csv-loader";
 
 type Stage = {
@@ -11,7 +11,7 @@ type Stage = {
   outcomes: string[];
   /** Hue (degrees) on the parchment palette */
   hue: number;
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  icon: LucideIcon;
   /** Which IG levels from the framework roughly map here (for the sample-controls peek) */
   igMatch: string[];
   roles: {
