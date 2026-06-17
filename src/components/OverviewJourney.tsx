@@ -227,6 +227,95 @@ const STAGES: Stage[] = [
   },
 ];
 
+// Maps a journey stage to its position on the Levels of AI pyramid (L1/L2/L3).
+// Discovery & Onboard sit at the foundation (no tier highlighted).
+const STAGE_TO_LEVEL: Record<string, 0 | 1 | 2 | 3> = {
+  discovery: 0,
+  onboard: 0,
+  generative: 1,
+  agentic: 2,
+  autopilot: 3,
+};
+
+function LevelsOfAIPyramid({ stageId, hue }: { stageId: string; hue: number }) {
+  const level = STAGE_TO_LEVEL[stageId] ?? 0;
+  const tiers = [
+    { id: 3, label: "L3", name: "Autopilot", y: 12, x1: 78, x2: 122 },
+    { id: 2, label: "L2", name: "Agentic", y: 38, x1: 62, x2: 138 },
+    { id: 1, label: "L1", name: "Generative", y: 64, x1: 46, x2: 154 },
+  ];
+  const activeFill = `hsl(${hue} 55% 38%)`;
+  const inactiveFill = `hsl(${hue} 25% 82%)`;
+  const inactiveStroke = `hsl(${hue} 30% 72%)`;
+
+  return (
+    <div className="hidden md:flex flex-col items-end flex-shrink-0 ml-2">
+      <span className="text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-1.5">
+        Levels of AI
+      </span>
+      <svg width="148" height="92" viewBox="0 0 200 92" className="overflow-visible">
+        {/* Increasing autonomy axis */}
+        <g>
+          <line x1="14" y1="84" x2="14" y2="14" stroke={inactiveStroke} strokeWidth="1" strokeDasharray="2 2" />
+          <polygon points="14,8 11,14 17,14" fill={inactiveStroke} />
+          <text
+            x="6"
+            y="50"
+            transform="rotate(-90 6 50)"
+            fontSize="6.5"
+            fill="currentColor"
+            className="text-muted-foreground"
+            letterSpacing="1"
+            fontFamily="ui-monospace, monospace"
+          >
+            AUTONOMY
+          </text>
+        </g>
+        {tiers.map((t) => {
+          const isActive = t.id === level;
+          const isDim = level !== 0 && !isActive;
+          return (
+            <g key={t.id} opacity={isDim ? 0.55 : 1}>
+              <polygon
+                points={`${t.x1},${t.y + 22} ${t.x2},${t.y + 22} ${t.x2 - 8},${t.y} ${t.x1 + 8},${t.y}`}
+                fill={isActive ? activeFill : inactiveFill}
+                stroke={isActive ? activeFill : inactiveStroke}
+                strokeWidth="1"
+                style={{ transition: "all 350ms ease" }}
+              />
+              <text
+                x={(t.x1 + t.x2) / 2}
+                y={t.y + 14}
+                textAnchor="middle"
+                fontSize="8"
+                fontWeight="700"
+                fill={isActive ? "white" : `hsl(${hue} 40% 32%)`}
+                fontFamily="ui-monospace, monospace"
+                letterSpacing="0.5"
+              >
+                {t.label}
+              </text>
+              {isActive && (
+                <text
+                  x={t.x2 + 8}
+                  y={t.y + 15}
+                  fontSize="8"
+                  fontWeight="600"
+                  fill={activeFill}
+                  fontFamily="ui-monospace, monospace"
+                  letterSpacing="0.5"
+                >
+                  {t.name.toUpperCase()}
+                </text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
 export default function OverviewJourney({ controls }: { controls: Control[] }) {
   const [activeId, setActiveId] = useState<string>(STAGES[0].id);
   const active = STAGES.find((s) => s.id === activeId) ?? STAGES[0];
