@@ -76,7 +76,7 @@ const STAGES: Stage[] = [
     ],
     hue: 90,
     icon: Rocket,
-    igMatch: ["IG1", "IG2"],
+    igMatch: ["IG2"],
     tools: ["90-day plan", "Executive summary", "Tenant baseline + DLP", "AI literacy curriculum"],
     roles: [
       {
