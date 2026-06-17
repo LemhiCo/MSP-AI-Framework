@@ -210,81 +210,45 @@ const STAGE_TO_LEVEL: Record<string, 0 | 1 | 2 | 3> = {
   autopilot: 3,
 };
 
-function LevelsOfAIPyramid({ stageId, hue }: { stageId: string; hue: number }) {
+function LevelsOfAIChip({ stageId, hue }: { stageId: string; hue: number }) {
   const level = STAGE_TO_LEVEL[stageId] ?? 0;
   const tiers = [
-    { id: 3, label: "L3", name: "Autopilot", y: 12, x1: 78, x2: 122 },
-    { id: 2, label: "L2", name: "Agentic", y: 38, x1: 62, x2: 138 },
-    { id: 1, label: "L1", name: "Generative", y: 64, x1: 46, x2: 154 },
+    { id: 1, label: "L1", name: "Generative" },
+    { id: 2, label: "L2", name: "Agentic" },
+    { id: 3, label: "L3", name: "Autopilot" },
   ];
-  const activeFill = `hsl(${hue} 55% 38%)`;
-  const inactiveFill = `hsl(${hue} 25% 82%)`;
-  const inactiveStroke = `hsl(${hue} 30% 72%)`;
-
+  const activeName = tiers.find((t) => t.id === level)?.name;
   return (
-    <div className="hidden md:flex flex-col items-end flex-shrink-0 ml-2">
-      <span className="text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-1.5">
-        Levels of AI
+    <div className="inline-flex items-center gap-1.5 flex-shrink-0">
+      <span className="text-[9px] font-mono uppercase tracking-[0.15em] text-muted-foreground hidden sm:inline">
+        AI level
       </span>
-      <svg width="148" height="92" viewBox="0 0 200 92" className="overflow-visible">
-        {/* Increasing autonomy axis */}
-        <g>
-          <line x1="14" y1="84" x2="14" y2="14" stroke={inactiveStroke} strokeWidth="1" strokeDasharray="2 2" />
-          <polygon points="14,8 11,14 17,14" fill={inactiveStroke} />
-          <text
-            x="6"
-            y="50"
-            transform="rotate(-90 6 50)"
-            fontSize="6.5"
-            fill="currentColor"
-            className="text-muted-foreground"
-            letterSpacing="1"
-            fontFamily="ui-monospace, monospace"
-          >
-            AUTONOMY
-          </text>
-        </g>
+      <div className="inline-flex rounded-full border bg-background/70 p-0.5" style={{ borderColor: `hsl(${hue} 40% 80%)` }}>
         {tiers.map((t) => {
           const isActive = t.id === level;
-          const isDim = level !== 0 && !isActive;
           return (
-            <g key={t.id} opacity={isDim ? 0.55 : 1}>
-              <polygon
-                points={`${t.x1},${t.y + 22} ${t.x2},${t.y + 22} ${t.x2 - 8},${t.y} ${t.x1 + 8},${t.y}`}
-                fill={isActive ? activeFill : inactiveFill}
-                stroke={isActive ? activeFill : inactiveStroke}
-                strokeWidth="1"
-                style={{ transition: "all 350ms ease" }}
-              />
-              <text
-                x={(t.x1 + t.x2) / 2}
-                y={t.y + 14}
-                textAnchor="middle"
-                fontSize="8"
-                fontWeight="700"
-                fill={isActive ? "white" : `hsl(${hue} 40% 32%)`}
-                fontFamily="ui-monospace, monospace"
-                letterSpacing="0.5"
-              >
-                {t.label}
-              </text>
-              {isActive && (
-                <text
-                  x={t.x2 + 8}
-                  y={t.y + 15}
-                  fontSize="8"
-                  fontWeight="600"
-                  fill={activeFill}
-                  fontFamily="ui-monospace, monospace"
-                  letterSpacing="0.5"
-                >
-                  {t.name.toUpperCase()}
-                </text>
-              )}
-            </g>
+            <span
+              key={t.id}
+              className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded-full transition-colors"
+              style={{
+                background: isActive ? `hsl(${hue} 55% 40%)` : "transparent",
+                color: isActive ? "white" : `hsl(${hue} 30% 45%)`,
+                opacity: level === 0 ? 0.5 : isActive ? 1 : 0.5,
+              }}
+            >
+              {t.label}
+            </span>
           );
         })}
-      </svg>
+      </div>
+      {activeName && (
+        <span
+          className="text-[10px] font-mono uppercase tracking-wider hidden md:inline"
+          style={{ color: `hsl(${hue} 50% 32%)` }}
+        >
+          {activeName}
+        </span>
+      )}
     </div>
   );
 }
