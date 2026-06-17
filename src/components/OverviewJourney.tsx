@@ -111,7 +111,7 @@ const STAGES: Stage[] = [
     hue: 25,
     icon: Sparkles,
     igMatch: ["IG3"],
-    tools: ["ChatGPT", "Microsoft 365 GenAI", "Google Gemini", "Claude", "DALL·E", "Line-of-business AI (Hubspot, Salesforce Einstein, Intuit AI)"],
+    tools: ["ChatGPT", "Microsoft 365 GenAI", "Google Gemini", "Claude", "DALL·E"],
     roles: [
       {
         title: "MSP / Advisor",
@@ -145,7 +145,7 @@ const STAGES: Stage[] = [
     hue: 280,
     icon: Workflow,
     igMatch: ["IG4"],
-    tools: ["Microsoft Copilot Studio agents", "Claude Cowork", "ChatGPT Custom Agents", "Agent eval harness"],
+    tools: ["Microsoft Copilot Studio agents", "Claude Cowork", "ChatGPT Custom Agents"],
     roles: [
       {
         title: "MSP / Advisor",
@@ -179,7 +179,7 @@ const STAGES: Stage[] = [
     hue: 340,
     icon: InfinityIcon,
     igMatch: ["IG5"],
-    tools: ["Hermes", "Microsoft Scout", "OpenClaw", "Measurement dashboards"],
+    tools: ["Hermes", "Microsoft Scout", "OpenClaw"],
     roles: [
       {
         title: "MSP / Advisor",
