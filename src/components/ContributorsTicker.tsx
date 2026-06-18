@@ -26,7 +26,7 @@ export default function ContributorsTicker() {
       <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1 shrink-0">
         <Heart className="w-2.5 h-2.5 text-destructive" /> Contributors
       </span>
-      <div className="flex items-center gap-3 overflow-x-auto">
+      <div className="flex items-center gap-3 overflow-x-auto scrollbar-tan">
         {contributors.map((c) => (
           <a
             key={c.handle}
