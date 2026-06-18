@@ -29,11 +29,16 @@ export default function ProductTabs({ active = "magic" }: { active?: string }) {
   }, []);
 
   const currentHost = typeof window !== "undefined" ? window.location.hostname.replace(/^www\./, "") : "";
+  const orderedTabs = [...tabs].sort((a, b) => {
+    const aIsMagic = a.name.toLowerCase().includes("magic");
+    const bIsMagic = b.name.toLowerCase().includes("magic");
+    return Number(aIsMagic) - Number(bIsMagic);
+  });
 
   return (
-    <nav className="w-full bg-white border-b border-border relative z-50 overflow-x-auto">
-      <div className="flex items-center gap-4 sm:gap-8 px-4 sm:px-8 flex-nowrap whitespace-nowrap">
-        {tabs.map((t) => {
+    <nav className="w-full bg-white border-b border-border relative z-50 overflow-hidden">
+      <div className="flex items-center justify-end gap-4 sm:gap-8 px-4 sm:px-8 flex-nowrap whitespace-nowrap">
+        {orderedTabs.map((t) => {
           const tabHost = hostOf(t.url);
           const isActive = currentHost
             ? tabHost === currentHost
