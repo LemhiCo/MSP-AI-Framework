@@ -184,7 +184,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen bg-background ${viewMode === "detailed" && !isMobile ? "" : "overflow-x-clip"}`}>
       {!signedUp && <WaitlistGate onComplete={() => { markSignedUp(); setShowHowItWorks(true); }} onSkip={markSignedUp} />}
       <div className={isMobile ? "" : "min-w-[1200px]"}>
         <ProductTabs active="magic" />
