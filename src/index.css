@@ -238,3 +238,24 @@ body::before {
 .md-content .md-section em {
   color: hsl(var(--muted-foreground));
 }
+
+/* Branded tan scrollbar for horizontal nav rails */
+.scrollbar-tan {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--accent-orange) / 0.55) hsl(var(--secondary) / 0.6);
+}
+.scrollbar-tan::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.scrollbar-tan::-webkit-scrollbar-track {
+  background: hsl(var(--secondary) / 0.5);
+  border-radius: 9999px;
+}
+.scrollbar-tan::-webkit-scrollbar-thumb {
+  background: hsl(var(--accent-orange) / 0.55);
+  border-radius: 9999px;
+}
+.scrollbar-tan::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--accent-orange) / 0.8);
+}
