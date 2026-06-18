@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { ChevronRight, Compass, Rocket, Sparkles, Workflow, Infinity as InfinityIcon, type LucideIcon } from "lucide-react";
 import type { Control } from "@/lib/csv-loader";
 
@@ -256,6 +256,18 @@ function LevelsOfAIChip({ stageId, hue }: { stageId: string; hue: number }) {
 export default function OverviewJourney({ controls }: { controls: Control[] }) {
   const [activeId, setActiveId] = useState<string>(STAGES[0].id);
   const active = STAGES.find((s) => s.id === activeId) ?? STAGES[0];
+  const railRef = useRef<HTMLDivElement>(null);
+  const nodeRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  useEffect(() => {
+    const rail = railRef.current;
+    const node = nodeRefs.current[activeId];
+    if (!rail || !node) return;
+    // Only auto-center on mobile (rail is horizontally scrollable)
+    if (rail.scrollWidth <= rail.clientWidth) return;
+    const target = node.offsetLeft - rail.clientWidth / 2 + node.offsetWidth / 2;
+    rail.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
+  }, [activeId]);
 
   const sampleControls = useMemo(() => {
     return controls
@@ -280,13 +292,14 @@ export default function OverviewJourney({ controls }: { controls: Control[] }) {
       <div className="relative -mx-3 md:mx-0">
         <div className="md:hidden absolute top-[22px] left-0 right-0 h-px bg-border/60" />
         <div className="hidden md:block absolute top-[22px] left-[6%] right-[6%] h-px bg-border/60" />
-        <div className="flex md:grid md:grid-cols-5 gap-1 md:gap-2 overflow-x-auto md:overflow-visible snap-x snap-mandatory px-3 md:px-0 pb-1 scrollbar-none">
+        <div ref={railRef} className="flex md:grid md:grid-cols-5 gap-1 md:gap-2 overflow-x-auto md:overflow-visible snap-x snap-mandatory px-3 md:px-0 pb-1 scrollbar-none scroll-smooth">
           {STAGES.map((s) => {
             const isActive = s.id === activeId;
             const Icon = s.icon;
             return (
               <button
                 key={s.id}
+                ref={(el) => { nodeRefs.current[s.id] = el; }}
                 onClick={() => setActiveId(s.id)}
                 className="group relative flex flex-col items-center text-center pt-1 pb-2 snap-center flex-shrink-0 w-[110px] md:w-auto transition-all"
               >
