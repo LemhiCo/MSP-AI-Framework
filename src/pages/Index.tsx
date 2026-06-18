@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { Search, Download, X, Heart, ExternalLink, ArrowRight, SlidersHorizontal } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
 import MobileControlList from "@/components/MobileControlList";
 import MobileDetailSheet from "@/components/MobileDetailSheet";
@@ -82,7 +83,7 @@ const Index = () => {
   const [viewMode, setViewMode] = useState<"overview" | "detailed">("overview");
 
   useEffect(() => {
-    const introKey = "lemhi-howitworks-seen-v2";
+    const introKey = "lemhi-howitworks-seen-v3";
     if (signedUp && !localStorage.getItem(introKey)) {
       localStorage.setItem(introKey, "true");
       setShowHowItWorks(true);
@@ -90,12 +91,29 @@ const Index = () => {
   }, [signedUp]);
 
   useEffect(() => {
-    const contribKey = "lemhi-contribute-tooltip-seen-v2";
+    const contribKey = "lemhi-contribute-tooltip-seen-v3";
     if (!localStorage.getItem(contribKey)) {
       const t = setTimeout(() => setShowContributeTooltip(true), 2000);
       return () => clearTimeout(t);
     }
   }, []);
+
+  // Nudge users from Overview into the full framework view
+  useEffect(() => {
+    if (!signedUp) return;
+    if (viewMode !== "overview") return;
+    const t = setTimeout(() => {
+      toast("See every control, card by card", {
+        description: "Open the Detailed Framework to browse all safeguards and exactly what to do for each.",
+        duration: 8000,
+        action: {
+          label: "Open framework",
+          onClick: () => setViewMode("detailed"),
+        },
+      });
+    }, 1200);
+    return () => clearTimeout(t);
+  }, [signedUp, viewMode]);
 
   // Filter state
   const [lifecycleFilter, setLifecycleFilter] = useState<Set<string>>(new Set());
