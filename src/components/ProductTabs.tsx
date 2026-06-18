@@ -31,8 +31,8 @@ export default function ProductTabs({ active = "magic" }: { active?: string }) {
   const currentHost = typeof window !== "undefined" ? window.location.hostname.replace(/^www\./, "") : "";
 
   return (
-    <nav className="w-full bg-white border-b border-border relative z-50">
-      <div className="flex items-center gap-4 sm:gap-8 px-4 sm:px-8 flex-wrap">
+    <nav className="w-full bg-white border-b border-border relative z-50 overflow-x-auto">
+      <div className="flex items-center gap-4 sm:gap-8 px-4 sm:px-8 flex-nowrap whitespace-nowrap">
         {tabs.map((t) => {
           const tabHost = hostOf(t.url);
           const isActive = currentHost
