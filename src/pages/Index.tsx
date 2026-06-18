@@ -1,7 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { Search, Download, X, Heart, ExternalLink, ArrowRight, SlidersHorizontal } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
 import MobileControlList from "@/components/MobileControlList";
 import MobileDetailSheet from "@/components/MobileDetailSheet";
@@ -81,6 +80,7 @@ const Index = () => {
   const [showMagicModal, setShowMagicModal] = useState(false);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [viewMode, setViewMode] = useState<"overview" | "detailed">("overview");
+  const [showDetailedTooltip, setShowDetailedTooltip] = useState(false);
 
   useEffect(() => {
     const introKey = "lemhi-howitworks-seen-v3";
@@ -98,20 +98,16 @@ const Index = () => {
     }
   }, []);
 
-  // Nudge users from Overview into the full framework view
+  // Nudge users from Overview into the full framework view via a floating tooltip
   useEffect(() => {
     if (!signedUp) return;
-    if (viewMode !== "overview") return;
-    const t = setTimeout(() => {
-      toast("See every control, card by card", {
-        description: "Open the Detailed Framework to browse all safeguards and exactly what to do for each.",
-        duration: 8000,
-        action: {
-          label: "Open framework",
-          onClick: () => setViewMode("detailed"),
-        },
-      });
-    }, 1200);
+    const seenKey = "lemhi-detailed-tooltip-seen-v1";
+    if (viewMode !== "overview") {
+      setShowDetailedTooltip(false);
+      return;
+    }
+    if (localStorage.getItem(seenKey)) return;
+    const t = setTimeout(() => setShowDetailedTooltip(true), 1200);
     return () => clearTimeout(t);
   }, [signedUp, viewMode]);
 
@@ -208,16 +204,50 @@ const Index = () => {
             >
               Overview
             </button>
-            <button
-              onClick={() => setViewMode("detailed")}
-              className={`text-xs font-medium px-4 py-1.5 rounded-full transition-all ${
-                viewMode === "detailed"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Detailed Framework
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setViewMode("detailed");
+                  setShowDetailedTooltip(false);
+                  localStorage.setItem("lemhi-detailed-tooltip-seen-v1", "true");
+                }}
+                className={`text-xs font-medium px-4 py-1.5 rounded-full transition-all ${
+                  viewMode === "detailed"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Detailed Framework
+              </button>
+
+              {showDetailedTooltip && (
+                <div
+                  className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-72 bg-card border border-border rounded-xl shadow-2xl p-4 z-50 animate-fade-up"
+                  style={{ animationDuration: "300ms" }}
+                >
+                  <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-card border-l border-t border-border rotate-45" />
+                  <div className="flex items-start gap-2">
+                    <span className="text-lg">🗂️</span>
+                    <div>
+                      <p className="text-sm font-semibold">See every control, card by card</p>
+                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                        Open the Detailed Framework to browse every safeguard and exactly what to do for each.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowDetailedTooltip(false);
+                      localStorage.setItem("lemhi-detailed-tooltip-seen-v1", "true");
+                    }}
+                    className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
