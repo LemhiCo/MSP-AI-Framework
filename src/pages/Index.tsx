@@ -1,7 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { Search, Download, X, Heart, ExternalLink, ArrowRight, SlidersHorizontal } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import ControlDetailPanel from "@/components/ControlDetailPanel";
 import MobileControlList from "@/components/MobileControlList";
 import MobileDetailSheet from "@/components/MobileDetailSheet";
@@ -81,6 +80,7 @@ const Index = () => {
   const [showMagicModal, setShowMagicModal] = useState(false);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [viewMode, setViewMode] = useState<"overview" | "detailed">("overview");
+  const [showDetailedTooltip, setShowDetailedTooltip] = useState(false);
 
   useEffect(() => {
     const introKey = "lemhi-howitworks-seen-v3";
@@ -98,20 +98,16 @@ const Index = () => {
     }
   }, []);
 
-  // Nudge users from Overview into the full framework view
+  // Nudge users from Overview into the full framework view via a floating tooltip
   useEffect(() => {
     if (!signedUp) return;
-    if (viewMode !== "overview") return;
-    const t = setTimeout(() => {
-      toast("See every control, card by card", {
-        description: "Open the Detailed Framework to browse all safeguards and exactly what to do for each.",
-        duration: 8000,
-        action: {
-          label: "Open framework",
-          onClick: () => setViewMode("detailed"),
-        },
-      });
-    }, 1200);
+    const seenKey = "lemhi-detailed-tooltip-seen-v1";
+    if (viewMode !== "overview") {
+      setShowDetailedTooltip(false);
+      return;
+    }
+    if (localStorage.getItem(seenKey)) return;
+    const t = setTimeout(() => setShowDetailedTooltip(true), 1200);
     return () => clearTimeout(t);
   }, [signedUp, viewMode]);
 
