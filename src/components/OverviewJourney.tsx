@@ -375,7 +375,7 @@ export default function OverviewJourney({ controls }: { controls: Control[] }) {
         </div>
 
         {/* Body */}
-        <div className="grid lg:grid-cols-[1fr_280px]">
+        <div className="grid xl:grid-cols-[1fr_260px]">
           {/* Roles + outcomes */}
           <div className="p-4 md:p-6 space-y-5">
             {/* Outcomes */}
@@ -456,7 +456,7 @@ export default function OverviewJourney({ controls }: { controls: Control[] }) {
 
           {/* Sample controls */}
           <aside
-            className="border-t lg:border-t-0 lg:border-l p-4 md:p-5 bg-background/40"
+            className="border-t xl:border-t-0 xl:border-l p-4 md:p-5 bg-background/40"
             style={{ borderColor: `hsl(${active.hue} 40% 85%)` }}
           >
             <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground mb-2">
