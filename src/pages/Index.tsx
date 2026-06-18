@@ -186,12 +186,12 @@ const Index = () => {
   return (
     <div className={`min-h-screen bg-background ${viewMode === "detailed" && !isMobile ? "" : "overflow-x-clip"}`}>
       {!signedUp && <WaitlistGate onComplete={() => { markSignedUp(); setShowHowItWorks(true); }} onSkip={markSignedUp} />}
-      <div className={isMobile ? "" : "min-w-[1200px]"}>
+      <div className={isMobile || viewMode === "overview" ? "" : "min-w-[1200px]"}>
         <ProductTabs active="magic" />
       </div>
 
       {/* View mode toggle */}
-      <div className={`${isMobile ? "" : "min-w-[1200px]"} border-b border-border bg-card/60`}>
+      <div className={`${isMobile || viewMode === "overview" ? "" : "min-w-[1200px]"} border-b border-border bg-card/60`}>
         <div className="relative flex items-center justify-center gap-1 px-3 py-2">
           <div className="inline-flex rounded-full border border-border bg-background p-0.5 shadow-sm">
             <button
@@ -251,7 +251,7 @@ const Index = () => {
       </div>
 
       {viewMode === "overview" ? (
-        <div className={isMobile ? "" : "min-w-[1200px]"}>
+        <div>
           <OverviewJourney controls={controls} />
           <ContributorsTicker />
         </div>
