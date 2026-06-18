@@ -259,3 +259,24 @@ body::before {
 .scrollbar-tan::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--accent-orange) / 0.8);
 }
+
+/* Branded tan scrollbar applied globally to the page */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--accent-orange) / 0.55) hsl(var(--secondary) / 0.6);
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--secondary) / 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--accent-orange) / 0.55);
+  border-radius: 9999px;
+  border: 2px solid hsl(var(--secondary) / 0.5);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--accent-orange) / 0.8);
+}
