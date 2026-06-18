@@ -27,7 +27,7 @@ const STAGES: Stage[] = [
   {
     id: "discovery",
     number: "01",
-    title: "Discovery & Sales",
+    title: "Discovery",
     tagline: "Earn the right to recommend AI.",
     description:
       "Before pitching anything AI, find out where the team actually stands. A quick per-employee readiness pulse turns guesswork into Comfort, Usage and Quality scores, surfaces shadow AI already in the building, and ranks the use cases employees most want help with — so the conversation is about their business, not your tooling.",
@@ -292,7 +292,7 @@ export default function OverviewJourney({ controls }: { controls: Control[] }) {
       <div className="relative -mx-3 md:mx-0">
         <div className="md:hidden absolute top-[22px] left-0 right-0 h-px bg-border/60" />
         <div className="hidden md:block absolute top-[22px] left-[6%] right-[6%] h-px bg-border/60" />
-        <div ref={railRef} className="flex md:grid md:grid-cols-5 gap-1 md:gap-2 overflow-x-auto md:overflow-visible snap-x snap-mandatory px-3 md:px-0 pb-1 scrollbar-none scroll-smooth">
+        <div ref={railRef} className="flex md:grid md:grid-cols-5 gap-1 md:gap-2 overflow-x-auto md:overflow-visible snap-x snap-mandatory px-3 md:px-0 pb-2 scrollbar-tan scroll-smooth">
           {STAGES.map((s) => {
             const isActive = s.id === activeId;
             const Icon = s.icon;
