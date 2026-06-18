@@ -192,7 +192,7 @@ const Index = () => {
 
       {/* View mode toggle */}
       <div className={`${isMobile ? "" : "min-w-[1200px]"} border-b border-border bg-card/60`}>
-        <div className="flex items-center justify-center gap-1 px-3 py-2">
+        <div className="relative flex items-center justify-center gap-1 px-3 py-2">
           <div className="inline-flex rounded-full border border-border bg-background p-0.5 shadow-sm">
             <button
               onClick={() => setViewMode("overview")}
@@ -204,8 +204,7 @@ const Index = () => {
             >
               Overview
             </button>
-            <div className="relative">
-              <button
+            <button
                 onClick={() => {
                   setViewMode("detailed");
                   setShowDetailedTooltip(false);
@@ -219,36 +218,35 @@ const Index = () => {
               >
                 Detailed Framework
               </button>
-
-              {showDetailedTooltip && (
-                <div
-                  className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-72 bg-card border border-border rounded-xl shadow-2xl p-4 z-50 animate-fade-up"
-                  style={{ animationDuration: "300ms" }}
-                >
-                  <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-card border-l border-t border-border rotate-45" />
-                  <div className="flex items-start gap-2">
-                    <span className="text-lg">🗂️</span>
-                    <div>
-                      <p className="text-sm font-semibold">See every control, card by card</p>
-                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                        Open the Detailed Framework to browse every safeguard and exactly what to do for each.
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowDetailedTooltip(false);
-                      localStorage.setItem("lemhi-detailed-tooltip-seen-v1", "true");
-                    }}
-                    className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
+
+          {showDetailedTooltip && (
+            <div
+              className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[min(18rem,calc(100vw-1rem))] bg-card border border-border rounded-xl shadow-2xl p-4 z-50 animate-fade-up"
+              style={{ animationDuration: "300ms" }}
+            >
+              <div className="absolute -top-1.5 left-[75%] -translate-x-1/2 w-3 h-3 bg-card border-l border-t border-border rotate-45" />
+              <div className="flex items-start gap-2 pr-5">
+                <span className="text-lg">🗂️</span>
+                <div>
+                  <p className="text-sm font-semibold">See every control, card by card</p>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    Open the Detailed Framework to browse every safeguard and exactly what to do for each.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowDetailedTooltip(false);
+                  localStorage.setItem("lemhi-detailed-tooltip-seen-v1", "true");
+                }}
+                className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
