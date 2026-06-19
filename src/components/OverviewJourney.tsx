@@ -355,11 +355,11 @@ export default function OverviewJourney({ controls }: { controls: Control[] }) {
             borderColor: `hsl(${active.hue} 40% 85%)`,
           }}
         >
-          <div className="flex items-center justify-between gap-3 mb-2">
-            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground min-w-0">
-              <span>Stage {active.number}</span>
-              <span>·</span>
-              <span className="truncate">{active.tagline}</span>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 mb-2">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] font-mono uppercase tracking-wider text-muted-foreground min-w-0">
+              <span className="shrink-0">Stage {active.number}</span>
+              <span className="shrink-0 hidden sm:inline">·</span>
+              <span className="min-w-0 break-words">{active.tagline}</span>
             </div>
             <LevelsOfAIChip stageId={active.id} hue={active.hue} />
           </div>
