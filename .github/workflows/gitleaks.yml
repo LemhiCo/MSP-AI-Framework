@@ -1,0 +1,63 @@
+name: Secret scanning
+
+on:
+  pull_request:
+    branches: [main]
+  merge_group:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  gitleaks:
+    name: Detect secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run gitleaks
+        id: gitleaks
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(gh release view --repo gitleaks/gitleaks --json tagName -q '.tagName' | sed 's/^v//')
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${version}/gitleaks_${version}_linux_x64.tar.gz" \
+            | tar -xz -C /usr/local/bin gitleaks
+          if [ -n "$BASE_SHA" ]; then
+            gitleaks detect --source . --log-opts "${BASE_SHA}..${HEAD_SHA}" --exit-code 1
+          else
+            gitleaks detect --source . --log-opts "HEAD~1..HEAD" --exit-code 1
+          fi
+        continue-on-error: true
+
+      - name: Alert security owner
+        if: steps.gitleaks.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            if (!context.payload.pull_request) return;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: [
+                '## ⚠️ Secret detected — immediate action required',
+                '',
+                'Gitleaks found a potential secret in this PR.',
+                '',
+                '**@Alexgoodman7** — review immediately per the [incident response runbook](https://github.com/LemhiCo/lemhi-infra/blob/main/docs/shared/github-secret-scanning.md#incident-response).',
+                '',
+                `Actor: \`${context.actor}\``,
+                `Branch: \`${context.payload.pull_request.head.ref}\``,
+                `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              ].join('\n')
+            });
+
+      - name: Fail if secrets found
+        if: steps.gitleaks.outcome == 'failure'
+        run: exit 1
