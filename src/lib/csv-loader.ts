@@ -59,7 +59,7 @@ export const IG_LEVELS = ["IG1", "IG2", "IG3", "IG4", "IG5"] as const;
 
 export const IG_META: Record<string, { label: string; name: string; sub: string }> = {
   IG1: { label: "1 – Critical Foundation", name: "Critical Foundation", sub: "Before any AI tool is enabled" },
-  IG2: { label: "2 – Platform Prerequisites", name: "Platform Prerequisites", sub: "Before Copilot or first agent" },
+  IG2: { label: "2 – Platform Prerequisites", name: "Platform Prerequisites", sub: "Before the tool of choice or first agent" },
   IG3: { label: "3 – Operational", name: "Operational", sub: "Once AI is live & managed" },
   IG4: { label: "4 – Advanced Configuration", name: "Advanced Configuration", sub: "Custom agents & hardening" },
   IG5: { label: "5 – Agentic Enterprise Readiness", name: "Agentic Enterprise Readiness", sub: "Autonomous agentic AI" },
@@ -71,7 +71,7 @@ export const CONTENT_AREAS = [
   { id: "SKL", name: "People & Skills", color: "var(--ca-skl)" },
   { id: "GOV", name: "Policy & Governance", color: "var(--ca-gov)" },
   { id: "TEC", name: "Technical Readiness", color: "var(--ca-tec)" },
-  { id: "CPL", name: "Copilot Readiness", color: "var(--ca-cpl)" },
+  { id: "TRD", name: "Tool Readiness", color: "var(--ca-trd)" },
   { id: "PRC", name: "Process Mapping", color: "var(--ca-prc)" },
   { id: "DAT", name: "Data Security & Tagging", color: "var(--ca-dat)" },
   { id: "OBS", name: "AI Observability", color: "var(--ca-obs)" },

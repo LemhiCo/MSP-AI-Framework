@@ -68,13 +68,24 @@ The framework uses five Implementation Guards (IGs) to sequence controls from ba
 | **Strategy & Buy-In** | STR | Executive ownership, use-case prioritization, roadmap |
 | **Policy & Governance** | GOV | Policy lifecycle, approval workflows, accountability |
 | **Technical Readiness** | TEC | Identity, access, environment, and platform hygiene |
-| **Copilot Readiness** | CPL | Microsoft Copilot-specific controls, agents, and guardrails |
+| **Tool Readiness** | TRD | Tool-agnostic controls that take the chosen AI tool from choice to daily use: Tool Choice, Tool Secure, Tool Configure, Tool Enable |
 | **Process Mapping** | PRC | Workflow integration, incident response, change management |
 | **Data Security & Tagging** | DAT | Classification, oversharing, data boundary enforcement |
 | **AI Observability** | OBS | Monitoring, drift detection, audit, and reporting |
 | **AI Tooling & Deployment** | DEP | Staged rollout, service management, rollback |
 | **People & Skills** | SKL | AI literacy, role-based training, champions, capability gates |
 | **Security** | REG | Regulatory mapping, compliance calendars, audit trails for regulated workflows |
+
+### Tool Readiness: the tool pipeline
+
+Tool Readiness replaces a single-vendor category. Every control in it works the same whether the customer picks Claude, Microsoft Copilot, ChatGPT, or Gemini. A control names the outcome and the evidence, not one vendor's setting name. The controls follow four steps, in order:
+
+| Step | What it does | Example controls |
+|---|---|---|
+| **Tool Choice** | Pick one general-purpose tool of choice, model the licences, cancel overlapping subscriptions, and control spend | Tool of choice decision, overlapping AI subscriptions consolidated, usage-based and API spend governance |
+| **Tool Secure** | Match access to roles and review what is already connected before anything new is added. Any tool needs the same cleanup | Audit and usage reporting baseline, agent and plugin access baseline, AI meeting notes and transcription policy |
+| **Tool Configure** | Wire the business systems into the tool of choice and scope what it can search. Skip this and the customer has a chatbot | Business systems connected to the tool of choice, default-deny search scope, document-store search allow-list |
+| **Tool Enable** | Launch with a sponsor-led kickoff and train people on the tool they actually have | Adoption kickoff session, training curriculum on the tool of choice, app deployment and visibility by cohort |
 
 ---
 

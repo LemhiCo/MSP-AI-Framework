@@ -99,7 +99,7 @@ export default function DashboardOverview() {
           <Principle title="Design Focus" text="Every safeguard is written from the perspective of a single customer environment." />
           <Principle title="Rollout Principle" text="No broad deployment until IG1 (Critical Foundation) safeguards are complete." />
           <Principle title="5 Implementation Guards" text="Controls sequence from Critical Foundation through Agentic Enterprise Readiness." />
-          <Principle title="9 Content Areas" text="Strategy, People & Skills, Governance, Technical, Copilot, Process, Data, Observability, and Deployment." />
+          <Principle title="9 Content Areas" text="Strategy, People & Skills, Governance, Technical, Tool Readiness, Process, Data, Observability, and Deployment." />
         </div>
       </div>
     </div>

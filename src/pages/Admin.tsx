@@ -23,7 +23,7 @@ const CA_COLORS: Record<string, string> = {
   SKL: "0 70% 50%",
   GOV: "25 80% 50%",
   TEC: "200 50% 42%",
-  CPL: "168 40% 35%",
+  TRD: "168 40% 35%",
   PRC: "45 80% 45%",
   DAT: "280 40% 45%",
   OBS: "210 60% 50%",
