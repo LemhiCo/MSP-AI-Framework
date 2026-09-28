@@ -84,7 +84,7 @@ Tool Readiness replaces a single-vendor category. Every control in it works the 
 |---|---|---|
 | **Tool Choice** | Pick one general-purpose tool of choice, model the licences, cancel overlapping subscriptions, and control spend | Tool of choice decision, overlapping AI subscriptions consolidated, usage-based and API spend governance |
 | **Tool Secure** | Match access to roles and review what is already connected before anything new is added. Any tool needs the same cleanup | Audit and usage reporting baseline, agent and plugin access baseline, AI meeting notes and transcription policy |
-| **Tool Configure** | Wire the business systems into the tool of choice and scope what it can search. Skip this and the customer has a chatbot | Business systems connected to the tool of choice, default-deny search scope, document-store search allow-list |
+| **Tool Configure** | Run an MCP connectivity workstream that wires business systems into the tool of choice, and scope what it can search. Skip this and the customer has a chatbot | MCP connectivity workstream, default-deny search scope, document-store search allow-list |
 | **Tool Enable** | Launch with a sponsor-led kickoff and train people on the tool they actually have | Adoption kickoff session, training curriculum on the tool of choice, app deployment and visibility by cohort |
 
 ---
