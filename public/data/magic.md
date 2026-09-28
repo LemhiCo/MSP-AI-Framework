@@ -80,8 +80,8 @@ Controls must describe something an MSP or customer can actually do, configure, 
 
 Good:
 - "Named executive sponsor assigned with approval authority"
-- "Copilot access scoped to Entra ID pilot group"
-- "Restricted SharePoint search enabled with approved site list"
+- "Tool of choice licensed only to a named pilot group"
+- "AI search limited to an approved list of document locations"
 
 Not good:
 - "Have an AI strategy"
@@ -179,7 +179,7 @@ MAGIC is not a prompt library or training course.
 While training and enablement are governed, the framework does not include:
 - Prompt examples
 - Workflow hacks
-- "Top 10 Copilot tips"
+- "Top 10 AI tool tips"
 
 Those belong in enablement programs, not governance frameworks.
 
