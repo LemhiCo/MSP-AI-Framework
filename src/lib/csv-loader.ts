@@ -72,6 +72,7 @@ export const CONTENT_AREAS = [
   { id: "GOV", name: "Policy & Governance", color: "var(--ca-gov)" },
   { id: "TEC", name: "Technical Readiness", color: "var(--ca-tec)" },
   { id: "TRD", name: "Tool Readiness", color: "var(--ca-trd)" },
+  { id: "REG", name: "Security", color: "var(--ca-reg)" },
   { id: "PRC", name: "Process Mapping", color: "var(--ca-prc)" },
   { id: "DAT", name: "Data Security & Tagging", color: "var(--ca-dat)" },
   { id: "OBS", name: "AI Observability", color: "var(--ca-obs)" },
