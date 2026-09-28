@@ -76,7 +76,7 @@ export const CONTENT_AREAS = [
   { id: "PRC", name: "Process Mapping", color: "var(--ca-prc)" },
   { id: "DAT", name: "Data Security & Tagging", color: "var(--ca-dat)" },
   { id: "OBS", name: "AI Observability", color: "var(--ca-obs)" },
-  { id: "DEP", name: "AI Tooling & Deployment", color: "var(--ca-dep)" },
+  { id: "DEP", name: "Deployment", color: "var(--ca-dep)" },
 ] as const;
 
 export const LIFECYCLE_TRIGGERS = [
