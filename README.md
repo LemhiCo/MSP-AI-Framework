@@ -78,14 +78,16 @@ The framework uses five Implementation Guards (IGs) to sequence controls from ba
 
 ### Tool Readiness: the tool pipeline
 
-Tool Readiness replaces a single-vendor category. Every control in it works the same whether the customer picks Claude, Microsoft Copilot, ChatGPT, or Gemini. A control names the outcome and the evidence, not one vendor's setting name. The controls follow four steps, in order:
+Tool Readiness replaces a single-vendor category. Every control in it works the same whether the customer picks Claude, Microsoft Copilot, ChatGPT, or Gemini. A control names the outcome and the evidence, not one vendor's setting name.
 
-| Step | What it does | Example controls |
-|---|---|---|
-| **Tool Choice** | Pick one general-purpose tool of choice, model the licences, cancel overlapping subscriptions, and control spend | Tool of choice decision, overlapping AI subscriptions consolidated, usage-based and API spend governance |
-| **Tool Secure** | Match access to roles and review what is already connected before anything new is added. Any tool needs the same cleanup | Audit and usage reporting baseline, agent and plugin access baseline, AI meeting notes and transcription policy |
-| **Tool Configure** | Run an MCP connectivity workstream that wires business systems into the tool of choice, and scope what it can search. Skip this and the customer has a chatbot | MCP connectivity workstream, default-deny search scope, document-store search allow-list |
-| **Tool Enable** | Launch with a sponsor-led kickoff and train people on the tool they actually have | Adoption kickoff session, training curriculum on the tool of choice, app deployment and visibility by cohort |
+A control belongs in Tool Readiness only when it is a choice or setting on the tool of choice itself. Training, rollout, policy, monitoring, and endpoint work stay in their own content area, even when they concern the tool of choice. The pipeline runs in four steps, in order, across those areas:
+
+| Step | What it does | Tool Readiness controls | Related controls in other areas |
+|---|---|---|---|
+| **Tool Choice** | Pick one general-purpose tool of choice, model the licences, cancel overlapping subscriptions, and control spend | TRD-IG1-01 Tool of choice decision, TRD-IG1-02 Self-service AI purchase and trial controls, TRD-IG1-03 Usage-based and API spend governance, TRD-IG2-01 Overlapping AI subscriptions consolidated, TRD-IG5-01 Model fine-tuning governance, TRD-IG5-02 Model and provider change review | STR-IG2-04 Licensing and budget guardrails, GOV-IG1-01 Approved AI tools inventory |
+| **Tool Secure** | Match access to roles and review what is already connected before anything new is added. Any tool needs the same cleanup | TRD-IG2-02 Agent and plugin access baseline, TRD-IG3-01 Shared AI workspaces and chat links | OBS-IG1-04 Audit and usage reporting baseline, TEC-IG1-04 Built-in browser and operating-system AI surfaces, GOV-IG2-04 AI meeting notes and transcription policy, DAT-IG3-03 Restricted repository list |
+| **Tool Configure** | Run an MCP connectivity workstream that wires business systems into the tool of choice, and scope what it can search. Skip this and the customer has a chatbot | TRD-IG1-04 Web search decision, TRD-IG2-03 Document-store search allow-list, TRD-IG2-04 Default-deny search scope, TRD-IG2-05 MCP connectivity workstream, TRD-IG4-01 Agent publication and blocked-list governance, TRD-IG5-03 Preview and early-access feature governance | DEP-IG3-01 Connector approval path, TEC-IG5-01 Secret and integration credential control |
+| **Tool Enable** | Launch with a sponsor-led kickoff, roll out by cohort, and train people on the tool they actually have | None: enablement is people and rollout work | SKL-IG1-06 Adoption kickoff session, SKL-IG2-05 Training curriculum on the tool of choice, DEP-IG2-03 Pilot licensing and access scoping, DEP-IG3-04 App deployment and visibility by cohort, OBS-IG3-05 Usage analytics access and privacy |
 
 ---
 
