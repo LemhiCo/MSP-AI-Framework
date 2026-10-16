@@ -1,0 +1,7 @@
+#!/bin/sh
+# Scan the staged changes for secrets. CI runs the same pinned Gitleaks release on every pull request.
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --pre-commit --staged --redact
+else
+  echo "pre-commit: gitleaks is not installed, so the secret scan was skipped. Install it with: brew install gitleaks" >&2
+fi
